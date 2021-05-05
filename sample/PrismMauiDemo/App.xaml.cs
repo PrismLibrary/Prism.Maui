@@ -1,13 +1,25 @@
 ﻿using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Prism;
+using Prism.Ioc;
 
 namespace PrismMauiDemo
 {
-    public partial class App : Application
+    public partial class App : PrismApplication
     {
-        public App()
+        public App(IContainerExtension container)
+            : base(container)
         {
             InitializeComponent();
+        }
+
+        protected override void OnInitialized()
+        {
+        }
+
+        protected override void RegisterTypes(IContainerRegistry containerRegistry)
+        {
+
         }
 
         //public override IWindow CreateWindow(IActivationState activationState)

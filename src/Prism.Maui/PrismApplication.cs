@@ -6,28 +6,26 @@ using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Mvvm;
 using Microsoft.Maui;
-using Microsoft.Maui.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Maui.Controls;
+using System.Reflection.PortableExecutable;
 
 namespace Prism
 {
-    public abstract class PrismApplicationBase : IApplication, IStartup //, IHostApplicationLifetime
+    public abstract class PrismApplication : Application
     {
         private IContainerExtension _containerExtension;
         private IModuleCatalog _moduleCatalog;
-        private readonly List<IWindow> _windows = new List<IWindow>();
 
         /// <summary>
         /// The dependency injection container used to resolve objects
         /// </summary>
-        public IContainerProvider Container => _containerExtension;
+        protected IContainerProvider Container => _containerExtension;
 
-        public IReadOnlyList<IWindow> Windows => _windows;
-
-        protected PrismApplicationBase()
+        protected PrismApplication(IContainerExtension container)
         {
+            _containerExtension = container;
             InitializeInternal();
         }
 
@@ -67,13 +65,8 @@ namespace Prism
             });
         }
 
-        /// <summary>
-        /// Run the bootstrapper process.
-        /// </summary>
         protected virtual void Initialize()
         {
-            ContainerLocator.SetContainerExtension(CreateContainerExtension);
-            _containerExtension = ContainerLocator.Current;
             RegisterRequiredTypes(_containerExtension);
             //PlatformInitializer?.RegisterTypes(_containerExtension);
             RegisterTypes(_containerExtension);
@@ -87,44 +80,8 @@ namespace Prism
             InitializeModules();
         }
 
-        void IStartup.Configure(IAppHostBuilder appBuilder)
-        {
-            appBuilder.ConfigureServices(ConfigureServices)
-                .ConfigureFonts(ConfigureFonts)
-                .ConfigureMauiHandlers(ConfigureMauiHandlers);
-
-            Configure(appBuilder);
-
-            appBuilder.UseMauiApp(x => this)
-                .UseServiceProviderFactory(new PrismServiceProviderFactory(_containerExtension));
-        }
-
-        protected virtual void Configure(IAppHostBuilder appBuilder)
-        {
-        }
-
-        protected virtual void ConfigureMauiHandlers(IMauiHandlersCollection handlersCollection)
-        {
-        }
-
-        protected virtual void ConfigureFonts(HostBuilderContext host, IFontCollection fonts)
-        {
-        }
-
-        protected virtual void ConfigureServices(HostBuilderContext host, IServiceCollection services)
-        {
-        }
-
-        public virtual IWindow CreateWindow(IActivationState activationState)
-        {
-            return new PrismApplicationWindow
-            {
-                MauiContext = activationState.Context
-            };
-        }
         protected abstract void RegisterTypes(IContainerRegistry containerRegistry);
         protected abstract void OnInitialized();
-        protected abstract IContainerExtension CreateContainerExtension();
 
         /// <summary>
         /// Registers all types that are required by Prism to function with the container.
@@ -164,26 +121,10 @@ namespace Prism
                 manager.Run();
             }
         }
-    }
 
-    public class PrismApplicationWindow : Window
-    {
-        public PrismApplicationWindow()
-            : base(null)
+        protected override IWindow CreateWindow(IActivationState activationState)
         {
+            return new PrismApplicationWindow();
         }
-
-        public PrismApplicationWindow(Page page)
-            : base(page)
-        {
-        }
-
-        public IMauiContext MauiContext { get; set; }
     }
-
-    //public class PrismApplicationWindow : IWindow
-    //{
-    //    public IMauiContext MauiContext { get; set; }
-    //    public IPage Page { get; set; }
-    //}
 }
