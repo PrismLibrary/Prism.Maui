@@ -15,6 +15,7 @@ namespace PrismMauiDemo
 
         protected override void OnInitialized()
         {
+            Console.WriteLine("OnInitialized");
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
