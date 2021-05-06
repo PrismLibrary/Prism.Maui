@@ -67,7 +67,6 @@ namespace Prism
 
         protected virtual void Initialize()
         {
-            RegisterRequiredTypes(_containerExtension);
             //PlatformInitializer?.RegisterTypes(_containerExtension);
             RegisterTypes(_containerExtension);
 
@@ -82,27 +81,6 @@ namespace Prism
 
         protected abstract void RegisterTypes(IContainerRegistry containerRegistry);
         protected abstract void OnInitialized();
-
-        /// <summary>
-        /// Registers all types that are required by Prism to function with the container.
-        /// </summary>
-        /// <param name="containerRegistry"></param>
-        protected virtual void RegisterRequiredTypes(IContainerRegistry containerRegistry)
-        {
-            //containerRegistry.RegisterSingleton<IApplicationProvider, ApplicationProvider>();
-            //containerRegistry.RegisterSingleton<IApplicationStore, ApplicationStore>();
-            containerRegistry.RegisterSingleton<IEventAggregator, EventAggregator>();
-            //containerRegistry.RegisterSingleton<IKeyboardMapper, KeyboardMapper>();
-            //containerRegistry.RegisterSingleton<IPageDialogService, PageDialogService>();
-            //containerRegistry.RegisterSingleton<IDialogService, DialogService>();
-            //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
-            //containerRegistry.RegisterSingleton<IPageBehaviorFactory, PageBehaviorFactory>();
-            containerRegistry.RegisterSingleton<IModuleCatalog, ModuleCatalog>();
-            containerRegistry.RegisterSingleton<IModuleManager, ModuleManager>();
-            containerRegistry.RegisterSingleton<IModuleInitializer, ModuleInitializer>();
-            //containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
-            //containerRegistry.Register<INavigationService, PageNavigationService>(NavigationServiceName);
-        }
 
         /// <summary>
         /// Configures the <see cref="IModuleCatalog"/> used by Prism.
@@ -124,7 +102,14 @@ namespace Prism
 
         protected override IWindow CreateWindow(IActivationState activationState)
         {
+            Console.WriteLine("CreateWindow");
             return new PrismApplicationWindow();
+        }
+
+        protected override void OnStart()
+        {
+            base.OnStart();
+            Console.WriteLine("OnStart");
         }
     }
 }

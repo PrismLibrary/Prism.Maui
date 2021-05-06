@@ -17,6 +17,7 @@ namespace Prism
         {
             var options = new ContainerOptionsBuilder();
             configureContainer(options);
+            options.RegisterRequiredTypes();
 
             builder.UseMauiApp<T>()
                 .UseServiceProviderFactory(new PrismServiceProviderFactory(options.Container));
@@ -24,6 +25,4 @@ namespace Prism
             return builder;
         }
     }
-
-    
 }

@@ -12,10 +12,7 @@ namespace PrismMauiDemo
         {
             appBuilder
                 .UseFormsCompatibility()
-                .UsePrismApplication<App>(options =>
-                {
-                    options.UseDryIoc();
-                });
+                .UsePrismApplication<App>(x => { x.UseDryIoc(); });
         }
     }
 }
