@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Prism.Behaviors;
 using Prism.Events;
 using Prism.Modularity;
 
@@ -56,7 +57,7 @@ namespace Prism.Ioc
             //containerRegistry.RegisterSingleton<IPageDialogService, PageDialogService>();
             //containerRegistry.RegisterSingleton<IDialogService, DialogService>();
             //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
-            //containerRegistry.RegisterSingleton<IPageBehaviorFactory, PageBehaviorFactory>();
+            containerRegistry.RegisterSingleton<IPageBehaviorFactory, PageBehaviorFactory>();
             containerRegistry.RegisterSingleton<IModuleCatalog, ModuleCatalog>();
             containerRegistry.RegisterSingleton<IModuleManager, ModuleManager>();
             containerRegistry.RegisterSingleton<IModuleInitializer, ModuleInitializer>();

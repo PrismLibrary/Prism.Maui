@@ -86,5 +86,23 @@ namespace Prism.Properties {
                 return ResourceManager.GetString("ModuleRefLocationNotSupported", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to NavigationMode is not available.
+        /// </summary>
+        internal static string NavigationModeNotAvailable {
+            get {
+                return ResourceManager.GetString("NavigationModeNotAvailable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The ServiceProvider did not provide a &apos;IProvideValueTarget&apos;.
+        /// </summary>
+        internal static string ServiceProviderDidNotHaveIProvideValueTarget {
+            get {
+                return ResourceManager.GetString("ServiceProviderDidNotHaveIProvideValueTarget", resourceCulture);
+            }
+        }
     }
 }

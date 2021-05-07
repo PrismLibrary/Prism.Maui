@@ -126,4 +126,10 @@
   <data name="ModuleRefLocationNotSupported" xml:space="preserve">
     <value>Module Reference Location is not supported in Maui</value>
   </data>
+  <data name="NavigationModeNotAvailable" xml:space="preserve">
+    <value>NavigationMode is not available</value>
+  </data>
+  <data name="ServiceProviderDidNotHaveIProvideValueTarget" xml:space="preserve">
+    <value>The ServiceProvider did not provide a 'IProvideValueTarget'</value>
+  </data>
 </root>
