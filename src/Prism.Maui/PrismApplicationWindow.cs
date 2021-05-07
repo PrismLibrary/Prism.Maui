@@ -3,18 +3,8 @@ using Microsoft.Maui.Controls;
 
 namespace Prism
 {
-    public class PrismApplicationWindow : Window
+    public class PrismApplicationWindow : VisualElement, IWindow
     {
-        public PrismApplicationWindow()
-            : base(null)
-        {
-        }
-
-        public PrismApplicationWindow(Page page)
-            : base(page)
-        {
-        }
-
-        public IMauiContext MauiContext { get; set; }
+        public IView View { get; set; }
     }
 }
