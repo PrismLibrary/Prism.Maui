@@ -9,7 +9,7 @@
                FontSize="32"
                TextColor="Black"
                HorizontalOptions="Center" />
-        <Label Text=".NET Multi-platform App UI"
+        <Label Text="Prism.Maui"
                FontSize="24"
                TextColor="Black"
                HorizontalOptions="Center" />

@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using Prism.Events;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Mvvm;
-using Microsoft.Maui;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Maui.Controls;
-using System.Reflection.PortableExecutable;
+using Prism.Navigation;
 
 namespace Prism
 {
-    public abstract class PrismApplication : Application
+    public abstract class PrismApplication : Application, IApplication
     {
+        private readonly ObservableCollection<IWindow> _windows = new ObservableCollection<IWindow>();
         private IContainerExtension _containerExtension;
         private IModuleCatalog _moduleCatalog;
 
@@ -22,6 +21,10 @@ namespace Prism
         /// The dependency injection container used to resolve objects
         /// </summary>
         protected IContainerProvider Container => _containerExtension;
+
+        public new IReadOnlyList<IWindow> Windows => _windows;
+
+        protected INavigationService NavigationService { get; private set; }
 
         protected PrismApplication(IContainerExtension container)
         {
@@ -36,7 +39,6 @@ namespace Prism
         {
             ConfigureViewModelLocator();
             Initialize();
-            OnInitialized();
         }
 
         /// <summary>
@@ -47,19 +49,20 @@ namespace Prism
             ViewModelLocationProvider.SetDefaultViewModelFactory((view, type) =>
             {
                 List<(Type Type, object Instance)> overrides = new List<(Type, object)>();
-                //if (Container.IsRegistered<IResolverOverridesHelper>())
-                //{
-                //    var resolver = Container.Resolve<IResolverOverridesHelper>();
-                //    var resolverOverrides = resolver.GetOverrides();
-                //    if (resolverOverrides.Any())
-                //        overrides.AddRange(resolverOverrides);
-                //}
+                if (Container.IsRegistered<IResolverOverridesHelper>())
+                {
+                   var resolver = Container.Resolve<IResolverOverridesHelper>();
+                   var resolverOverrides = resolver.GetOverrides();
+                   if (resolverOverrides.Any())
+                       overrides.AddRange(resolverOverrides);
+                }
 
-                //if (!overrides.Any(x => x.Type == typeof(INavigationService)))
-                //{
-                //    var navService = CreateNavigationService(view);
-                //    overrides.Add((typeof(INavigationService), navService));
-                //}
+                if (!overrides.Any(x => x.Type == typeof(INavigationService)))
+                {
+                    //var navService = CreateNavigationService(view);
+                    var navService = Container.Resolve<INavigationService>();
+                    overrides.Add((typeof(INavigationService), navService));
+                }
 
                 return Container.Resolve(type, overrides.ToArray());
             });
@@ -73,14 +76,14 @@ namespace Prism
             _moduleCatalog = Container.Resolve<IModuleCatalog>();
             ConfigureModuleCatalog(_moduleCatalog);
 
-            //_containerExtension.CreateScope();
-            //NavigationService = _containerExtension.Resolve<INavigationService>();
+            _containerExtension.CreateScope();
+            NavigationService = _containerExtension.Resolve<INavigationService>();
 
             InitializeModules();
         }
 
         protected abstract void RegisterTypes(IContainerRegistry containerRegistry);
-        protected abstract void OnInitialized();
+        protected abstract void OnWindowCreated(IActivationState activationState);
 
         /// <summary>
         /// Configures the <see cref="IModuleCatalog"/> used by Prism.
@@ -100,16 +103,17 @@ namespace Prism
             }
         }
 
-        protected override IWindow CreateWindow(IActivationState activationState)
+        IWindow IApplication.CreateWindow(IActivationState activationState)
         {
-            Console.WriteLine("CreateWindow");
-            return new PrismApplicationWindow();
+            var window = CreateWindow(activationState);
+            _windows.Add(window);
+            OnWindowCreated(activationState);
+            return window;
         }
 
-        protected override void OnStart()
+        protected override IWindow CreateWindow(IActivationState activationState)
         {
-            base.OnStart();
-            Console.WriteLine("OnStart");
+            return new PrismApplicationWindow();
         }
     }
 }

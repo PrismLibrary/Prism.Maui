@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui;
 using Prism;
 using Prism.Ioc;
 
@@ -11,24 +9,17 @@ namespace PrismMauiDemo
         public App(IContainerExtension container)
             : base(container)
         {
-            InitializeComponent();
         }
 
-        protected override void OnInitialized()
+        protected override void OnWindowCreated(IActivationState activationState)
         {
-            Console.WriteLine("OnInitialized");
+            Microsoft.Maui.Controls.Compatibility.Forms.Init(activationState);
+            NavigationService.NavigateAsync("MainPage");
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-
+            containerRegistry.RegisterForNavigation<MainPage>();
         }
-
-        //public override IWindow CreateWindow(IActivationState activationState)
-        //{
-        //    Microsoft.Maui.Controls.Compatibility.Forms.Init(activationState);
-
-        //    return new MainWindow();
-        //}
     }
 }

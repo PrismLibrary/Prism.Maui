@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Prism.Behaviors;
 using Prism.Events;
 using Prism.Modularity;
+using Prism.Navigation;
 
 namespace Prism.Ioc
 {
@@ -61,8 +62,7 @@ namespace Prism.Ioc
             containerRegistry.RegisterSingleton<IModuleCatalog, ModuleCatalog>();
             containerRegistry.RegisterSingleton<IModuleManager, ModuleManager>();
             containerRegistry.RegisterSingleton<IModuleInitializer, ModuleInitializer>();
-            //containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
-            //containerRegistry.Register<INavigationService, PageNavigationService>(NavigationServiceName);
+            containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
         }
     }
 }
