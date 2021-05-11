@@ -1,9 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
+using Prism.AppModel;
 using Prism.Behaviors;
 using Prism.Events;
 using Prism.Modularity;
 using Prism.Navigation;
+using Prism.Services;
 
 namespace Prism.Ioc
 {
@@ -51,11 +53,9 @@ namespace Prism.Ioc
 
         private static void DefaultRegisterRequiredTypes(IContainerRegistry containerRegistry)
         {
-            //containerRegistry.RegisterSingleton<IApplicationProvider, ApplicationProvider>();
-            //containerRegistry.RegisterSingleton<IApplicationStore, ApplicationStore>();
             containerRegistry.RegisterSingleton<IEventAggregator, EventAggregator>();
-            //containerRegistry.RegisterSingleton<IKeyboardMapper, KeyboardMapper>();
-            //containerRegistry.RegisterSingleton<IPageDialogService, PageDialogService>();
+            containerRegistry.RegisterSingleton<IKeyboardMapper, KeyboardMapper>();
+            containerRegistry.RegisterSingleton<IPageDialogService, PageDialogService>();
             //containerRegistry.RegisterSingleton<IDialogService, DialogService>();
             //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
             containerRegistry.RegisterSingleton<IPageBehaviorFactory, PageBehaviorFactory>();
