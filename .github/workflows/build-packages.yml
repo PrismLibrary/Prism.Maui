@@ -1,0 +1,47 @@
+name: Build Prism.Maui
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    name: Build Prism.Maui
+    runs-on: macos-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+            fetch-depth: 0
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+          include-prerelease: true
+
+      - name: Set Sponsor Connect Credentials
+        run: |
+          dotnet nuget update source SponsorConnect -u=dansiegel -p=$env:SponsorConnectToken --configfile=nuget.config --store-password-in-clear-text
+        shell: powershell
+        env:
+          SponsorConnectToken: ${{ secrets.SPONSOR_CONNECT_TOKEN }}
+
+      - name: Build Packages
+        run: dotnet build build.slnf -c Release
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: NuGet
+          path: Artifacts/
+
+      - name: NuGet Publish
+        uses: dansiegel/publish-nuget@v1.01
+        with:
+            filename: 'Artifacts/*.nupkg'
+            feedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
+            apiKey: ${{ secrets.IN_HOUSE_API_KEY }}
