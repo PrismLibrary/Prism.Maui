@@ -1,0 +1,10 @@
+{
+  "solution": {
+    "path": "Prism.Maui.sln",
+    "projects": [
+      "src\\Prism.Maui\\Prism.Maui.csproj",
+      "src\\Prism.DryIoc.Maui\\Prism.DryIoc.Maui.csproj",
+      "src\\Prism.DryIoc.Shared\\Prism.DryIoc.Shared.shproj"
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+<Project>
+
+  <PropertyGroup>
+    <NeutralLanguage>en</NeutralLanguage>
+    <Authors>Dan Siegel</Authors>
+    <PackageProjectUrl>https://github.com/dansiegel/Prism.Maui</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>prism-logo.png</PackageIcon>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageOutputPath>$(MSBuildThisFileDirectory)Artifacts</PackageOutputPath>
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/dansiegel/Prism.Maui</RepositoryUrl>
+    <PrismPackageIcon>$(MSBuildThisFileDirectory)prism-logo.png</PrismPackageIcon>
+    <PrismLicenseFile>$(MSBuildThisFileDirectory)LICENSE</PrismLicenseFile>
+    <PackageTags>prism;maui;dotnet-maui;xaml;mvvm;ios;android;mac;winui</PackageTags>
+    <Copyright>Copyright Dan Siegel 2021</Copyright>
+    <Description>This is an early alpha build of Prism for .NET Maui. API's are likely to change.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(PrismPackageIcon)"
+          Visible="False"
+          Pack="True"
+          PackagePath="" />
+    <None Include="$(PrismLicenseFile)"
+          Visible="False"
+          Pack="True"
+          PackagePath="" />
+    <SourceRoot Include="$(MSBuildThisFileDirectory)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Nerdbank.GitVersioning" 
+                      Version="3.3.37"
+                      PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub"
+                      Version="1.1.0-beta-20204-02"
+                      PrivateAssets="all" />
+  </ItemGroup>
+
+</Project>
