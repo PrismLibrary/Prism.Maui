@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -39,24 +40,27 @@ namespace Prism.Common
             }
         }
 
-        public static void DestroyPage(Page page)
+        public static void DestroyPage(IView view)
         {
             try
             {
-                DestroyChildren(page);
+                DestroyChildren(view);
 
-                InvokeViewAndViewModelAction<IDestructible>(page, v => v.Destroy());
+                InvokeViewAndViewModelAction<IDestructible>(view, v => v.Destroy());
 
-                page.Behaviors?.Clear();
-                page.BindingContext = null;
+                if(view is Page page)
+                {
+                    page.Behaviors?.Clear();
+                    page.BindingContext = null;
+                }
             }
             catch (Exception ex)
             {
-                throw new Exception($"Cannot destroy {page}.", ex);
+                throw new Exception($"Cannot destroy {view}.", ex);
             }
         }
 
-        private static void DestroyChildren(Page page)
+        private static void DestroyChildren(IView page)
         {
             switch (page)
             {
@@ -149,7 +153,7 @@ namespace Prism.Common
                 InvokeViewAndViewModelAction<INavigatedAware>(page, v => v.OnNavigatedTo(parameters));
         }
 
-        public static Page GetOnNavigatedToTarget(Page page, Page mainPage, bool useModalNavigation)
+        public static Page GetOnNavigatedToTarget(Page page, IView mainPage, bool useModalNavigation)
         {
             Page target;
             if (useModalNavigation)
@@ -172,7 +176,7 @@ namespace Prism.Common
             return target;
         }
 
-        public static Page GetOnNavigatedToTargetFromChild(Page target)
+        public static Page GetOnNavigatedToTargetFromChild(IView target)
         {
             Page child = null;
 
@@ -182,13 +186,16 @@ namespace Prism.Common
                 child = tabbed.CurrentPage;
             else if (target is CarouselPage carousel)
                 child = carousel.CurrentPage;
-            else if (target is NavigationPage)
-                child = target.Navigation.NavigationStack.Last();
+            else if (target is NavigationPage np)
+                child = np.Navigation.NavigationStack.Last();
 
             if (child != null)
                 target = GetOnNavigatedToTargetFromChild(child);
 
-            return target;
+            if (target is Page page)
+                return page;
+
+            return null;
         }
 
         public static Page GetPreviousPage(Page currentPage, System.Collections.Generic.IReadOnlyList<Page> navStack)
@@ -234,7 +241,7 @@ namespace Prism.Common
             return GetOnNavigatedToTargetFromChild(page);
         };
 
-        public static void HandleSystemGoBack(Page previousPage, Page currentPage)
+        public static void HandleSystemGoBack(IView previousPage, IView currentPage)
         {
             var parameters = new NavigationParameters();
             parameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);

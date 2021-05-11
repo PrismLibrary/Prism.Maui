@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Prism.Ioc;
 using Prism.Mvvm;
@@ -47,5 +45,11 @@ namespace Prism.Navigation
 
             return view;
         }
+
+        public static Type GetPageType(string name) =>
+            _registrations.FirstOrDefault(x => x.Name == name)?.View;
+
+        public static ViewRegistration GetPageNavigationInfo(Type viewType) => 
+            _registrations.FirstOrDefault(x => x.View == viewType);
     }
 }

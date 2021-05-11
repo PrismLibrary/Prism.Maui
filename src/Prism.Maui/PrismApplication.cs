@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Prism.Extensions;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Mvvm;
@@ -13,8 +14,8 @@ namespace Prism
 {
     public abstract class PrismApplication : Application, IApplication
     {
-        private readonly ObservableCollection<IWindow> _windows = new ObservableCollection<IWindow>();
-        private IContainerExtension _containerExtension;
+        private readonly ObservableCollection<IWindow> _windows = new();
+        private readonly IContainerExtension _containerExtension;
         private IModuleCatalog _moduleCatalog;
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace Prism
         {
             ViewModelLocationProvider.SetDefaultViewModelFactory((view, type) =>
             {
-                List<(Type Type, object Instance)> overrides = new List<(Type, object)>();
+                var overrides = new List<(Type Type, object Instance)>();
                 if (Container.IsRegistered<IResolverOverridesHelper>())
                 {
                    var resolver = Container.Resolve<IResolverOverridesHelper>();
@@ -59,8 +60,7 @@ namespace Prism
 
                 if (!overrides.Any(x => x.Type == typeof(INavigationService)))
                 {
-                    //var navService = CreateNavigationService(view);
-                    var navService = Container.Resolve<INavigationService>();
+                    var navService = CreateNavigationService(view);
                     overrides.Add((typeof(INavigationService), navService));
                 }
 
@@ -68,9 +68,22 @@ namespace Prism
             });
         }
 
+        private INavigationService CreateNavigationService(object view)
+        {
+            if (view is Page page)
+            {
+                return Navigation.Xaml.Navigation.GetNavigationService(page);
+            }
+            else if (view is VisualElement visualElement && visualElement.TryGetParentPage(out var parent))
+            {
+                return Navigation.Xaml.Navigation.GetNavigationService(parent);
+            }
+
+            return Container.Resolve<INavigationService>();
+        }
+
         protected virtual void Initialize()
         {
-            //PlatformInitializer?.RegisterTypes(_containerExtension);
             RegisterTypes(_containerExtension);
 
             _moduleCatalog = Container.Resolve<IModuleCatalog>();
@@ -82,7 +95,13 @@ namespace Prism
             InitializeModules();
         }
 
+
         protected abstract void RegisterTypes(IContainerRegistry containerRegistry);
+
+        /// <summary>
+        /// Used to Navigate
+        /// </summary>
+        /// <param name="activationState"></param>
         protected abstract void OnWindowCreated(IActivationState activationState);
 
         /// <summary>
