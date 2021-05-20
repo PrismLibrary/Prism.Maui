@@ -16,7 +16,9 @@
     <PrismLicenseFile>$(MSBuildThisFileDirectory)LICENSE</PrismLicenseFile>
     <PackageTags>prism;maui;dotnet-maui;xaml;mvvm;ios;android;mac;winui</PackageTags>
     <Copyright>Copyright Dan Siegel 2021</Copyright>
-    <Description>This is an early alpha build of Prism for .NET Maui. API's are likely to change.</Description>
+    <Description>This is a special pre-Build Alpha. In order to use this version be sure to install maui-check and run `maui-check --dev`
+
+Be sure to check out the source code at https://github.com/dansiegel/prism.maui and copy the nuget.config as this early build is targeting CI / nightly feeds from Microsoft.</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -33,7 +35,7 @@
 
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" 
-                      Version="3.3.37"
+                      Version="3.4.194"
                       PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub"
                       Version="1.1.0-beta-20204-02"

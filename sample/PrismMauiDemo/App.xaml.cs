@@ -1,6 +1,7 @@
 ﻿using Microsoft.Maui;
 using Prism;
 using Prism.Ioc;
+using Prism.Navigation;
 
 namespace PrismMauiDemo
 {

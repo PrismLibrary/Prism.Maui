@@ -10,7 +10,7 @@ namespace Prism.DryIoc
     /// The <see cref="IContainerExtension" /> Implementation to use with DryIoc
     /// </summary>
 #if ContainerExtensions
-    internal partial
+    internal
 #else
     public
 #endif
