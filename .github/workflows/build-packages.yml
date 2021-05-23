@@ -51,9 +51,16 @@ jobs:
           name: NuGet
           path: Artifacts/
 
-      - name: NuGet Publish
+      - name: NuGet Publish (In-House)
         uses: dansiegel/publish-nuget@v1.01
         with:
             filename: 'Artifacts/*.nupkg'
             feedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
             apiKey: ${{ secrets.IN_HOUSE_API_KEY }}
+
+      - name: NuGet Publish (Sponsor Connect)
+        uses: dansiegel/publish-nuget@v1.01
+        with:
+            filename: 'Artifacts/*.nupkg'
+            feedUrl: ${{ secrets.SPONSOR_CONNECT_NUGET_FEED }}
+            apiKey: ${{ secrets.SPONSOR_CONNECT_TOKEN }}
