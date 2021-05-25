@@ -35,7 +35,7 @@ Be sure to check out the source code at https://github.com/dansiegel/prism.maui 
 
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" 
-                      Version="3.4.194"
+                      Version="3.4.203"
                       PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub"
                       Version="1.1.0-beta-20204-02"
