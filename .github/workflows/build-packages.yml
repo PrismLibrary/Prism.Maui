@@ -48,6 +48,18 @@ jobs:
       - name: Build Packages
         run: dotnet build build.slnf -c Release
 
+      - name: Sign Packages
+        run: build\Sign-Packages.ps1
+        shell: powershell
+        env:
+          SignClientAADInstance: ${{ secrets.SIGNCLIENTAADINSTANCE }}
+          SignClientUser: ${{ secrets.SIGNCLIENTUSER }}
+          SignClientSecret: ${{ secrets.SIGNCLIENTSECRET }}
+          SignClientClientId: ${{ secrets.SIGNCLIENTCLIENTID }}
+          SignClientTenantId: ${{ secrets.SIGNCLIENTTENANTID }}
+          SignServiceResourceId: ${{ secrets.SIGNSERVICERESOURCEID }}
+          SignServiceUrl: ${{ secrets.SIGNSERVICEURL }}
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
