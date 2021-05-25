@@ -23,24 +23,27 @@ jobs:
           dotnet-version: '6.0.x'
           include-prerelease: true
 
-      - name: Configure and Restore Packages
-        run: |
-          $authToken = $env:SponsorConnectToken
-          if([string]::IsNullOrEmpty($authToken))
-          {
-            Write-Error "No Auth Token is available"
-          }
+      # - name: Configure and Restore Packages
+      #   run: |
+      #     $authToken = $env:SponsorConnectToken
+      #     if([string]::IsNullOrEmpty($authToken))
+      #     {
+      #       Write-Error "No Auth Token is available"
+      #     }
 
-          Write-Host "Downloading Nuget.exe ..."
-          Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile nuget.exe
+      #     Write-Host "Downloading Nuget.exe ..."
+      #     Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile nuget.exe
 
-          Write-Host "Setting Feed credentials for Sponsor Connect"
-          nuget sources update -Name SponsorConnect -Username dansiegel -Password $authToken -ConfigFile nuget.config -ValidAuthenticationTypes basic
-          nuget restore src\Prism.Maui\Prism.Maui.csproj
-          nuget restore src\Prism.DryIoc.Maui\Prism.DryIoc.Maui.csproj
-        shell: powershell
-        env:
-          SponsorConnectToken: ${{ secrets.SPONSOR_CONNECT_TOKEN }}
+      #     Write-Host "Setting Feed credentials for Sponsor Connect"
+      #     nuget sources update -Name SponsorConnect -Username dansiegel -Password $authToken -ConfigFile nuget.config -ValidAuthenticationTypes basic
+      #     nuget restore src\Prism.Maui\Prism.Maui.csproj
+      #     nuget restore src\Prism.DryIoc.Maui\Prism.DryIoc.Maui.csproj
+      #   shell: powershell
+      #   env:
+      #     SponsorConnectToken: ${{ secrets.SPONSOR_CONNECT_TOKEN }}
+
+      - name: NuGet Restore
+        run: dotnet restore build.slnf --configFile nuget.config
 
       - name: Build Packages
         run: dotnet build build.slnf -c Release
