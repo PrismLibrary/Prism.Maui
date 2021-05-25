@@ -16,9 +16,11 @@
     <PrismLicenseFile>$(MSBuildThisFileDirectory)LICENSE</PrismLicenseFile>
     <PackageTags>prism;maui;dotnet-maui;xaml;mvvm;ios;android;mac;winui</PackageTags>
     <Copyright>Copyright Dan Siegel 2021</Copyright>
-    <Description>This is a special pre-Build Alpha. In order to use this version be sure to install maui-check and run `maui-check --dev`
+    <Description>This is a special MSBuild Alpha. In order to use this version be sure to install and run `maui-check`.
+`dotnet tool install --global Redth.Net.Maui.Check --version 0.4.2`
 
-Be sure to check out the source code at https://github.com/dansiegel/prism.maui and copy the nuget.config as this early build is targeting CI / nightly feeds from Microsoft.</Description>
+As this is an Alpha build there are no docs, be sure to check out the source repo at: https://github.com/dansiegel/prism.maui 
+Note that as of .NET 6 Preview 4, Maui still requires that you have referenced the Xamarin CI feed.</Description>
   </PropertyGroup>
 
   <ItemGroup>
