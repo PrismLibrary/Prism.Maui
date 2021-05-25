@@ -19,7 +19,7 @@ if (!(Test-Path $fileList))
 }
 
 # Sanitize GitHub Repository Names
-$repoName = $env:BUILD_REPOSITORY_NAME -replace ".*/",""
+$repoName = "Prism.Maui"
 
 $azureAd = @{
     SignClient = @{
@@ -42,7 +42,7 @@ $nupkgs = Get-ChildItem $env:BUILD_ARTIFACTSTAGINGDIRECTORY\*.nupkg -recurse | S
 foreach ($nupkg in $nupkgs){
     Write-Host "Submitting $nupkg for signing"
 
-    .\SignClient 'sign' -c $appSettings -i $nupkg -f $fileList -r $env:SignClientUser -s $env:SignClientSecret -n $repoName -d $repoName -u $env:BUILD_REPOSITORY_URI
+    .\SignClient 'sign' -c $appSettings -i $nupkg -f $fileList -r $env:SignClientUser -s $env:SignClientSecret -n $repoName -d $repoName -u "https://github.com/dansiegel/prism.maui"
 
     Write-Host "Finished signing $nupkg"
 }
