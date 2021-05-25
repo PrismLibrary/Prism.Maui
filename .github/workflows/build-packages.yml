@@ -43,7 +43,7 @@ jobs:
       #     SponsorConnectToken: ${{ secrets.SPONSOR_CONNECT_TOKEN }}
 
       - name: NuGet Restore
-        run: dotnet restore build.slnf --configFile nuget.config
+        run: dotnet restore --configfile nuget.config build.slnf
 
       - name: Build Packages
         run: dotnet build build.slnf -c Release
