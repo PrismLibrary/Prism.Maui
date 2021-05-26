@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui;
+using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 using Microsoft.Maui.Controls.Compatibility;
 using Prism;
@@ -12,7 +12,11 @@ namespace PrismMauiDemo
         {
             appBuilder
                 .UseFormsCompatibility()
-                .UsePrismApplication<App>(x => { x.UseDryIoc(); });
+                .UsePrismApplication<App>(x => x.UseDryIoc())
+                .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                });
         }
     }
 }
