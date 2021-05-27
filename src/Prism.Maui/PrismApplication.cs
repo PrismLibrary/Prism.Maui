@@ -89,9 +89,6 @@ namespace Prism
             _moduleCatalog = Container.Resolve<IModuleCatalog>();
             ConfigureModuleCatalog(_moduleCatalog);
 
-            _containerExtension.CreateScope();
-            NavigationService = _containerExtension.Resolve<INavigationService>();
-
             InitializeModules();
         }
 
@@ -124,6 +121,11 @@ namespace Prism
 
         IWindow IApplication.CreateWindow(IActivationState activationState)
         {
+            // We need to delay creating the Navigation Service since it
+            // requires the IApplication which cannot be resolved from a
+            // method called by the ctor...
+            var scope = _containerExtension.CreateScope();
+            NavigationService = scope.Resolve<INavigationService>();
             var window = CreateWindow(activationState);
             _windows.Add(window);
             OnWindowCreated(activationState);
