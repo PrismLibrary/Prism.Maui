@@ -1,5 +1,4 @@
 ﻿using Microsoft.Maui;
-using Microsoft.Maui.Controls.PlatformConfiguration;
 using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
 using Prism;
 using Prism.Ioc;
@@ -18,7 +17,7 @@ namespace PrismMauiDemo
         {
             Microsoft.Maui.Controls.Compatibility.Forms.Init(activationState);
 
-            On<Windows>()
+            this.On<Microsoft.Maui.Controls.PlatformConfiguration.Windows>()
                 .SetImageDirectory("Assets");
 
             NavigationService.NavigateAsync("MainPage");

@@ -53,4 +53,9 @@
 		<MauiFont Include="..\PrismMauiDemo\Resources\Fonts\**\*.ttf" Link="Resources\Fonts\%(RecursiveDir)%(FileName)%(Extension)" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\..\src\Prism.DryIoc.Maui\Prism.DryIoc.Maui.csproj" />
+	  <ProjectReference Include="..\..\src\Prism.Maui\Prism.Maui.csproj" />
+	</ItemGroup>
+
 </Project>
