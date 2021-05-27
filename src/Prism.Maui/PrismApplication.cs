@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Prism.Extensions;
@@ -99,7 +100,7 @@ namespace Prism
         /// Used to Navigate
         /// </summary>
         /// <param name="activationState"></param>
-        protected abstract void OnWindowCreated(IActivationState activationState);
+        protected abstract Task OnWindowCreated(IActivationState activationState);
 
         /// <summary>
         /// Configures the <see cref="IModuleCatalog"/> used by Prism.
@@ -128,7 +129,7 @@ namespace Prism
             NavigationService = scope.Resolve<INavigationService>();
             var window = CreateWindow(activationState);
             _windows.Add(window);
-            OnWindowCreated(activationState);
+            OnWindowCreated(activationState).Wait();
             return window;
         }
 
