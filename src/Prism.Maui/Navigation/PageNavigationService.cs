@@ -206,7 +206,7 @@ namespace Prism.Navigation
 
                 parameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);
 
-                Page page = GetCurrentPage();
+                var page = GetCurrentPage();
                 var canNavigate = await PageUtilities.CanNavigateAsync(page, parameters);
                 if (!canNavigate)
                 {
@@ -216,7 +216,7 @@ namespace Prism.Navigation
                     };
                 }
 
-                List<Page> pagesToDestroy = page.Navigation.NavigationStack.ToList(); // get all pages to destroy
+                var pagesToDestroy = page.Navigation.NavigationStack.ToList(); // get all pages to destroy
                 pagesToDestroy.Reverse(); // destroy them in reverse order
                 var root = pagesToDestroy.Last();
                 pagesToDestroy.Remove(root); //don't destroy the root page
@@ -249,7 +249,9 @@ namespace Prism.Navigation
         protected virtual Task<INavigationResult> NavigateInternal(string name, INavigationParameters parameters, bool? useModalNavigation, bool animated)
         {
             if (name.StartsWith(RemovePageRelativePath))
+            {
                 name = name.Replace(RemovePageRelativePath, RemovePageInstruction);
+            }
 
             return NavigateInternal(UriParsingHelper.Parse(name), parameters, useModalNavigation, animated);
         }
@@ -281,7 +283,6 @@ namespace Prism.Navigation
         /// </example>
         protected async virtual Task<INavigationResult> NavigateInternal(Uri uri, INavigationParameters parameters, bool? useModalNavigation, bool animated)
         {
-            var result = new NavigationResult();
             try
             {
                 NavigationSource = PageNavigationSource.NavigationService;
@@ -321,13 +322,17 @@ namespace Prism.Navigation
         protected virtual async Task ProcessNavigation(Page currentPage, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
         {
             if (segments.Count == 0)
+            {
                 return;
+            }
 
             var nextSegment = segments.Dequeue();
 
             var pageParameters = UriParsingHelper.GetSegmentParameters(nextSegment);
             if (pageParameters.ContainsKey(KnownNavigationParameters.UseModalNavigation))
+            {
                 useModalNavigation = pageParameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation);
+            }
 
             if (nextSegment == RemovePageSegment)
             {
@@ -366,29 +371,29 @@ namespace Prism.Navigation
         protected virtual Task ProcessNavigationForRemovePageSegments(Page currentPage, string nextSegment, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
         {
             if (!PageUtilities.HasDirectNavigationPageParent(currentPage))
+            {
                 throw new NavigationException(NavigationException.RelativeNavigationRequiresNavigationPage, currentPage);
+            }
 
-            if (CanRemoveAndPush(segments))
-                return RemoveAndPush(currentPage, nextSegment, segments, parameters, useModalNavigation, animated);
-            else
-                return RemoveAndGoBack(currentPage, nextSegment, segments, parameters, useModalNavigation, animated);
+            return CanRemoveAndPush(segments)
+                ? RemoveAndPush(currentPage, nextSegment, segments, parameters, useModalNavigation, animated)
+                : RemoveAndGoBack(currentPage, nextSegment, segments, parameters, useModalNavigation, animated);
         }
 
         private static bool CanRemoveAndPush(Queue<string> segments)
         {
-            if (segments.All(x => x == RemovePageSegment))
-                return false;
-            else
-                return true;
+            return !segments.All(x => x == RemovePageSegment);
         }
 
         private Task RemoveAndGoBack(Page currentPage, string nextSegment, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
         {
-            List<Page> pagesToRemove = new List<Page>();
+            var pagesToRemove = new List<Page>();
 
             var currentPageIndex = currentPage.Navigation.NavigationStack.Count;
             if (currentPage.Navigation.NavigationStack.Count > 0)
+            {
                 currentPageIndex = currentPage.Navigation.NavigationStack.Count - 1;
+            }
 
             while (segments.Count != 0)
             {
@@ -411,7 +416,9 @@ namespace Prism.Navigation
 
             var currentPageIndex = currentPage.Navigation.NavigationStack.Count;
             if (currentPage.Navigation.NavigationStack.Count > 0)
+            {
                 currentPageIndex = currentPage.Navigation.NavigationStack.Count - 1;
+            }
 
             while (segments.Peek() == RemovePageSegment)
             {
@@ -527,7 +534,9 @@ namespace Prism.Navigation
                 await UseReverseNavigation(currentPage, nextSegment, segments, parameters, false, animated);
 
                 if (clearNavigationStack && !isEmptyOfNavigationStack)
+                {
                     currentPage.Navigation.RemovePage(topPage);
+                }
             }
 
             foreach (var destroyPage in destroyPages)
@@ -651,7 +660,7 @@ namespace Prism.Navigation
             if (page is IFlyoutPageOptions flyoutPageOptions)
                 return flyoutPageOptions.IsPresentedAfterNavigation;
 
-            if (page.BindingContext is IFlyoutPageOptions flyoutPageBindingContext)
+            else if (page.BindingContext is IFlyoutPageOptions flyoutPageBindingContext)
                 return flyoutPageBindingContext.IsPresentedAfterNavigation;
 
             return false;
@@ -662,7 +671,7 @@ namespace Prism.Navigation
             if (page is INavigationPageOptions iNavigationPage)
                 return iNavigationPage.ClearNavigationStackOnNavigation;
 
-            if (page.BindingContext is INavigationPageOptions iNavigationPageBindingContext)
+            else if (page.BindingContext is INavigationPageOptions iNavigationPageBindingContext)
                 return iNavigationPageBindingContext.ClearNavigationStackOnNavigation;
 
             return true;
@@ -682,7 +691,9 @@ namespace Prism.Navigation
             await OnInitializedAsync(toPage, segmentParameters);
 
             if (navigationAction != null)
+            {
                 await navigationAction();
+            }
 
             OnNavigatedFrom(fromPage, segmentParameters);
 
