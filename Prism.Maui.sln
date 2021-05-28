@@ -19,6 +19,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PrismMauiDemo.WinUI3", "sam
 EndProject
 Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "PrismMauiDemo.WinUI3 (Package)", "sample\PrismMauiDemo.WinUI3 (Package)\PrismMauiDemo.WinUI3 (Package).wapproj", "{1530E120-DD92-4F9A-B919-71DA1C170936}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{7CB47440-CCBC-4E16-B2B9-9FD472154117}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prism.Maui.Tests", "tests\Prism.Maui.Tests\Prism.Maui.Tests.csproj", "{3BFAB205-050B-47B7-9AB8-BE799E07DA90}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Prism.DryIoc.Shared\Prism.DryIoc.Shared.projitems*{6c5c1f1f-da92-4307-862f-5034bf8b0858}*SharedItemsImports = 5
@@ -119,6 +123,22 @@ Global
 		{1530E120-DD92-4F9A-B919-71DA1C170936}.Release|x86.ActiveCfg = Release|x86
 		{1530E120-DD92-4F9A-B919-71DA1C170936}.Release|x86.Build.0 = Release|x86
 		{1530E120-DD92-4F9A-B919-71DA1C170936}.Release|x86.Deploy.0 = Release|x86
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Debug|arm64.Build.0 = Debug|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Debug|x64.Build.0 = Debug|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Debug|x86.Build.0 = Debug|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Release|arm64.ActiveCfg = Release|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Release|arm64.Build.0 = Release|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Release|x64.ActiveCfg = Release|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Release|x64.Build.0 = Release|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Release|x86.ActiveCfg = Release|Any CPU
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -130,6 +150,7 @@ Global
 		{6E7EC81D-DA39-4C4F-A898-0148558C34F4} = {6CAB3327-8C0A-4D0B-BF18-CEFD15B84BA7}
 		{BC2A4465-98D4-4FA4-ADAF-ABFA5E2BB68D} = {06F06128-578F-449D-B3D6-D04A531B1018}
 		{1530E120-DD92-4F9A-B919-71DA1C170936} = {06F06128-578F-449D-B3D6-D04A531B1018}
+		{3BFAB205-050B-47B7-9AB8-BE799E07DA90} = {7CB47440-CCBC-4E16-B2B9-9FD472154117}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7E696A15-8B47-4BC2-8997-071E61157406}
