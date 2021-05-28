@@ -20,7 +20,7 @@ namespace Prism.Maui.Tests.Mocks
 
         public VisualElement MainPage => _windows[0].View as VisualElement;
 
-        public IReadOnlyList<IWindow> Windows { get; }
+        public IReadOnlyList<IWindow> Windows => _windows;
 
         public IWindow CreateWindow(IActivationState activationState)
         {
