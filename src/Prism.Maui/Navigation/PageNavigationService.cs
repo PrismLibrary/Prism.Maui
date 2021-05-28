@@ -776,7 +776,7 @@ namespace Prism.Navigation
             try
             {
                 _container.CreateScope();
-                var page = (Page)_container.Resolve<object>(segmentName);
+                var page = (Page)NavigationRegistry.CreateView(_container, segmentName);
 
                 if (page is null)
                     throw new NullReferenceException($"The resolved type for {segmentName} was null. You may be attempting to navigate to a Non-Page type");

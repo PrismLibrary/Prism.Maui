@@ -37,11 +37,9 @@ namespace Prism.Navigation
                 throw new KeyNotFoundException($"No view with the name '{name}' has been registered");
 
             var view = container.Resolve(registration.View);
-            if (view is BindableObject bindable && bindable.BindingContext is null && (bool)bindable.GetValue(ViewModelLocator.AutowireViewModelProperty))
+            if (view is BindableObject bindable && bindable.BindingContext is null && (bool?)bindable.GetValue(ViewModelLocator.AutowireViewModelProperty) is null)
             {
-                // TODO: Use ViewModelLocationProvider if the ViewModel type is null...
-                var viewModelType = registration.ViewModel;
-                bindable.BindingContext = container.Resolve(viewModelType);
+                ViewModelLocator.SetAutowireViewModel(bindable, true);
             }
 
             return view;
