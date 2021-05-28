@@ -87,7 +87,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("ContentPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
             Assert.IsType<ContentPageMock>(rootPage.Navigation.ModalStack[0]);
         }
 
@@ -100,7 +100,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync(new Uri("ContentPage", UriKind.Relative));
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
             Assert.IsType<ContentPageMock>(rootPage.Navigation.ModalStack[0]);
         }
 
@@ -238,7 +238,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("ContentPage", navParameters);
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
             Assert.IsType<ContentPageMock>(rootPage.Navigation.ModalStack[0]);
 
             var viewModel = rootPage.Navigation.ModalStack[0].BindingContext as ContentPageMockViewModel;
@@ -258,7 +258,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("ContentPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
             Assert.IsType<ContentPageMock>(rootPage.Navigation.ModalStack[0]);
 
             var result = await navigationService.GoBackAsync();
@@ -289,7 +289,7 @@ namespace Prism.Maui.Tests.Navigation
             var result = await navigationService.GoBackAsync();
 
             Assert.True(result.Success);
-            Assert.True(rootPage.Navigation.NavigationStack.Count == 1);
+            Assert.Single(rootPage.Navigation.NavigationStack);
             Assert.IsType<ContentPageMock>(rootPage.CurrentPage);
             Assert.True(tabbedPageMock.DestroyCalled);
             Assert.Null(tabbedPageMock.BindingContext);
@@ -305,7 +305,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("ContentPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
             Assert.IsType<ContentPageMock>(rootPage.Navigation.ModalStack[0]);
 
             var viewModel = rootPage.Navigation.ModalStack[0].BindingContext as ContentPageMockViewModel;
@@ -328,7 +328,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("ContentPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
 
             var contentPage = rootPage.Navigation.ModalStack[0] as ContentPageMock;
             Assert.NotNull(contentPage);
@@ -340,7 +340,7 @@ namespace Prism.Maui.Tests.Navigation
             await nextPageNavService.NavigateAsync("NavigationPage");
 
             Assert.True(contentPage.OnNavigatedFromCalled);
-            Assert.True(contentPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(contentPage.Navigation.ModalStack);
         }
 
         [Fact]
@@ -355,7 +355,7 @@ namespace Prism.Maui.Tests.Navigation
             await navigationService.NavigateAsync("ContentPage");
 
             Assert.True(rootPage.OnConfirmNavigationCalled);
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
         }
 
         [Fact]
@@ -389,7 +389,7 @@ namespace Prism.Maui.Tests.Navigation
             Assert.False(viewModel.OnConfirmNavigationCalled);
 
             await navigationService.NavigateAsync("ContentPage");
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
 
             Assert.NotNull(viewModel);
             Assert.True(viewModel.OnConfirmNavigationCalled);
@@ -494,7 +494,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("NavigationPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
             Assert.IsType<NavigationPageMock>(rootPage.Navigation.ModalStack[0]);
 
             var viewModel = rootPage.Navigation.ModalStack[0].BindingContext as NavigationPageMockViewModel;
@@ -511,7 +511,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("FlyoutPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
 
             var mdPage = rootPage.Navigation.ModalStack[0] as FlyoutPage;
             Assert.NotNull(mdPage);
@@ -530,7 +530,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("TabbedPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
 
             var mdPage = rootPage.Navigation.ModalStack[0] as TabbedPageMock;
             Assert.NotNull(mdPage);
@@ -549,7 +549,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("ContentPage");
 
-            Assert.True(rootPage.Navigation.NavigationStack.Count == 1);
+            Assert.Single(rootPage.Navigation.NavigationStack);
             Assert.IsType<ContentPageMock>(rootPage.Navigation.NavigationStack[0]);
         }
 
@@ -944,8 +944,8 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("ContentPage/ContentPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
-            Assert.True(rootPage.Navigation.ModalStack[0].Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
+            Assert.Single(rootPage.Navigation.ModalStack[0].Navigation.ModalStack);
         }
 
         [Fact]
@@ -957,8 +957,8 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("ContentPage/NavigationPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
-            Assert.True(rootPage.Navigation.ModalStack[0].Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
+            Assert.Single(rootPage.Navigation.ModalStack[0].Navigation.ModalStack);
         }
 
         [Fact]
@@ -971,7 +971,7 @@ namespace Prism.Maui.Tests.Navigation
             await navigationService.NavigateAsync("ContentPage/NavigationPage/ContentPage");
 
             var navPage = rootPage.Navigation.ModalStack[0].Navigation.ModalStack[0];
-            Assert.True(navPage.Navigation.NavigationStack.Count == 1);
+            Assert.Single(navPage.Navigation.NavigationStack);
         }
 
         [Fact]
@@ -987,7 +987,7 @@ namespace Prism.Maui.Tests.Navigation
 
             var navPage = _applicationProvider.MainPage;
             Assert.IsType<NavigationPageMock>(navPage);
-            Assert.True(navPage.Navigation.NavigationStack.Count == 1);
+            Assert.Single(navPage.Navigation.NavigationStack);
         }
 
         [Fact]
@@ -1003,7 +1003,7 @@ namespace Prism.Maui.Tests.Navigation
 
             var navPage = _applicationProvider.MainPage;
             Assert.IsType<NavigationPageMock>(navPage);
-            Assert.True(navPage.Navigation.NavigationStack.Count == 1);
+            Assert.Single(navPage.Navigation.NavigationStack);
         }
 
         [Fact]
@@ -1016,7 +1016,7 @@ namespace Prism.Maui.Tests.Navigation
             await navigationService.NavigateAsync("ContentPage/NavigationPage-Empty/ContentPage");
 
             var navPage = rootPage.Navigation.ModalStack[0].Navigation.ModalStack[0];
-            Assert.True(navPage.Navigation.NavigationStack.Count == 1);
+            Assert.Single(navPage.Navigation.NavigationStack);
         }
 
 
@@ -1064,7 +1064,7 @@ namespace Prism.Maui.Tests.Navigation
             await navigationService.NavigateAsync("ContentPage/NavigationPageWithStack/ContentPage");
 
             var navPage = rootPage.Navigation.ModalStack[0].Navigation.ModalStack[0];
-            Assert.True(navPage.Navigation.NavigationStack.Count == 1);
+            Assert.Single(navPage.Navigation.NavigationStack);
         }
 
         [Fact]
@@ -1107,8 +1107,8 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("ContentPage/TabbedPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
-            Assert.True(rootPage.Navigation.ModalStack[0].Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
+            Assert.Single(rootPage.Navigation.ModalStack[0].Navigation.ModalStack);
         }
 
         [Fact]
@@ -1120,8 +1120,8 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("ContentPage/FlyoutPage");
 
-            Assert.True(rootPage.Navigation.ModalStack.Count == 1);
-            Assert.True(rootPage.Navigation.ModalStack[0].Navigation.ModalStack.Count == 1);
+            Assert.Single(rootPage.Navigation.ModalStack);
+            Assert.Single(rootPage.Navigation.ModalStack[0].Navigation.ModalStack);
         }
 
         #region FlyoutPage
@@ -1446,7 +1446,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync($"TabbedPage");
 
-            Assert.True(rootPage.Navigation.NavigationStack.Count == 1);
+            Assert.Single(rootPage.Navigation.NavigationStack);
             Assert.IsType<TabbedPageMock>(rootPage.Navigation.NavigationStack[0]);
         }
 
@@ -1604,7 +1604,7 @@ namespace Prism.Maui.Tests.Navigation
 
             Assert.IsType<NavigationPageMock>(rootPage.Detail);
 
-            Assert.True(rootPage.Detail.Navigation.NavigationStack.Count == 1);
+            Assert.Single(rootPage.Navigation.NavigationStack);
 
             var tabbedPage = rootPage.Detail.Navigation.NavigationStack[0] as TabbedPageMock;
             Assert.NotNull(tabbedPage);
