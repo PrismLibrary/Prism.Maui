@@ -3,7 +3,7 @@
 namespace Prism.Behaviors
 {
     /// <summary>
-    /// Applies behaviors to the Xamarin.Forms pages when they are created during navigation.
+    /// Applies behaviors to the Microsoft.Maui.Controls.Page's when they are created during navigation.
     /// </summary>
     public class PageBehaviorFactory : IPageBehaviorFactory
     {

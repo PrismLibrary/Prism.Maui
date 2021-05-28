@@ -13,7 +13,7 @@ namespace Prism.Mvvm
     public static class ViewModelLocator
     {
         /// <summary>
-        /// Instructs Prism whether or not to automatically create an instance of a ViewModel using a convention, and assign the associated View's <see cref="Xamarin.Forms.BindableObject.BindingContext"/> to that instance.
+        /// Instructs Prism whether or not to automatically create an instance of a ViewModel using a convention, and assign the associated View's <see cref="Microsoft.Maui.Controls.BindableObject.BindingContext"/> to that instance.
         /// </summary>
         public static readonly BindableProperty AutowireViewModelProperty =
             BindableProperty.CreateAttached("AutowireViewModel", typeof(bool?), typeof(ViewModelLocator), null, propertyChanged: OnAutowireViewModelChanged);
@@ -29,7 +29,7 @@ namespace Prism.Mvvm
         }
 
         /// <summary>
-        /// Sets the AutowireViewModel property value.  If <c>true</c>, creates an instance of a ViewModel using a convention, and sets the associated View's <see cref="Xamarin.Forms.BindableObject.BindingContext"/> to that instance.
+        /// Sets the AutowireViewModel property value.  If <c>true</c>, creates an instance of a ViewModel using a convention, and sets the associated View's <see cref="Microsoft.Maui.Controls.BindableObject.BindingContext"/> to that instance.
         /// </summary>
         /// <param name="bindable"></param>
         /// <param name="value"></param>
@@ -46,10 +46,10 @@ namespace Prism.Mvvm
         }
 
         /// <summary>
-        /// Sets the <see cref="Xamarin.Forms.BindableObject.BindingContext"/> of a View
+        /// Sets the <see cref="Microsoft.Maui.Controls.BindableObject.BindingContext"/> of a View
         /// </summary>
-        /// <param name="view">The View to set the <see cref="Xamarin.Forms.BindableObject.BindingContext"/> on</param>
-        /// <param name="viewModel">The object to use as the <see cref="Xamarin.Forms.BindableObject.BindingContext"/> for the View</param>
+        /// <param name="view">The View to set the <see cref="Microsoft.Maui.Controls.BindableObject.BindingContext"/> on</param>
+        /// <param name="viewModel">The object to use as the <see cref="Microsoft.Maui.Controls.BindableObject.BindingContext"/> for the View</param>
         private static void Bind(object view, object viewModel)
         {
             if (view is BindableObject element)

@@ -135,7 +135,7 @@ namespace Prism.Modularity
         public InitializationMode InitializationMode { get; set; }
 
         /// <summary>
-        /// Reference to the location of the module assembly. Not Supported by Xamarin.Forms
+        /// Reference to the location of the module assembly. Not Supported by Microsoft.Maui
         /// </summary>
         string IModuleInfo.Ref
         {

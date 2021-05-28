@@ -27,7 +27,7 @@ namespace Prism.Modularity
         public event EventHandler<LoadModuleCompletedEventArgs> LoadModuleCompleted;
 
         /// <summary>
-        /// Not used by Prism.Forms
+        /// Not used by Prism.Maui
         /// </summary>
         public event EventHandler<ModuleDownloadProgressChangedEventArgs> ModuleDownloadProgressChanged
         {

@@ -26,7 +26,7 @@
         Numeric,
 
         /// <summary>
-        /// Returns a new keyboard with None Xamarin.Forms.KeyboardFlags.
+        /// Returns a new keyboard with None Microsoft.Maui.KeyboardFlags.
         /// </summary>
         Plain,
 

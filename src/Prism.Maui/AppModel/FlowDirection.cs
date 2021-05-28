@@ -2,20 +2,20 @@
 {
     /// <summary>
     /// Enumerates values that control the layout direction for views. This maps to
-    /// the Xamarin.Forms.FlowDirection.
+    /// the Microsoft.Maui.Controls.FlowDirection.
     /// </summary>
     /// <remarks>
     /// The following contains a few important points from Right-to-Left Localization.
     /// Developers should consult that document for more information about limitations
     /// of right-to-left support, and for requirements to implement right-to-left support
     /// on various target platforms.
-    /// The default value of Xamarin.Forms.FlowDirection for a visual element that has
-    /// no parent is Xamarin.Forms.FlowDirection.LeftToRight, even on platforms where
-    /// Xamarin.Forms.Device.FlowDirection is Xamarin.Forms.FlowDirection.RightToLeft.
+    /// The default value of Microsoft.Maui.Controls.FlowDirection for a visual element that has
+    /// no parent is Microsoft.Maui.Controls.FlowDirection.LeftToRight, even on platforms where
+    /// Microsoft.Maui.Controls.Device.FlowDirection is Microsoft.Maui.Controls.FlowDirection.RightToLeft.
     /// Therefore, developers must deliberately opt in to right-to-left layout. Developers
-    /// can choose right-to-left layout by setting the Xamarin.Forms.VisualElement.FlowDirection
-    /// property of the root element to Xamarin.Forms.FlowDirection.RightToLeft to choose
-    /// right-to-left layout, or to Xamarin.Forms.FlowDirection.MatchParent to match
+    /// can choose right-to-left layout by setting the Microsoft.Maui.Controls.VisualElement.FlowDirection
+    /// property of the root element to Microsoft.Maui.Controls.FlowDirection.RightToLeft to choose
+    /// right-to-left layout, or to Microsoft.Maui.Controls.FlowDirection.MatchParent to match
     /// the device layout.
     /// </remarks>
     public enum FlowDirection

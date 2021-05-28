@@ -6,7 +6,7 @@ using FlowDirection = Prism.AppModel.FlowDirection;
 namespace Prism.Services
 {
     /// <summary>
-    /// A service which provides access to the DisplayAlert and DisplayActionSheet off of the Xamarin.Forms.Page class.
+    /// A service which provides access to the DisplayAlert and DisplayActionSheet off of the Microsoft.Maui.Controls.Page class.
     /// </summary>
     public interface IPageDialogService
     {

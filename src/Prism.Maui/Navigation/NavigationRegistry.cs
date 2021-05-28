@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using Microsoft.Maui.Controls;
@@ -51,5 +52,8 @@ namespace Prism.Navigation
 
         public static ViewRegistration GetPageNavigationInfo(Type viewType) => 
             _registrations.FirstOrDefault(x => x.View == viewType);
+
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public static void ClearRegistrationCache() => _registrations.Clear();
     }
 }
