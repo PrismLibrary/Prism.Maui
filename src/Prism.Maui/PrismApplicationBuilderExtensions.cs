@@ -1,12 +1,7 @@
 ﻿using System;
 using Prism.Ioc;
 using Microsoft.Maui.Hosting;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.Maui.Controls;
-using Prism.Mvvm;
+using Microsoft.Maui.Controls.Hosting;
 
 namespace Prism
 {
