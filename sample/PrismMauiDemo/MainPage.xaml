@@ -25,7 +25,7 @@
                     FontSize="18"
                     FontAttributes="Bold"
                     x:Name="CounterLabel"
-                    HorizontalOptions="Center" />
+                    HorizontalOptions="CenterAndExpand" />
 
                 <Button Text="Click me"
                     Grid.Row="3"

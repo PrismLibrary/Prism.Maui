@@ -1,8 +1,6 @@
-using Microsoft.Maui;
+﻿using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
-using Microsoft.Maui.Controls.Compatibility;
 using Prism;
-using Prism.DryIoc;
 
 namespace PrismMauiDemo
 {
@@ -11,7 +9,6 @@ namespace PrismMauiDemo
         public void Configure(IAppHostBuilder appBuilder)
         {
             appBuilder
-                .UseFormsCompatibility()
                 .UsePrismApplication<App>(x => x.UseDryIoc())
                 .ConfigureFonts(fonts =>
                 {
