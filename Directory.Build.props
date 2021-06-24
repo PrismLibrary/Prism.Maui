@@ -21,6 +21,9 @@
 
 As this is an Alpha build there are no docs, be sure to check out the source repo at: https://github.com/dansiegel/prism.maui 
 Note that as of .NET 6 Preview 4, Maui still requires that you have referenced the Xamarin CI feed.</Description>
+<!-- HACK: WinUI seems to have issues without this -->
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    <DisableEmbeddedXbf>false</DisableEmbeddedXbf>
   </PropertyGroup>
 
   <ItemGroup>

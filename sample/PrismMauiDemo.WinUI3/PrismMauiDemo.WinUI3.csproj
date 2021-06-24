@@ -14,7 +14,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.ProjectReunion" Version="[0.5.6]">
+		<PackageReference Include="Microsoft.ProjectReunion" Version="[0.8.0-preview]">
 			<IncludeAssets>build</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Maui" Version="6.0.100-preview.4.*" />
