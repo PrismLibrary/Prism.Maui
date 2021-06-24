@@ -9,19 +9,17 @@ namespace PrismMauiDemo
 {
     public partial class App : PrismApplication
     {
-        public App(IContainerExtension container)
-            : base(container)
+        public App()
         {
+            InitializeComponent();
         }
 
-        protected override async Task OnWindowCreated(IActivationState activationState)
+        protected override Task OnWindowCreated(IActivationState activationState)
         {
-            Microsoft.Maui.Controls.Compatibility.Forms.Init(activationState);
-
             this.On<Microsoft.Maui.Controls.PlatformConfiguration.Windows>()
                 .SetImageDirectory("Assets");
 
-            await NavigationService.NavigateAsync("/MainPage");
+            return NavigationService.NavigateAsync("MainPage");
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)

@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "PrismMauiDemo.WinUI": {
+      "commandName": "AppContainer"
+    }
+  }
+}
