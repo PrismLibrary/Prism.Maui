@@ -1,3 +1,6 @@
 <Project>
-  <!-- Intentionally left empty to remove package dependencies -->
+  <PropertyGroup>
+    <GenerateLibraryLayout>true</GenerateLibraryLayout>
+    <DisableEmbeddedXbf>false</DisableEmbeddedXbf>
+  </PropertyGroup>
 </Project>

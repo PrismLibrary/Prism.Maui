@@ -1,6 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.Maui;
+using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
+using Microsoft.Maui.Hosting;
 using Prism;
 using Prism.Ioc;
 using Prism.Navigation;
@@ -25,6 +27,15 @@ namespace PrismMauiDemo
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<MainPage>();
+        }
+
+        protected override void Configure(IAppHostBuilder builder)
+        {
+            builder
+               .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                });
         }
     }
 }

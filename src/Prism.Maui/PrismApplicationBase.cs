@@ -5,15 +5,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.Hosting;
+using Prism.AppModel;
+using Prism.Behaviors;
+using Prism.Events;
 using Prism.Extensions;
 using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Mvvm;
 using Prism.Navigation;
+using Prism.Services;
+using Microsoft.Maui.Controls.Hosting;
 
 namespace Prism
 {
-    public abstract class PrismApplication : Application, IApplication
+    public abstract class PrismApplicationBase : Application, IApplication, IStartup
     {
         private readonly ObservableCollection<IWindow> _windows = new();
         private readonly IContainerExtension _containerExtension;
@@ -28,10 +34,23 @@ namespace Prism
 
         protected INavigationService NavigationService { get; private set; }
 
-        protected PrismApplication(IContainerExtension container)
-        {
-            _containerExtension = container;
+        protected PrismApplicationBase()
+{
+            ContainerLocator.SetContainerExtension(CreateContainerExtension);
+            _containerExtension = ContainerLocator.Current;
             InitializeInternal();
+        }
+
+        void IStartup.Configure(IAppHostBuilder builder)
+        {
+            builder
+                .UseMauiApp(x => this)
+                .UseServiceProviderFactory(new PrismServiceProviderFactory(_containerExtension));
+            Configure(builder);
+        }
+
+        protected virtual void Configure(IAppHostBuilder builder)
+        {
         }
 
         /// <summary>
@@ -42,6 +61,8 @@ namespace Prism
             ConfigureViewModelLocator();
             Initialize();
         }
+
+        protected abstract IContainerExtension CreateContainerExtension();
 
         /// <summary>
         /// Configures the <see cref="ViewModelLocator"/> used by Prism.
@@ -85,6 +106,7 @@ namespace Prism
 
         protected virtual void Initialize()
         {
+            RegisterRequiredServices(_containerExtension);
             RegisterTypes(_containerExtension);
 
             _moduleCatalog = Container.Resolve<IModuleCatalog>();
@@ -93,6 +115,19 @@ namespace Prism
             InitializeModules();
         }
 
+        protected virtual void RegisterRequiredServices(IContainerRegistry containerRegistry)
+        {
+            containerRegistry.RegisterSingleton<IEventAggregator, EventAggregator>();
+            containerRegistry.RegisterSingleton<IKeyboardMapper, KeyboardMapper>();
+            containerRegistry.RegisterSingleton<IPageDialogService, PageDialogService>();
+            //containerRegistry.RegisterSingleton<IDialogService, DialogService>();
+            //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
+            containerRegistry.RegisterSingleton<IPageBehaviorFactory, PageBehaviorFactory>();
+            containerRegistry.RegisterSingleton<IModuleCatalog, ModuleCatalog>();
+            containerRegistry.RegisterSingleton<IModuleManager, ModuleManager>();
+            containerRegistry.RegisterSingleton<IModuleInitializer, ModuleInitializer>();
+            containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
+        }
 
         protected abstract void RegisterTypes(IContainerRegistry containerRegistry);
 
