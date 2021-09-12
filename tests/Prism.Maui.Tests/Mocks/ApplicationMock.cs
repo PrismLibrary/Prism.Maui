@@ -10,7 +10,7 @@ namespace Prism.Maui.Tests.Mocks
 {
     public class ApplicationMock : IApplication
     {
-        private List<IWindow> _windows = new List<IWindow> { new PrismApplicationWindow() };
+        private List<IWindow> _windows = new List<IWindow> { new Window() };
 
         public ApplicationMock(Page page = null)
         {

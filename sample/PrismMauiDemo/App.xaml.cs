@@ -1,12 +1,11 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls.Hosting;
-using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Controls.Xaml;
 using Microsoft.Maui.Hosting;
 using Prism;
 using Prism.Ioc;
 using Prism.Navigation;
 
+[assembly: XamlCompilationAttribute(XamlCompilationOptions.Compile)]
 namespace PrismMauiDemo
 {
     public partial class App : PrismApplication
@@ -18,9 +17,6 @@ namespace PrismMauiDemo
 
         protected override Task OnWindowCreated(IActivationState activationState)
         {
-            this.On<Microsoft.Maui.Controls.PlatformConfiguration.Windows>()
-                .SetImageDirectory("Assets");
-
             return NavigationService.NavigateAsync("MainPage");
         }
 

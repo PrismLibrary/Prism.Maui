@@ -167,10 +167,5 @@ namespace Prism
             OnWindowCreated(activationState).Wait();
             return window;
         }
-
-        protected override IWindow CreateWindow(IActivationState activationState)
-        {
-            return new PrismApplicationWindow();
-        }
     }
 }

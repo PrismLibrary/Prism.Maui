@@ -6,6 +6,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Prism.Behaviors;
 using Prism.Common;
+using Prism.Extensions;
 using Prism.Ioc;
 
 namespace Prism.Navigation
@@ -1033,10 +1034,8 @@ namespace Prism.Navigation
 
             if (currentPage == null)
             {
-                if (Window is PrismApplicationWindow paw)
-                    paw.Content = page;
-                else
-                    throw new Exception("Window not of type PrismApplicationWindow");
+                if (!Window.SetPage(page))
+                    throw new Exception("Unable to set the Page on the IWindow. No Setter or backing field could be found for either the Page or Content property.");
 
                 return Task.FromResult<object>(null);
             }

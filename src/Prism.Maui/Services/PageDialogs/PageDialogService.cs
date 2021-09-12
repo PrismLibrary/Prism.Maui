@@ -192,7 +192,7 @@ namespace Prism.Services
 
         protected Page GetMainPage()
         {
-            if (_window.View is Page page)
+            if (_window.Content is Page page)
                 return page;
 
             throw new NullReferenceException("The Application Window View has not been set or has been set to something other than a Page.");
