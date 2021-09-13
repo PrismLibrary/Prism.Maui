@@ -3,11 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <UseMaui>true</UseMaui>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DryIoc.dll" Version="4.8.1" />
-    <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="5.1.0" />
+    <PackageReference Include="DryIoc.dll" Version="5.0.0-preview-01" />
+    <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.0.0-preview-02" />
   </ItemGroup>
 
   <ItemGroup>
