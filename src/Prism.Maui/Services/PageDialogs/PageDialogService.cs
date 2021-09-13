@@ -17,7 +17,7 @@ namespace Prism.Services
         private IApplication _application { get; }
 
         /// <summary>
-        /// Gets the <see cref="IApplicationProvider"/>.
+        /// Gets the <see cref="IWindow"/>.
         /// </summary>
         protected IWindow _window => _application.Windows[0];
 
@@ -192,7 +192,7 @@ namespace Prism.Services
 
         protected Page GetMainPage()
         {
-            if (_window.View is Page page)
+            if (_window.Content is Page page)
                 return page;
 
             throw new NullReferenceException("The Application Window View has not been set or has been set to something other than a Page.");

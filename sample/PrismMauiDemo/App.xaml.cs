@@ -1,32 +1,37 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Controls.Xaml;
+using Microsoft.Maui.Hosting;
 using Prism;
 using Prism.Ioc;
 using Prism.Navigation;
 
+[assembly: XamlCompilationAttribute(XamlCompilationOptions.Compile)]
 namespace PrismMauiDemo
 {
     public partial class App : PrismApplication
     {
-        public App(IContainerExtension container)
-            : base(container)
+        public App()
         {
+            InitializeComponent();
         }
 
-        protected override async Task OnWindowCreated(IActivationState activationState)
+        protected override Task OnWindowCreated(IActivationState activationState)
         {
-            Microsoft.Maui.Controls.Compatibility.Forms.Init(activationState);
-
-            this.On<Microsoft.Maui.Controls.PlatformConfiguration.Windows>()
-                .SetImageDirectory("Assets");
-
-            await NavigationService.NavigateAsync("/MainPage");
+            return NavigationService.NavigateAsync("MainPage");
         }
 
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<MainPage>();
+        }
+
+        protected override void Configure(IAppHostBuilder builder)
+        {
+            builder
+               .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                });
         }
     }
 }

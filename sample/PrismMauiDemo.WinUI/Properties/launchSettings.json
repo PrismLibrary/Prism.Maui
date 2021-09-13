@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PrismMauiDemo.WinUI": {
+      "commandName": "MsixPackage",
+      "nativeDebugging": false
+    }
+  }
+}

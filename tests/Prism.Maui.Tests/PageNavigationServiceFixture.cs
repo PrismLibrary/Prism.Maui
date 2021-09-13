@@ -22,6 +22,7 @@ namespace Prism.Maui.Tests.Navigation
         public PageNavigationServiceFixture()
         {
             //Mocks.MockForms.Init();
+            //Microsoft.Maui.Controls.Compatibility.Forms.Init(activationState);
 
             ContainerLocator.ResetContainer();
             _container = new PageNavigationContainerMock();
