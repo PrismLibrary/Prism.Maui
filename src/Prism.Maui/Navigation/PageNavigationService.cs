@@ -95,7 +95,7 @@ namespace Prism.Navigation
                 NavigationSource = PageNavigationSource.NavigationService;
 
                 page = GetCurrentPage();
-                if (IsRoot(Window.Content as Page, page))
+                if (IsRoot(GetPageFromWindow(), page))
                     throw new NavigationException(NavigationException.CannotPopApplicationMainPage, page);
 
                 var segmentParameters = UriParsingHelper.GetSegmentParameters(null, parameters);
@@ -134,7 +134,7 @@ namespace Prism.Navigation
 
             return new NavigationResult
             {
-                Exception = GetGoBackException(page, Window.Content)
+                Exception = GetGoBackException(page, GetPageFromWindow())
             };
         }
 
@@ -454,7 +454,7 @@ namespace Prism.Navigation
 
             await ProcessNavigation(nextPage, segments, parameters, useModalNavigation, animated);
 
-            var currentPage = Window.Content as Page;
+            var currentPage = GetPageFromWindow();
             var modalStack = currentPage?.Navigation.ModalStack.ToList();
             await DoNavigateAction(GetCurrentPage(), nextSegment, nextPage, parameters, async () =>
             {
@@ -1080,7 +1080,7 @@ namespace Prism.Navigation
 
         protected virtual Page GetCurrentPage()
         {
-            return _page != null ? _page : Window.Content as Page;
+            return _page != null ? _page : GetPageFromWindow();
         }
 
         internal static bool UseModalNavigation(Page currentPage, bool? useModalNavigationDefault)
@@ -1111,13 +1111,14 @@ namespace Prism.Navigation
 
         private bool GoBackModal(NavigationPage navPage)
         {
+            var rootPage = GetPageFromWindow();
             if (navPage.CurrentPage != navPage.RootPage)
                 return false;
-            else if (navPage.CurrentPage == navPage.RootPage && navPage.Parent is Application && Window.Content != navPage)
+            else if (navPage.CurrentPage == navPage.RootPage && navPage.Parent is Application && rootPage != navPage)
                 return true;
-            else if (navPage.Parent is TabbedPage tabbed && tabbed != Window.Content)
+            else if (navPage.Parent is TabbedPage tabbed && tabbed != rootPage)
                 return true;
-            else if (navPage.Parent is CarouselPage carousel && carousel != Window.Content)
+            else if (navPage.Parent is CarouselPage carousel && carousel != rootPage)
                 return true;
 
             return false;
@@ -1141,6 +1142,18 @@ namespace Prism.Navigation
                 NavigationPage np => IsRoot(np.RootPage, currentPage),
                 _ => false
             };
+        }
+
+        private Page GetPageFromWindow()
+        {
+            try
+            {
+                return Window.Content as Page;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }
