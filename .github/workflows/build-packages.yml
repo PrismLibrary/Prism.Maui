@@ -17,11 +17,16 @@ jobs:
         with:
             fetch-depth: 0
 
-      - name: Setup .NET Core
+      - name: Setup .NET Core 5.0
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '5.0.x'
           include-prerelease: true
+
+      - name: Run Maui-Check
+        run: |
+          dotnet tool install --global Redth.Net.Maui.Check --version 0.8.6
+          maui-check --fix --non-interactive --ci
 
       # - name: Configure and Restore Packages
       #   run: |
