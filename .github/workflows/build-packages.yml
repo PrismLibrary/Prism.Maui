@@ -27,7 +27,7 @@ jobs:
         run: |
           cd ..
           dotnet tool install --global Redth.Net.Maui.Check --version 0.8.6
-          maui-check --fix --non-interactive --ci
+          maui-check --fix --non-interactive --ci --skip vswin
 
       # - name: Configure and Restore Packages
       #   run: |
