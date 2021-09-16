@@ -2,19 +2,25 @@
 
 ```cs
 // OOB Maui Application
-builder.UseMauiApp<App>();
+MauiApp.CreateBuilder()
+    .UseMauiApp<App>();
 
 // Prism.Maui
-.UsePrismApplication<App>(x => x.UseDryIoc());
+PrismApp.CreateBuilder()
+    .RegisterServices(containerRegistry => {
+        containerRegistry.RegisterForNavigation<MainPage>();
+    })
+    .ConfigureModuleCatalog(catalog => {
+        catalog.AddModule<AuthModule>();
+    })
+    .UsePrismApp<App>();
 ```
-
-Note that the Prism `ContainerExtension` is created by the extension method on the ContainerOptionsBuilder. Overloads are available for you to pass in Rules or a `DryIoc.IContainer`. PrismApplication no longer resides in the DI project but in Platform project (Prism.Maui). The container is created before the PrismApplication instance.
 
 ## Service Registration
 
-For existing Prism platforms, PrismApplication is responsible for a lot of service registration. Maui presents a very different paradigm to the app startup process as it uses the AppHostBuilder pattern that you may be familiar with from AspNetCore applications. Since a lot of the application wiring up occurs in the Startup before PrismApplication, we no longer register required services for Prism as part of the PrismApplication initialization.
+For existing Prism platforms, PrismApplication is responsible for a lot of service registration. Maui presents a very different paradigm to the app startup process as it uses the AppHostBuilder pattern that you may be familiar with from AspNetCore and other .NET Core applications. Since the application wiring up in the MauiAppBuilder before PrismApplication, we no longer register required services for Prism as part of the PrismApplication initialization.
 
-Items which you only need within the context of what you are doing with Prism such as a ViewModel can be registered in either your Startup or PrismApplication. Views must be registered in PrismApplication.
+For those items such as Pages registered for Navigation which need to be registered with the Prism Container Abstraction, you can register them with the RegisterServices extension off of the PrismAppBuilder. Similarly you can call ConfigureModuleCatalog to register modules or provide delegate to execute as part of the container initialization. Note that these will run prior to the Maui services being registered or the finial container being ready to use.
 
 ## NOTE
 
