@@ -5,25 +5,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
-using Microsoft.Maui.Hosting;
-using Prism.AppModel;
-using Prism.Behaviors;
-using Prism.Events;
 using Prism.Extensions;
 using Prism.Ioc;
-using Prism.Modularity;
 using Prism.Mvvm;
 using Prism.Navigation;
-using Prism.Services;
-using Microsoft.Maui.Controls.Hosting;
 
 namespace Prism
 {
-    public abstract class PrismApplicationBase : Application, IApplication, IStartup
+    public abstract class PrismApplication : Application, IApplication
     {
         private readonly ObservableCollection<IWindow> _windows = new();
         private readonly IContainerExtension _containerExtension;
-        private IModuleCatalog _moduleCatalog;
 
         /// <summary>
         /// The dependency injection container used to resolve objects
@@ -34,35 +26,11 @@ namespace Prism
 
         protected INavigationService NavigationService { get; private set; }
 
-        protected PrismApplicationBase()
-{
-            ContainerLocator.SetContainerExtension(CreateContainerExtension);
+        protected PrismApplication()
+        {
             _containerExtension = ContainerLocator.Current;
-            InitializeInternal();
-        }
-
-        void IStartup.Configure(IAppHostBuilder builder)
-        {
-            builder
-                .UseMauiApp(x => this)
-                .UseServiceProviderFactory(new PrismServiceProviderFactory(_containerExtension));
-            Configure(builder);
-        }
-
-        protected virtual void Configure(IAppHostBuilder builder)
-        {
-        }
-
-        /// <summary>
-        /// Run the initialization process.
-        /// </summary>
-        private void InitializeInternal()
-        {
             ConfigureViewModelLocator();
-            Initialize();
         }
-
-        protected abstract IContainerExtension CreateContainerExtension();
 
         /// <summary>
         /// Configures the <see cref="ViewModelLocator"/> used by Prism.
@@ -104,56 +72,11 @@ namespace Prism
             return Container.Resolve<INavigationService>();
         }
 
-        protected virtual void Initialize()
-        {
-            RegisterRequiredServices(_containerExtension);
-            RegisterTypes(_containerExtension);
-
-            _moduleCatalog = Container.Resolve<IModuleCatalog>();
-            ConfigureModuleCatalog(_moduleCatalog);
-
-            InitializeModules();
-        }
-
-        protected virtual void RegisterRequiredServices(IContainerRegistry containerRegistry)
-        {
-            containerRegistry.RegisterSingleton<IEventAggregator, EventAggregator>();
-            containerRegistry.RegisterSingleton<IKeyboardMapper, KeyboardMapper>();
-            containerRegistry.RegisterSingleton<IPageDialogService, PageDialogService>();
-            //containerRegistry.RegisterSingleton<IDialogService, DialogService>();
-            //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
-            containerRegistry.RegisterSingleton<IPageBehaviorFactory, PageBehaviorFactory>();
-            containerRegistry.RegisterSingleton<IModuleCatalog, ModuleCatalog>();
-            containerRegistry.RegisterSingleton<IModuleManager, ModuleManager>();
-            containerRegistry.RegisterSingleton<IModuleInitializer, ModuleInitializer>();
-            containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
-        }
-
-        protected abstract void RegisterTypes(IContainerRegistry containerRegistry);
-
         /// <summary>
         /// Used to Navigate
         /// </summary>
         /// <param name="activationState"></param>
         protected abstract Task OnWindowCreated(IActivationState activationState);
-
-        /// <summary>
-        /// Configures the <see cref="IModuleCatalog"/> used by Prism.
-        /// </summary>
-        /// <param name="moduleCatalog">The ModuleCatalog to configure</param>
-        protected virtual void ConfigureModuleCatalog(IModuleCatalog moduleCatalog) { }
-
-        /// <summary>
-        /// Initializes the modules.
-        /// </summary>
-        protected virtual void InitializeModules()
-        {
-            if (_moduleCatalog.Modules.Any())
-            {
-                IModuleManager manager = Container.Resolve<IModuleManager>();
-                manager.Run();
-            }
-        }
 
         IWindow IApplication.CreateWindow(IActivationState activationState)
         {
