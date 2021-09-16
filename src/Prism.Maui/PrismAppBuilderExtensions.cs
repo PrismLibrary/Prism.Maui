@@ -20,13 +20,22 @@ namespace Prism
             return builder;
         }
 
+        public static PrismAppBuilder OnInitialized(this PrismAppBuilder builder, Action action)
+        {
+            return builder.OnInitialized(_ => action());
+        }
+
         /// <summary>
         /// Configures the <see cref="IModuleCatalog"/> used by Prism.
         /// </summary>
         /// <param name="moduleCatalog">The ModuleCatalog to configure</param>
         public static PrismAppBuilder ConfigureModuleCatalog(this PrismAppBuilder builder, Action<IModuleCatalog> configureCatalog)
         {
-            builder.Builder.Services.AddSingleton<IMauiInitializeService, PrismModularityInitializationService>();
+            var services = builder.Builder.Services;
+            services.AddSingleton<IModuleCatalog, ModuleCatalog>();
+            services.AddSingleton<IModuleManager, ModuleManager>();
+            services.AddSingleton<IModuleInitializer, ModuleInitializer>();
+            services.AddSingleton<IMauiInitializeService, PrismModularityInitializationService>();
             return builder.OnInitialized(container =>
             {
                 var moduleCatalog = container.Resolve<IModuleCatalog>();

@@ -7,7 +7,6 @@ using Prism.AppModel;
 using Prism.Behaviors;
 using Prism.Events;
 using Prism.Ioc;
-using Prism.Modularity;
 using Prism.Navigation;
 using Prism.Services;
 
@@ -60,9 +59,8 @@ namespace Prism
                 RegisterDefaultRequiredTypes(container);
 
             _registrations.ForEach(action => action(container));
-            _initializations.ForEach(action => action(container));
 
-            Builder.Host.UseServiceProviderFactory(new PrismServiceProviderFactory());
+            Builder.Host.UseServiceProviderFactory(new PrismServiceProviderFactory(_initializations));
             return Builder
                 .UseMauiApp<TApp>();
         }
@@ -76,9 +74,6 @@ namespace Prism
             //containerRegistry.RegisterSingleton<IDialogService, DialogService>();
             //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
             containerRegistry.RegisterSingleton<IPageBehaviorFactory, PageBehaviorFactory>();
-            containerRegistry.RegisterSingleton<IModuleCatalog, ModuleCatalog>();
-            containerRegistry.RegisterSingleton<IModuleManager, ModuleManager>();
-            containerRegistry.RegisterSingleton<IModuleInitializer, ModuleInitializer>();
             containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
         }
     }

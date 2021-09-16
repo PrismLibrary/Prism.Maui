@@ -18,7 +18,7 @@ namespace Prism
         /// <returns></returns>
         protected override IContainerExtension CreateContainerExtension()
         {
-            return new DryIocContainerExtension(new Container(DryIocContainerExtension.DefaultRules));
+            return new DryIocContainerExtension();
         }
     }
 }
