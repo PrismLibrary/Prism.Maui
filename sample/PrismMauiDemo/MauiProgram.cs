@@ -1,8 +1,11 @@
-﻿using Microsoft.Maui;
-using Microsoft.Maui.Controls.Hosting;
+﻿using MauiModule;
+using Microsoft.Maui;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Hosting;
 using Prism;
 using Prism.Ioc;
+using Prism.Modularity;
+using PrismMauiDemo.Views;
 
 namespace PrismMauiDemo
 {
@@ -13,11 +16,14 @@ namespace PrismMauiDemo
             var builder = PrismApp.CreateBuilder()
                 .ConfigureModuleCatalog(moduleCatalog =>
                 {
-                    // Register Modules
+                    moduleCatalog.AddModule<MauiAppModule>();
                 })
                 .RegisterTypes(containerRegistry =>
                 {
                     containerRegistry.RegisterForNavigation<MainPage>();
+                    containerRegistry.RegisterForNavigation<SamplePage>();
+                    containerRegistry.RegisterForNavigation<NavigationPage>();
+                    containerRegistry.RegisterForNavigation<TabbedPage>();
                 })
                 .UsePrismApp<App>()
                 .ConfigureFonts(fonts =>

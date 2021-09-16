@@ -2,13 +2,13 @@
 using Microsoft.Maui.Essentials;
 using System;
 
-namespace PrismMauiDemo
+namespace PrismMauiDemo.Views
 {
-    public partial class MainPage : ContentPage
+    public partial class SamplePage : ContentPage
     {
         int count = 0;
 
-        public MainPage()
+        public SamplePage()
         {
             InitializeComponent();
         }
