@@ -1,6 +1,7 @@
-﻿using Microsoft.Maui;
-using Microsoft.Maui.Controls;
+﻿using System.Threading.Tasks;
+using Microsoft.Maui;
 using Prism;
+using Prism.Navigation;
 
 namespace PrismMauiDemo
 {
@@ -9,6 +10,11 @@ namespace PrismMauiDemo
         public App()
         {
             InitializeComponent();
+        }
+
+        protected override async Task OnWindowCreated(IActivationState activationState)
+        {
+            await NavigationService.NavigateAsync("MainPage");
         }
     }
 }
