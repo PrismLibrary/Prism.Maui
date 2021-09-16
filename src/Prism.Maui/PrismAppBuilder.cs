@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using Microsoft.Maui;
+using Microsoft.Maui.Controls.Hosting;
 using Prism.AppModel;
 using Prism.Behaviors;
 using Prism.Events;
@@ -7,41 +10,61 @@ using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Navigation;
 using Prism.Services;
-using System.ComponentModel;
 
 namespace Prism
 {
     public abstract class PrismAppBuilder
     {
-        private Action<IContainerRegistry> _registerRequiredTypes;
+        private bool registeredRequiredTypes;
+        private List<Action<IContainerRegistry>> _registrations { get; }
+        private List<Action<IContainerProvider>> _initializations { get; }
 
         protected PrismAppBuilder(MauiAppBuilder builder)
         {
+            _registrations = new List<Action<IContainerRegistry>>();
+            _initializations = new List<Action<IContainerProvider>>();
+
             Builder = builder;
             ContainerLocator.SetContainerExtension(CreateContainerExtension);
-            _registerRequiredTypes = RegisterDefaultRequiredTypes;
-            //Builder.UseServiceProviderFactory(new PrismServiceProviderFactory(_createContainerExtensionDelegate));
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]
         public MauiAppBuilder Builder { get; }
 
-        private IContainerExtension _container;
-        public IContainerExtension Container => _container ??= ContainerLocator.Current;
-
         protected abstract IContainerExtension CreateContainerExtension();
 
         public PrismAppBuilder RegisterRequiredTypes(Action<IContainerRegistry> registerRequiredTypes)
         {
-            _registerRequiredTypes = registerRequiredTypes;
+            registeredRequiredTypes = true;
+            _registrations.Add(registerRequiredTypes);
             return this;
         }
 
-        public MauiAppBuilder RegisterTypes(Action<IContainerRegistry> registerTypes)
+        public PrismAppBuilder RegisterTypes(Action<IContainerRegistry> registerTypes)
         {
-            _registerRequiredTypes(Container);
-            registerTypes(Container);
-            return Builder;
+            _registrations.Add(registerTypes);
+            return this;
+        }
+
+        public PrismAppBuilder OnInitialized(Action<IContainerProvider> action)
+        {
+            _initializations.Add(action);
+            return this;
+        }
+
+        public MauiAppBuilder UsePrismApp<TApp>()
+            where TApp : PrismApplication
+        {
+            var container = ContainerLocator.Current;
+            if (!registeredRequiredTypes)
+                RegisterDefaultRequiredTypes(container);
+
+            _registrations.ForEach(action => action(container));
+            _initializations.ForEach(action => action(container));
+
+            Builder.Host.UseServiceProviderFactory(new PrismServiceProviderFactory());
+            return Builder
+                .UseMauiApp<TApp>();
         }
 
         [EditorBrowsable(EditorBrowsableState.Never)]

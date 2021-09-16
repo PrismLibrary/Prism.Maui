@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Hosting;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -25,10 +26,12 @@ namespace Prism
         /// <param name="moduleCatalog">The ModuleCatalog to configure</param>
         public static PrismAppBuilder ConfigureModuleCatalog(this PrismAppBuilder builder, Action<IModuleCatalog> configureCatalog)
         {
-            var moduleCatalog = builder.Container.Resolve<IModuleCatalog>();
-            configureCatalog(moduleCatalog);
-            builder.Container.RegisterSingleton<IMauiInitializeService, PrismModularityInitializationService>();
-            return builder;
+            builder.Builder.Services.AddSingleton<IMauiInitializeService, PrismModularityInitializationService>();
+            return builder.OnInitialized(container =>
+            {
+                var moduleCatalog = container.Resolve<IModuleCatalog>();
+                configureCatalog(moduleCatalog);
+            });
         }
     }
 }
