@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Maui;
-using Prism.AppModel;
+﻿using Prism.AppModel;
 using FlowDirection = Prism.AppModel.FlowDirection;
 
 namespace Prism.Services

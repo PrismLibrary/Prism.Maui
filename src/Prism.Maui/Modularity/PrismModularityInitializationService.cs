@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui.Hosting;
-using System;
-using System.Linq;
 
 namespace Prism.Modularity
 {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Prism.Services.Dialogs
+﻿namespace Prism.Services.Dialogs
 {
     public record DialogResult : IDialogResult
     {

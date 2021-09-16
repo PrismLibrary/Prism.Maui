@@ -1,5 +1,4 @@
-﻿using System;
-using Prism.Ioc;
+﻿using Prism.Ioc;
 
 namespace Prism.Modularity
 {

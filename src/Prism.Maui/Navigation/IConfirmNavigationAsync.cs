@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Prism.Navigation
+﻿namespace Prism.Navigation
 {
     /// <summary>
     /// Provides a way for ViewModels involved in navigation to asynchronously determine if a navigation request should continue.

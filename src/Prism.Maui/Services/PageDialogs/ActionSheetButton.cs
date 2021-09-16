@@ -1,10 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Prism.Services
+﻿namespace Prism.Services
 {
     /// <summary>
-    /// Represents a button displayed in <see cref="Prism.Services.IPageDialogService.DisplayActionSheetAsync(string, IActionSheetButton[])"/>
+    /// Represents a button displayed in <see cref="IPageDialogService.DisplayActionSheetAsync(string, IActionSheetButton[])"/>
     /// </summary>
     public class ActionSheetButton : ActionSheetButtonBase
     {

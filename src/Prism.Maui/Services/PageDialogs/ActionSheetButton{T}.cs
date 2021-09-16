@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Prism.Services
+﻿namespace Prism.Services
 {
     /// <summary>
     /// Provides a Generic Implementation for IActionSheetButton

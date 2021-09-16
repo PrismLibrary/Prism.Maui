@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Prism.Services
+﻿namespace Prism.Services
 {
     /// <summary>
     /// ActionSheetButton Base class

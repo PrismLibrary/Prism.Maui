@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Prism.Navigation
+﻿namespace Prism.Navigation
 {
     public interface INavigationResult
     {
