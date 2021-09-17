@@ -18,7 +18,7 @@ namespace Prism
         }
 
         public static PrismAppBuilder CreateBuilder(Rules rules)
-{
+        {
             return new DryIocPrismAppBuilder(rules);
         }
     }

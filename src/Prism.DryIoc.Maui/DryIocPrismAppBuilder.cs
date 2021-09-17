@@ -4,7 +4,7 @@ using Prism.Ioc;
 
 namespace Prism
 {
-    public sealed class DryIocPrismAppBuilder : PrismAppBuilder
+    internal sealed class DryIocPrismAppBuilder : PrismAppBuilder
     {
         public DryIocPrismAppBuilder()
         {

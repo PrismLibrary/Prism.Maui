@@ -29,6 +29,7 @@ namespace Prism
             Builder = MauiApp.CreateBuilder(); ;
             Builder.Host.UseServiceProviderFactory(new PrismServiceProviderFactory(RunInitializations));
 
+            ContainerLocator.ResetContainer();
             if(containerExtension != null)
                 ContainerLocator.SetContainerExtension(() => containerExtension);
         }
