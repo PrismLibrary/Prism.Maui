@@ -4,18 +4,18 @@ namespace Prism.Ioc
 {
     public class PrismServiceProviderFactory : IServiceProviderFactory<IContainerExtension>
     {
-        private List<Action<IContainerProvider>> _initializations { get; }
+        private Action<IContainerExtension> _registerTypes { get; }
 
-        public PrismServiceProviderFactory(List<Action<IContainerProvider>> initializations)
+        public PrismServiceProviderFactory(Action<IContainerExtension> registerTypes)
         {
-            _initializations = initializations;
+            _registerTypes = registerTypes;
         }
 
         public IContainerExtension CreateBuilder(IServiceCollection services)
         {
             var container = ContainerLocator.Current;
             container.Populate(services);
-            _initializations.ForEach(action => action(container));
+            _registerTypes(container);
             return container;
         }
 

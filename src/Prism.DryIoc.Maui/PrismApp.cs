@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui;
+﻿using DryIoc;
 
 namespace Prism
 {
@@ -9,8 +9,17 @@ namespace Prism
     {
         public static PrismAppBuilder CreateBuilder()
         {
-            var builder = MauiApp.CreateBuilder();
-            return new DryIocPrismAppBuilder(builder);
+            return new DryIocPrismAppBuilder();
+        }
+
+        public static PrismAppBuilder CreateBuilder(IContainer container)
+        {
+            return new DryIocPrismAppBuilder(container);
+        }
+
+        public static PrismAppBuilder CreateBuilder(Rules rules)
+{
+            return new DryIocPrismAppBuilder(rules);
         }
     }
 }

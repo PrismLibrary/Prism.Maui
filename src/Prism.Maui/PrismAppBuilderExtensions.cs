@@ -7,18 +7,6 @@ namespace Prism
 {
     public static class PrismAppBuilderExtensions
     {
-        public static PrismAppBuilder WithContainerExtension(this PrismAppBuilder builder, IContainerExtension container)
-        {
-            ContainerLocator.SetContainerExtension(() => container);
-            return builder;
-        }
-
-        public static PrismAppBuilder WithContainerExtension(this PrismAppBuilder builder, Func<IContainerExtension> containerDelegate)
-        {
-            ContainerLocator.SetContainerExtension(containerDelegate);
-            return builder;
-        }
-
         public static PrismAppBuilder OnInitialized(this PrismAppBuilder builder, Action action)
         {
             return builder.OnInitialized(_ => action());

@@ -1,5 +1,4 @@
 ﻿using DryIoc;
-using Microsoft.Maui;
 using Prism.DryIoc;
 using Prism.Ioc;
 
@@ -7,8 +6,17 @@ namespace Prism
 {
     public sealed class DryIocPrismAppBuilder : PrismAppBuilder
     {
-        public DryIocPrismAppBuilder(MauiAppBuilder builder) 
-            : base(builder)
+        public DryIocPrismAppBuilder()
+        {
+        }
+
+        public DryIocPrismAppBuilder(IContainer container)
+            : base(new DryIocContainerExtension(container))
+        {
+        }
+
+        public DryIocPrismAppBuilder(Rules rules)
+            : this(new Container(rules))
         {
         }
 
