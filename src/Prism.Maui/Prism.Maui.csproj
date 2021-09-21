@@ -5,7 +5,7 @@
     <RootNamespace>Prism</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <UseMaui>true</UseMaui>
-      <ImplicitUsings>true</ImplicitUsings>
+    <ImplicitUsings>true</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>

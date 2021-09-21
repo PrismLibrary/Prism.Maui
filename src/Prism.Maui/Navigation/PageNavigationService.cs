@@ -4,6 +4,7 @@ using Prism.Behaviors;
 using Prism.Common;
 using Prism.Extensions;
 using Prism.Ioc;
+using Application = Microsoft.Maui.Controls.Application;
 
 namespace Prism.Navigation
 {

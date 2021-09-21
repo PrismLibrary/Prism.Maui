@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Microsoft.Maui.Controls;
 using Prism.Common;
+using Application = Microsoft.Maui.Controls.Application;
 
 namespace Prism.Navigation
 {
