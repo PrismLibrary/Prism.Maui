@@ -13,7 +13,8 @@ namespace PrismMauiDemo
     {
         public static MauiApp CreateMauiApp()
         {
-            var builder = PrismApp.CreateBuilder()
+            var builder = MauiApp.CreateBuilder()
+                .UsePrismApp<App>()
                 .ConfigureModuleCatalog(moduleCatalog =>
                 {
                     moduleCatalog.AddModule<MauiAppModule>();
@@ -25,7 +26,7 @@ namespace PrismMauiDemo
                     containerRegistry.RegisterForNavigation<NavigationPage>();
                     containerRegistry.RegisterForNavigation<TabbedPage>();
                 })
-                .UsePrismApp<App>()
+                .MauiBuilder
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
