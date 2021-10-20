@@ -2,7 +2,6 @@
 using Microsoft.Maui;
 using Prism;
 using Prism.Navigation;
-using PrismMauiDemo.Views;
 
 namespace PrismMauiDemo
 {
@@ -16,7 +15,7 @@ namespace PrismMauiDemo
         protected override async Task OnWindowCreated(IActivationState activationState)
         {
             var result = await NavigationService.NavigateAsync("MainPage/NavigationPage/SamplePage");
-            if(!result.Success)
+            if (!result.Success)
             {
                 System.Diagnostics.Debugger.Break();
             }

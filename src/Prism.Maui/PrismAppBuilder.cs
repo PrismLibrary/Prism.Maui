@@ -1,5 +1,5 @@
-﻿using Microsoft.Maui;
-using Microsoft.Maui.Controls.Hosting;
+﻿using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
 using Prism.AppModel;
 using Prism.Behaviors;
 using Prism.Events;
@@ -12,7 +12,7 @@ namespace Prism
     public sealed class PrismAppBuilder<TApp> : PrismAppBuilder
         where TApp : PrismApplication
     {
-        public PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder) 
+        public PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
             : base(containerExtension, builder)
         {
             builder.UseMauiApp<TApp>();

@@ -1,5 +1,5 @@
 ﻿using DryIoc;
-using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
 using Prism;
 using Prism.DryIoc;
 
