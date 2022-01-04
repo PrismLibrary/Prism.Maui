@@ -1,24 +1,20 @@
-﻿using Microsoft.Maui.Controls;
-using Microsoft.Maui.Essentials;
-using System;
+﻿namespace PrismMauiDemo.Views;
 
-namespace PrismMauiDemo.Views
+public partial class SamplePage : ContentPage
 {
-    public partial class SamplePage : ContentPage
+    int count = 0;
+
+    public SamplePage()
     {
-        int count = 0;
+        InitializeComponent();
+    }
 
-        public SamplePage()
-        {
-            InitializeComponent();
-        }
+    private void OnCounterClicked(object sender, EventArgs e)
+    {
+        count++;
+        CounterLabel.Text = $"Current count: {count}";
 
-        private void OnCounterClicked(object sender, EventArgs e)
-        {
-            count++;
-            CounterLabel.Text = $"Current count: {count}";
-
-            SemanticScreenReader.Announce(CounterLabel.Text);
-        }
+        SemanticScreenReader.Announce(CounterLabel.Text);
     }
 }
+

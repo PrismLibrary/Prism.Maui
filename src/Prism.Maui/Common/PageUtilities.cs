@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
 using Prism.Mvvm;
 using Prism.Navigation;
+using NavigationMode = Prism.Navigation.NavigationMode;
 
 namespace Prism.Common
 {
