@@ -20,11 +20,23 @@ namespace Prism.Maui.Tests.Mocks
                 _currentWindow.Page = page;
         }
 
-        public IView MainPage => _currentWindow.Page;
+        public Page MainPage => _currentWindow.Page;
 
         public IReadOnlyList<IWindow> Windows => _windows;
+        public IElementHandler Handler { get; set; }
+        public IElement Parent { get; }
+
+        public void CloseWindow(IWindow window)
+        {
+            throw new NotImplementedException();
+        }
 
         public IWindow CreateWindow(IActivationState activationState)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OpenWindow(IWindow window)
         {
             throw new NotImplementedException();
         }
