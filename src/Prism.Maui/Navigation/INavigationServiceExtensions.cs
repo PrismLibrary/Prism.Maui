@@ -267,7 +267,7 @@ namespace Prism.Navigation
             {
                 var parentKeyInfo = NavigationRegistry.GetPageNavigationInfo(parent.GetType());
 
-                if (parent is TabbedPage || parent is CarouselPage)
+                if (parent is TabbedPage)
                 {
                     //set the selected tab to the current page
                     currentSegment = $"{parentKeyInfo.Name}?{KnownNavigationParameters.SelectedTab}={currentPageKeyInfo.Name}";

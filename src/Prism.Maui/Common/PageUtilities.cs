@@ -68,12 +68,6 @@ namespace Prism.Common
                         DestroyPage(item);
                     }
                     break;
-                case CarouselPage carouselPage:
-                    foreach (var item in carouselPage.Children.Reverse())
-                    {
-                        DestroyPage(item);
-                    }
-                    break;
                 case NavigationPage navigationPage:
                     foreach (var item in navigationPage.Navigation.NavigationStack.Reverse())
                     {
@@ -178,8 +172,6 @@ namespace Prism.Common
                 child = flyout.Detail;
             else if (target is TabbedPage tabbed)
                 child = tabbed.CurrentPage;
-            else if (target is CarouselPage carousel)
-                child = carousel.CurrentPage;
             else if (target is NavigationPage np)
                 child = np.Navigation.NavigationStack.Last();
 
@@ -261,7 +253,7 @@ namespace Prism.Common
                     navigationPage = navParent;
                     return true;
                 }
-                else if ((page.Parent is TabbedPage || page.Parent is CarouselPage) && page.Parent?.Parent is NavigationPage navigationParent)
+                else if ((page.Parent is TabbedPage) && page.Parent?.Parent is NavigationPage navigationParent)
                 {
                     navigationPage = navigationParent;
                     return true;

@@ -167,10 +167,6 @@ namespace Prism.Navigation
             {
                 return true;
             }
-            else if (currentPage.Parent is CarouselPage carousel && mainPage == carousel)
-            {
-                return true;
-            }
             else if (currentPage.Parent is NavigationPage navPage && navPage.CurrentPage == navPage.RootPage)
             {
                 return IsMainPage(navPage, mainPage);
@@ -355,10 +351,6 @@ namespace Prism.Navigation
             else if (currentPage is TabbedPage tabbed)
             {
                 await ProcessNavigationForTabbedPage(tabbed, nextSegment, segments, parameters, useModalNavigation, animated);
-            }
-            else if (currentPage is CarouselPage carousel)
-            {
-                await ProcessNavigationForCarouselPage(carousel, nextSegment, segments, parameters, useModalNavigation, animated);
             }
             else if (currentPage is FlyoutPage flyout)
             {
@@ -553,16 +545,6 @@ namespace Prism.Navigation
             });
         }
 
-        protected virtual async Task ProcessNavigationForCarouselPage(CarouselPage currentPage, string nextSegment, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
-        {
-            var nextPage = CreatePageFromSegment(nextSegment);
-            await ProcessNavigation(nextPage, segments, parameters, useModalNavigation, animated);
-            await DoNavigateAction(currentPage, nextSegment, nextPage, parameters, async () =>
-            {
-                await DoPush(currentPage, nextPage, useModalNavigation, animated);
-            });
-        }
-
         protected virtual async Task ProcessNavigationForFlyoutPage(FlyoutPage currentPage, string nextSegment, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
         {
             bool isPresented = GetFlyoutPageIsPresented(currentPage);
@@ -718,13 +700,6 @@ namespace Prism.Navigation
                     }
                 }
             }
-            else if (toPage is CarouselPage carouselPage)
-            {
-                foreach (var child in carouselPage.Children)
-                {
-                    await PageUtilities.OnInitializedAsync(child, parameters);
-                }
-            }
         }
 
         private static void OnNavigatedTo(Page toPage, INavigationParameters parameters)
@@ -742,10 +717,6 @@ namespace Prism.Navigation
                     PageUtilities.OnNavigatedTo(tabbedPage.CurrentPage, parameters);
                 }
             }
-            else if (toPage is CarouselPage carouselPage)
-            {
-                PageUtilities.OnNavigatedTo(carouselPage.CurrentPage, parameters);
-            }
         }
 
         private static void OnNavigatedFrom(Page fromPage, INavigationParameters parameters)
@@ -762,10 +733,6 @@ namespace Prism.Navigation
                 {
                     PageUtilities.OnNavigatedFrom(tabbedPage.CurrentPage, parameters);
                 }
-            }
-            else if (fromPage is CarouselPage carouselPage)
-            {
-                PageUtilities.OnNavigatedFrom(carouselPage.CurrentPage, parameters);
             }
         }
 
@@ -825,10 +792,6 @@ namespace Prism.Navigation
             {
                 ConfigureTabbedPage((TabbedPage)page, segment);
             }
-            else if (page is CarouselPage)
-            {
-                ConfigureCarouselPage((CarouselPage)page, segment);
-            }
         }
 
         void ConfigureTabbedPage(TabbedPage tabbedPage, string segment)
@@ -884,27 +847,11 @@ namespace Prism.Navigation
             TabbedPageSelectTab(tabbedPage, parameters);
         }
 
-        void ConfigureCarouselPage(CarouselPage carouselPage, string segment)
-        {
-            foreach (var child in carouselPage.Children)
-            {
-                PageUtilities.SetAutowireViewModel(child);
-            }
-
-            var parameters = UriParsingHelper.GetSegmentParameters(segment);
-
-            CarouselPageSelectTab(carouselPage, parameters);
-        }
-
         private static void SelectPageTab(Page page, INavigationParameters parameters)
         {
             if (page is TabbedPage tabbedPage)
             {
                 TabbedPageSelectTab(tabbedPage, parameters);
-            }
-            else if (page is CarouselPage carouselPage)
-            {
-                CarouselPageSelectTab(carouselPage, parameters);
             }
         }
 
@@ -932,21 +879,6 @@ namespace Prism.Navigation
                             childFound = true;
                         }
                     }
-                }
-            }
-        }
-
-        private static void CarouselPageSelectTab(CarouselPage carouselPage, INavigationParameters parameters)
-        {
-            var selectedTab = parameters?.GetValue<string>(KnownNavigationParameters.SelectedTab);
-            if (!string.IsNullOrWhiteSpace(selectedTab))
-            {
-                var selectedTabType = NavigationRegistry.GetPageType(UriParsingHelper.GetSegmentName(selectedTab));
-
-                foreach (var child in carouselPage.Children)
-                {
-                    if (child.GetType() == selectedTabType)
-                        carouselPage.CurrentPage = child;
                 }
             }
         }
@@ -1055,7 +987,6 @@ namespace Prism.Navigation
                         return currentPage.Navigation.PushAsync(page, animated);
                     }
                 }
-
             }
         }
 
@@ -1115,8 +1046,6 @@ namespace Prism.Navigation
                 return true;
             else if (navPage.Parent is TabbedPage tabbed && tabbed != rootPage)
                 return true;
-            else if (navPage.Parent is CarouselPage carousel && carousel != rootPage)
-                return true;
 
             return false;
         }
@@ -1135,7 +1064,6 @@ namespace Prism.Navigation
             {
                 FlyoutPage fp => IsRoot(fp.Detail, currentPage),
                 TabbedPage tp => IsRoot(tp.CurrentPage, currentPage),
-                CarouselPage cp => IsRoot(cp.CurrentPage, currentPage),
                 NavigationPage np => IsRoot(np.RootPage, currentPage),
                 _ => false
             };
