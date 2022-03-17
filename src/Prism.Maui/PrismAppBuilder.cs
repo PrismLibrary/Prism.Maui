@@ -1,6 +1,4 @@
-﻿using Microsoft.Maui.Controls.Hosting;
-using Microsoft.Maui.Hosting;
-using Prism.AppModel;
+﻿using Prism.AppModel;
 using Prism.Behaviors;
 using Prism.Events;
 using Prism.Ioc;
@@ -33,7 +31,7 @@ namespace Prism
             _initializations = new List<Action<IContainerProvider>>();
 
             MauiBuilder = builder;
-            MauiBuilder.Host.UseServiceProviderFactory(new PrismServiceProviderFactory(RunInitializations));
+            MauiBuilder.ConfigureContainer(new PrismServiceProviderFactory(RunInitializations));
 
             ContainerLocator.ResetContainer();
             ContainerLocator.SetContainerExtension(() => containerExtension);
