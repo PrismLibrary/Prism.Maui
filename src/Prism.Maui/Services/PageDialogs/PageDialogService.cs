@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Maui;
+﻿using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using Prism.AppModel;
 using FlowDirection = Prism.AppModel.FlowDirection;
-using MauiFlow = Microsoft.Maui.Controls.FlowDirection;
+using MauiFlow = Microsoft.Maui.FlowDirection;
 
 namespace Prism.Services
 {

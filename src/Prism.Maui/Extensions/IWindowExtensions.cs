@@ -8,25 +8,44 @@ namespace Prism.Extensions
     {
         public static bool SetPage(this IWindow window, Page page)
         {
-            var windowType = window.GetType();
+            if(window is null)
+                throw new ArgumentNullException(nameof(window));
+            else if(page is null)
+                throw new ArgumentNullException(nameof(page));
 
-            var setter = GetSetter(windowType.GetRuntimeProperties(), nameof(Page), nameof(IWindow.Content));
-
-            if(setter != null)
+            try
             {
-                setter.Invoke(window, new[] { page });
-                return true;
+                if(window is Window mauiWindow)
+                {
+                    mauiWindow.Page = page;
+                    return true;
+                }
+
+                var windowType = window.GetType();
+
+                var setter = GetSetter(windowType.GetRuntimeProperties(), nameof(Page), nameof(IWindow.Content));
+
+                if (setter != null)
+                {
+                    setter.Invoke(window, new[] { page });
+                    return true;
+                }
+
+                var field = GetFirstField(windowType, nameof(Page), nameof(IWindow.Content));
+
+                if (field != null)
+                {
+                    field.SetValue(window, page);
+                    return true;
+                }
+
+                return false;
             }
-
-            var field = GetFirstField(windowType, nameof(Page), nameof(IWindow.Content));
-
-            if(field != null)
+            catch(Exception ex)
             {
-                field.SetValue(window, page);
-                return true;
+                Console.WriteLine(ex);
+                return false;
             }
-
-            return false;
         }
 
         private static MethodInfo GetSetter(IEnumerable<PropertyInfo> properties, params string[] propertyNames)

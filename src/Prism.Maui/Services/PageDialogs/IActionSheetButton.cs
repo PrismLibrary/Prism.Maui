@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Prism.Services
+﻿namespace Prism.Services
 {
     /// <summary>
     /// Convenient contract to enable executing commands directly when using <see cref="IPageDialogService.DisplayActionSheetAsync(string, IActionSheetButton[])"/>

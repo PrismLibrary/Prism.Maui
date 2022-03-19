@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace Prism.Navigation
+﻿namespace Prism.Navigation
 {
 
     /// <summary>

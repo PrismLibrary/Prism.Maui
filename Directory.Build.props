@@ -16,10 +16,9 @@
     <PrismLicenseFile>$(MSBuildThisFileDirectory)LICENSE</PrismLicenseFile>
     <PackageTags>prism;maui;dotnet-maui;xaml;mvvm;ios;android;mac;winui</PackageTags>
     <Copyright>Copyright Dan Siegel 2021</Copyright>
-    <Description>This is a special MSBuild Alpha. In order to use this version be sure to install and run `maui-check`.
-`dotnet tool install --global Redth.Net.Maui.Check --version 0.5.6`
+    <Description>This is a special preview package. In order to use this be sure that you have installed the Maui workload with Visual Studio 2022 preview 4 or later. Alternatively you may use Maui-Check to ensure that your environment has the required prerequesites to build from the command line with Visual Studio Code.
 
-As this is an Alpha build there are no docs, be sure to check out the source repo at: https://github.com/dansiegel/prism.maui </Description>
+As this is special preview build there are no docs, be sure to check out the source repo at: https://github.com/dansiegel/prism.maui </Description>
 <!-- HACK: WinUI seems to have issues without this -->
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
     <DisableEmbeddedXbf>false</DisableEmbeddedXbf>
@@ -39,7 +38,7 @@ As this is an Alpha build there are no docs, be sure to check out the source rep
 
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" 
-                      Version="3.4.231"
+                      Version="3.4.244"
                       PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub"
                       Version="1.1.0-beta-20204-02"

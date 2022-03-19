@@ -7,12 +7,12 @@
   IgnorableNamespaces="uap rescap">
 
   <Identity
-    Name="292AB268-DF3A-4767-9BCC-33E3CF34584A"
+    Name="8CAB445B-30CD-4ACD-B9E1-3F838CA240F3"
     Publisher="CN=Prism Library"
     Version="1.0.0.0" />
 
   <Properties>
-    <DisplayName>PrismMauiDemo</DisplayName>
+    <DisplayName>Prism Maui Demo</DisplayName>
     <PublisherDisplayName>Prism Library</PublisherDisplayName>
     <Logo>Assets\appiconStoreLogo.png</Logo>
   </Properties>

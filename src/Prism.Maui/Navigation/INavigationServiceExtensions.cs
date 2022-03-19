@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 using Microsoft.Maui.Controls;
 using Prism.Common;
+using Application = Microsoft.Maui.Controls.Application;
 
 namespace Prism.Navigation
 {
@@ -270,7 +267,7 @@ namespace Prism.Navigation
             {
                 var parentKeyInfo = NavigationRegistry.GetPageNavigationInfo(parent.GetType());
 
-                if (parent is TabbedPage || parent is CarouselPage)
+                if (parent is TabbedPage)
                 {
                     //set the selected tab to the current page
                     currentSegment = $"{parentKeyInfo.Name}?{KnownNavigationParameters.SelectedTab}={currentPageKeyInfo.Name}";

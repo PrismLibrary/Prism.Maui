@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Prism.Common;
+﻿using Prism.Common;
 
 namespace Prism.Navigation
 {

@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
 using Prism.Mvvm;
 using Prism.Navigation;
+using NavigationMode = Prism.Navigation.NavigationMode;
 
 namespace Prism.Common
 {
@@ -70,12 +64,6 @@ namespace Prism.Common
                     break;
                 case TabbedPage tabbedPage:
                     foreach (var item in tabbedPage.Children.Reverse())
-                    {
-                        DestroyPage(item);
-                    }
-                    break;
-                case CarouselPage carouselPage:
-                    foreach (var item in carouselPage.Children.Reverse())
                     {
                         DestroyPage(item);
                     }
@@ -184,8 +172,6 @@ namespace Prism.Common
                 child = flyout.Detail;
             else if (target is TabbedPage tabbed)
                 child = tabbed.CurrentPage;
-            else if (target is CarouselPage carousel)
-                child = carousel.CurrentPage;
             else if (target is NavigationPage np)
                 child = np.Navigation.NavigationStack.Last();
 
@@ -267,7 +253,7 @@ namespace Prism.Common
                     navigationPage = navParent;
                     return true;
                 }
-                else if ((page.Parent is TabbedPage || page.Parent is CarouselPage) && page.Parent?.Parent is NavigationPage navigationParent)
+                else if ((page.Parent is TabbedPage) && page.Parent?.Parent is NavigationPage navigationParent)
                 {
                     navigationPage = navigationParent;
                     return true;

@@ -12,17 +12,36 @@ namespace Prism.Maui.Tests.Mocks
     {
         private List<IWindow> _windows = new List<IWindow> { new Window() };
 
+        private Window _currentWindow => _windows.Cast<Window>().FirstOrDefault();
+
         public ApplicationMock(Page page = null)
         {
             if (page != null)
-                _windows[0].View = page;
+                _currentWindow.Page = page;
         }
 
-        public VisualElement MainPage => _windows[0].View as VisualElement;
+        public Page MainPage => _currentWindow.Page;
 
         public IReadOnlyList<IWindow> Windows => _windows;
+        public IElementHandler Handler { get; set; }
+        public IElement Parent { get; }
+
+        public void CloseWindow(IWindow window)
+        {
+            throw new NotImplementedException();
+        }
 
         public IWindow CreateWindow(IActivationState activationState)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OpenWindow(IWindow window)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ThemeChanged()
         {
             throw new NotImplementedException();
         }

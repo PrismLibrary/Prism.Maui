@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System;
+﻿using System.Globalization;
 using Prism.Properties;
 
 namespace Prism.Modularity

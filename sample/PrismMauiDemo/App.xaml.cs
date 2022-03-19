@@ -1,37 +1,21 @@
-﻿using Microsoft.Maui;
-using Microsoft.Maui.Controls.Xaml;
-using Microsoft.Maui.Hosting;
-using Prism;
-using Prism.Ioc;
+﻿using Prism;
 using Prism.Navigation;
 
-[assembly: XamlCompilationAttribute(XamlCompilationOptions.Compile)]
-namespace PrismMauiDemo
+namespace PrismMauiDemo;
+
+public partial class App : PrismApplication
 {
-    public partial class App : PrismApplication
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        protected override Task OnWindowCreated(IActivationState activationState)
+    protected override async Task OnWindowCreated(IActivationState activationState)
+    {
+        var result = await NavigationService.NavigateAsync("MainPage/NavigationPage/SamplePage");
+        if (!result.Success)
         {
-            return NavigationService.NavigateAsync("MainPage");
-        }
-
-        protected override void RegisterTypes(IContainerRegistry containerRegistry)
-        {
-            containerRegistry.RegisterForNavigation<MainPage>();
-        }
-
-        protected override void Configure(IAppHostBuilder builder)
-        {
-            builder
-               .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                });
+            System.Diagnostics.Debugger.Break();
         }
     }
 }

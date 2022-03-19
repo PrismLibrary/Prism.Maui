@@ -1,10 +1,9 @@
 ﻿using Foundation;
-using Microsoft.Maui;
 
-namespace PrismMauiDemo
+namespace PrismMauiDemo;
+
+[Register("AppDelegate")]
+public class AppDelegate : MauiUIApplicationDelegate
 {
-    [Register("AppDelegate")]
-    public class AppDelegate : MauiUIApplicationDelegate<App>
-    {
-    }
+    protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 }

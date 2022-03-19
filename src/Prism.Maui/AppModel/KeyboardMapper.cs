@@ -1,5 +1,4 @@
 ﻿using Microsoft.Maui;
-using System;
 
 namespace Prism.AppModel
 {

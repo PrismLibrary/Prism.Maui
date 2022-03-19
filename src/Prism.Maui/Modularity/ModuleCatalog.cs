@@ -1,5 +1,4 @@
 ﻿using Microsoft.Maui.Controls;
-using Prism.Modularity;
 
 namespace Prism.Modularity
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Controls;
 using Prism.Common;
 
 namespace Prism.Behaviors

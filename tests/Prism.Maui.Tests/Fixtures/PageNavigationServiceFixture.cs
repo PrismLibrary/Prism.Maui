@@ -117,7 +117,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync("/ContentPage");
 
-            var navigatedPage = applicationProvider.MainPage;
+            var navigatedPage = applicationProvider.MainPage as Page;
             Assert.IsType<ContentPageMock>(navigatedPage);
             Assert.NotEqual(rootPage, _applicationProvider.MainPage);
 
@@ -176,7 +176,7 @@ namespace Prism.Maui.Tests.Navigation
 
             await navigationService.NavigateAsync(new Uri("http://localhost/ContentPage", UriKind.Absolute));
 
-            var navigatedPage = applicationProvider.MainPage;
+            var navigatedPage = applicationProvider.MainPage as Page;
             Assert.IsType<ContentPageMock>(navigatedPage);
             Assert.NotEqual(rootPage, _applicationProvider.MainPage);
 
@@ -986,7 +986,7 @@ namespace Prism.Maui.Tests.Navigation
 
             Assert.Equal(0, rootPage.Navigation.ModalStack.Count);
 
-            var navPage = _applicationProvider.MainPage;
+            var navPage = _applicationProvider.MainPage as Page;
             Assert.IsType<NavigationPageMock>(navPage);
             Assert.Single(navPage.Navigation.NavigationStack);
         }
@@ -1002,7 +1002,7 @@ namespace Prism.Maui.Tests.Navigation
 
             Assert.Equal(0, rootPage.Navigation.ModalStack.Count);
 
-            var navPage = _applicationProvider.MainPage;
+            var navPage = _applicationProvider.MainPage as Page;
             Assert.IsType<NavigationPageMock>(navPage);
             Assert.Single(navPage.Navigation.NavigationStack);
         }

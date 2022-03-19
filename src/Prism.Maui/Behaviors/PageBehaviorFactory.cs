@@ -7,16 +7,6 @@ namespace Prism.Behaviors
     /// </summary>
     public class PageBehaviorFactory : IPageBehaviorFactory
     {
-        ///// <summary>
-        ///// Applies behaviors to a <see cref="CarouselPage" />.
-        ///// </summary>
-        ///// <param name="page">The CarouselPage to apply the behaviors</param>
-        ///// <remarks>The CarouselPageActiveAwareBehavior is applied by default</remarks>
-        //protected virtual void ApplyCarouselPageBehaviors(CarouselPage page)
-        //{
-        //    page.Behaviors.Add(new CarouselPageActiveAwareBehavior());
-        //}
-
         /// <summary>
         /// Applies behaviors to a <see cref="ContentPage" />.
         /// </summary>
