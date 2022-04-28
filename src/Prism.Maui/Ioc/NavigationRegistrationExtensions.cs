@@ -11,7 +11,7 @@ namespace Prism.Ioc
 
         public static IContainerRegistry RegisterForNavigation<TView, TViewModel>(this IContainerRegistry container, string name = null)
             where TView : Page =>
-            container.Register(typeof(TView), typeof(TViewModel), name);
+            container.RegisterForNavigation(typeof(TView), typeof(TViewModel), name);
 
         public static IContainerRegistry RegisterForNavigation(this IContainerRegistry container, Type view, Type viewModel, string name = null)
         {
