@@ -1,7 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-using Prism.Extensions;
+﻿using Prism.Extensions;
 using Prism.Ioc;
 using Prism.Mvvm;
 using Prism.Navigation;
@@ -9,17 +6,14 @@ using Application = Microsoft.Maui.Controls.Application;
 
 namespace Prism
 {
-    public abstract class PrismApplication : Application, IApplication
+    public abstract class PrismApplication : Application
     {
-        private readonly ObservableCollection<IWindow> _windows = new();
         private readonly IContainerExtension _containerExtension;
 
         /// <summary>
         /// The dependency injection container used to resolve objects
         /// </summary>
         protected IContainerProvider Container => _containerExtension;
-
-        public new IReadOnlyList<IWindow> Windows => _windows;
 
         protected INavigationService NavigationService { get; private set; }
 
@@ -66,7 +60,7 @@ namespace Prism
                 return Navigation.Xaml.Navigation.GetNavigationService(parent);
             }
 
-            return Container.Resolve<INavigationService>();
+            return Container.Resolve<INavigationService>((typeof(IApplication), this));
         }
 
         /// <summary>
@@ -75,22 +69,18 @@ namespace Prism
         /// <param name="activationState"></param>
         protected abstract Task OnWindowCreated(IActivationState activationState);
 
-        IWindow IApplication.CreateWindow(IActivationState activationState)
+        protected sealed override Window CreateWindow(IActivationState activationState)
         {
+            var window = base.CreateWindow(activationState);
+
             // We need to delay creating the Navigation Service since it
             // requires the IApplication which cannot be resolved from a
             // method called by the ctor...
             var scope = _containerExtension.CreateScope();
-            NavigationService = scope.Resolve<INavigationService>();
-            var window = CreateWindow(activationState);
-            _windows.Add(window);
+            NavigationService = scope.Resolve<INavigationService>((typeof(IApplication), this));
             OnWindowCreated(activationState).Wait();
-            return window;
-        }
 
-        protected override Window CreateWindow(IActivationState activationState)
-        {
-            return new Window();
+            return window;
         }
     }
 }
