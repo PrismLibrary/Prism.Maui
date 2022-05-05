@@ -750,10 +750,13 @@ namespace Prism.Navigation
             }
             catch (Exception ex)
             {
-                if (((IContainerRegistry)_container).IsRegistered<object>(segmentName))
-                    throw new NavigationException(NavigationException.ErrorCreatingPage, _page, ex);
+                if (ex is NavigationException)
+                    throw;
 
-                throw new NavigationException(NavigationException.NoPageIsRegistered, _page, ex);
+                else if(ex is KeyNotFoundException)
+                    throw new NavigationException(NavigationException.NoPageIsRegistered, _page, ex);
+
+                throw new NavigationException(NavigationException.ErrorCreatingPage, _page, ex);
             }
         }
 
