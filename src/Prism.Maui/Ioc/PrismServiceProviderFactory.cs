@@ -1,45 +1,25 @@
-using Microsoft.Extensions.DependencyInjection;
+namespace Prism.Ioc;
 
-namespace Prism.Ioc
+public class PrismServiceProviderFactory : IServiceProviderFactory<IContainerExtension>
 {
-    public class PrismServiceProviderFactory : IServiceProviderFactory<IContainerExtension>
+    private Action<IContainerExtension> _registerTypes { get; }
+
+    public PrismServiceProviderFactory(Action<IContainerExtension> registerTypes)
     {
-        private Action<IContainerExtension> _registerTypes { get; }
-
-        public PrismServiceProviderFactory(Action<IContainerExtension> registerTypes)
-        {
-            _registerTypes = registerTypes;
-        }
-
-        public IContainerExtension CreateBuilder(IServiceCollection services)
-        {
-            var container = ContainerLocator.Current;
-            container.Populate(services);
-            _registerTypes(container);
-            if (!container.IsRegistered(typeof(IServiceScopeFactory)))
-                container.Register<IServiceScopeFactory, ServiceScopeFactory>();
-
-            return container;
-        }
-
-        public IServiceProvider CreateServiceProvider(IContainerExtension containerExtension)
-        {
-            return containerExtension.CreateServiceProvider();
-        }
+        _registerTypes = registerTypes;
     }
 
-    internal class ServiceScopeFactory : IServiceScopeFactory
+    public IContainerExtension CreateBuilder(IServiceCollection services)
     {
-        private IServiceProvider _services { get; }
+        var container = ContainerLocator.Current;
+        container.Populate(services);
+        _registerTypes(container);
 
-        public ServiceScopeFactory(IServiceProvider services)
-        {
-            _services = services;
-        }
+        return container;
+    }
 
-        public IServiceScope CreateScope()
-        {
-            return _services.CreateScope();
-        }
+    public IServiceProvider CreateServiceProvider(IContainerExtension containerExtension)
+    {
+        return containerExtension.CreateServiceProvider();
     }
 }
