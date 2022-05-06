@@ -28,7 +28,14 @@ namespace Prism
         /// </summary>
         protected virtual void ConfigureViewModelLocator()
         {
-            ViewModelLocationProvider.SetDefaultViewModelFactory((view, type) =>
+            ViewModelLocationProvider2.SetDefaultViewToViewModelTypeResolver(view =>
+            {
+                if (!(view is BindableObject bindable))
+                    return null;
+
+                return bindable.GetValue(ViewModelLocator.ViewModelProperty) as Type;
+            });
+            ViewModelLocationProvider2.SetDefaultViewModelFactory((view, type) =>
             {
                 var overrides = new List<(Type Type, object Instance)>();
                 if (Container.IsRegistered<IResolverOverridesHelper>())
@@ -71,7 +78,10 @@ namespace Prism
 
         protected sealed override Window CreateWindow(IActivationState activationState)
         {
-            var window = base.CreateWindow(activationState);
+            var window = new Window();
+
+            var windows = Windows as List<Window>;
+            windows.Add(window);
 
             // We need to delay creating the Navigation Service since it
             // requires the IApplication which cannot be resolved from a

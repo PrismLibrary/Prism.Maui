@@ -4,9 +4,9 @@
              x:Class="MauiModule.Views.ViewD"
              Title="{Binding Title}"
              BackgroundColor="White">
-  <StackLayout>
-    <Label Text="Welcome to .NET MAUI!"
-            VerticalOptions="CenterAndExpand" 
-            HorizontalOptions="CenterAndExpand" />
+  <StackLayout VerticalOptions="CenterAndExpand"
+               HorizontalOptions="CenterAndExpand">
+    <Label Text="View D" HorizontalTextAlignment="Center" />
+    <Label Text="Welcome to Prism for .NET MAUI!" HorizontalTextAlignment="Center" />
   </StackLayout>
 </ContentPage>

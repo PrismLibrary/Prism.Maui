@@ -6,7 +6,7 @@
              Title="MainPage"
              BackgroundColor="White">
   <FlyoutPage.Flyout>
-    <ContentPage>
+    <ContentPage Title="Menu">
       <StackLayout Margin="20">
         <Button Text="ViewA"
                 Command="{Binding NavigateCommand}"

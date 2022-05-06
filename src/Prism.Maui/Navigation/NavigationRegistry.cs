@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Data;
-using Microsoft.Maui.Controls;
 using Prism.Ioc;
 using Prism.Mvvm;
 
@@ -33,11 +32,19 @@ namespace Prism.Navigation
             if (registration is null)
                 throw new KeyNotFoundException($"No view with the name '{name}' has been registered");
 
-            var view = container.Resolve(registration.View);
-            if (view is BindableObject bindable && bindable.BindingContext is null && (bool?)bindable.GetValue(ViewModelLocator.AutowireViewModelProperty) is null)
-            {
-                ViewModelLocator.SetAutowireViewModel(bindable, true);
-            }
+            var view = container.Resolve(registration.View) as BindableObject;
+
+            // Sanity Check
+            if (view is null)
+                throw new KeyNotFoundException($"No view with the name '{name}' has been registered");
+            else if (view.BindingContext is not null)
+                return view;
+
+            if (registration.ViewModel is not null)
+                view.SetValue(ViewModelLocator.ViewModelProperty, registration.ViewModel);
+
+            else if ((bool?)view.GetValue(ViewModelLocator.AutowireViewModelProperty) is null)
+                ViewModelLocator.SetAutowireViewModel(view, true);
 
             return view;
         }

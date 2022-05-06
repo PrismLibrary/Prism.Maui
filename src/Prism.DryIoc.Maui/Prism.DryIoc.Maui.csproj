@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <PackageReference Include="DryIoc.dll" Version="5.0.1" />
-    <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
