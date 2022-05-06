@@ -43,9 +43,7 @@ public static class ViewModelLocator
         bool? bNewValue = (bool?)newValue;
         if (bNewValue.HasValue && bNewValue.Value)
         {
-            var vmType = bindable.GetValue(ViewModelProperty) as Type;
-            if (vmType is null)
-                ViewModelLocationProvider2.AutoWireViewModelChanged(bindable, Bind);
+            ViewModelLocationProvider2.AutoWireViewModelChanged(bindable, Bind);
         }
     }
 
