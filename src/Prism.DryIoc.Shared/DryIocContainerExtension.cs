@@ -1,8 +1,7 @@
-using System;
-using System.Linq;
 using DryIoc;
 using Prism.Ioc;
 using Prism.Ioc.Internals;
+using IContainer = DryIoc.IContainer;
 
 namespace Prism.DryIoc
 {

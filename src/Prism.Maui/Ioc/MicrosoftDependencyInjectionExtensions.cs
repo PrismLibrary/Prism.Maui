@@ -1,23 +1,20 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿namespace Prism.Ioc;
 
-namespace Prism.Ioc
+public static class MicrosoftDependencyInjectionExtensions
 {
-    public static class MicrosoftDependencyInjectionExtensions
+    public static void Populate(this IContainerExtension container, IServiceCollection services)
     {
-        public static void Populate(this IContainerExtension container, IServiceCollection services)
-        {
-            if (!(container is IServiceCollectionAware sca))
-                throw new InvalidOperationException("The instance of IContainerExtension does not implement IServiceCollectionAware");
+        if (container is not IServiceCollectionAware sca)
+            throw new InvalidOperationException("The instance of IContainerExtension does not implement IServiceCollectionAware");
 
-            sca.Populate(services);
-        }
+        sca.Populate(services);
+    }
 
-        public static IServiceProvider CreateServiceProvider(this IContainerExtension container)
-        {
-            if (!(container is IServiceCollectionAware sca))
-                throw new InvalidOperationException("The instance of IContainerExtension does not implement IServiceCollectionAware");
+    public static IServiceProvider CreateServiceProvider(this IContainerExtension container)
+    {
+        if (container is not IServiceCollectionAware sca)
+            throw new InvalidOperationException("The instance of IContainerExtension does not implement IServiceCollectionAware");
 
-            return sca.CreateServiceProvider();
-        }
+        return sca.CreateServiceProvider();
     }
 }

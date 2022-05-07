@@ -6,6 +6,7 @@ using NavigationMode = Prism.Navigation.NavigationMode;
 
 namespace Prism.Common
 {
+    // TODO: Refactor from Static class to interface
     public static class PageUtilities
     {
         public static void InvokeViewAndViewModelAction<T>(object view, Action<T> action) where T : class

@@ -1,5 +1,3 @@
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
 using Prism.Behaviors;
 using Prism.Common;
 using Prism.Extensions;
@@ -24,12 +22,26 @@ namespace Prism.Navigation
         private readonly IContainerProvider _container;
         protected readonly IApplication _application;
         protected readonly IPageBehaviorFactory _pageBehaviorFactory;
-        protected IWindow Window => _application.Windows[0];
+        protected IWindow Window;
 
         protected Page _page;
         Page IPageAware.Page
         {
-            get => _page;
+            get
+            {
+                if(Window is null)
+                {
+                    Element curPage = _page;
+                    while (curPage?.Parent != null)
+                    {
+                        if (curPage.Parent is Window window)
+                            Window = window;
+                        curPage = curPage.Parent;
+                    }
+                }
+
+                return _page;
+            }
             set => _page = value;
         }
 
@@ -964,9 +976,21 @@ namespace Prism.Navigation
             if (page == null)
                 throw new ArgumentNullException(nameof(page));
 
+            // Prevent Page from using Parent's ViewModel
+            if (page.BindingContext is null)
+                page.BindingContext = new object();
+
             if (currentPage == null)
             {
-                if (!Window.SetPage(page))
+                if (Window is null)
+                {
+                    Window = new PrismWindow
+                    {
+                        Page = page
+                    };
+                    ((List<Window>)_application.Windows).Add(Window as PrismWindow);
+                }
+                else if (!Window.SetPage(page))
                     throw new Exception("Unable to set the Page on the IWindow. No Setter or backing field could be found for either the Page or Content property.");
 
                 return Task.FromResult<object>(null);
@@ -995,7 +1019,6 @@ namespace Prism.Navigation
 
         protected virtual Task InsertPageBefore(Page currentPage, Page page, int pageOffset)
         {
-            var navigationPage = currentPage.Parent as NavigationPage;
             var firstPage = currentPage.Navigation.NavigationStack.Skip(pageOffset).FirstOrDefault();
             currentPage.Navigation.InsertPageBefore(page, firstPage);
             return Task.FromResult(true);
@@ -1078,10 +1101,18 @@ namespace Prism.Navigation
             {
                 return Window.Content as Page;
             }
+#if DEBUG
             catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex);
+                return null;
+            }
+#else
+            catch
             {
                 return null;
             }
+#endif
         }
     }
 }

@@ -1,15 +1,12 @@
-﻿using Microsoft.Maui.Controls;
+﻿namespace Prism.Common;
 
-namespace Prism.Common
+/// <summary>
+/// Interface to signify that a class must have knowledge of a specific <see cref="Microsoft.Maui.Controls.Page"/> instance in order to function properly.
+/// </summary>
+public interface IPageAware
 {
     /// <summary>
-    /// Interface to signify that a class must have knowledge of a specific <see cref="Microsoft.Maui.Controls.Page"/> instance in order to function properly.
+    /// The <see cref="Microsoft.Maui.Controls.Page"/> instance.
     /// </summary>
-    public interface IPageAware
-    {
-        /// <summary>
-        /// The <see cref="Microsoft.Maui.Controls.Page"/> instance.
-        /// </summary>
-        Page Page { get; set; }
-    }
+    Page Page { get; set; }
 }

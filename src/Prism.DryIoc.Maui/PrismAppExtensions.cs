@@ -1,5 +1,4 @@
 ﻿using DryIoc;
-using Microsoft.Maui.Hosting;
 using Prism;
 using Prism.DryIoc;
 
@@ -11,13 +10,13 @@ namespace Microsoft.Maui;
 public static class PrismAppExtensions
 {
     public static PrismAppBuilder UsePrismApp<TApp>(this MauiAppBuilder builder)
-        where TApp : PrismApplication
+        where TApp : Application
     {
         return builder.UsePrismApp<TApp>(new DryIocContainerExtension());
     }
 
     public static PrismAppBuilder UsePrismApp<TApp>(this MauiAppBuilder builder, Rules rules)
-        where TApp : PrismApplication
+        where TApp : Application
     {
         rules = rules.WithTrackingDisposableTransients()
             .With(Made.Of(FactoryMethod.ConstructorWithResolvableArguments))

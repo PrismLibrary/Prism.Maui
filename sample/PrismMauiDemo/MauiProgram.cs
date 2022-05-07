@@ -1,7 +1,8 @@
-﻿using MauiModule;
+using MauiModule;
 using Prism;
 using Prism.Ioc;
 using Prism.Modularity;
+using Prism.Navigation;
 using PrismMauiDemo.Views;
 
 namespace PrismMauiDemo;
@@ -10,8 +11,7 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
-        var builder = MauiApp.CreateBuilder();
-        builder
+        return MauiApp.CreateBuilder()
             .UsePrismApp<App>()
             .ConfigureModuleCatalog(moduleCatalog =>
             {
@@ -24,12 +24,18 @@ public static class MauiProgram
                 containerRegistry.RegisterForNavigation<NavigationPage>();
                 containerRegistry.RegisterForNavigation<TabbedPage>();
             })
-            .MauiBuilder
+            .OnAppStart(async navigationService =>
+            {
+                var result = await navigationService.NavigateAsync("MainPage/NavigationPage/ViewA/ViewB/ViewC/ViewD");
+                if (!result.Success)
+                {
+                    System.Diagnostics.Debugger.Break();
+                }
+            })
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            });
-
-        return builder.Build();
+            })
+            .Build();
     }
 }

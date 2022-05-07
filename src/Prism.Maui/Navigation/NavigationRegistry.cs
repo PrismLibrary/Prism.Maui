@@ -3,30 +3,32 @@ using System.Data;
 using Prism.Ioc;
 using Prism.Mvvm;
 
-namespace Prism.Navigation
+namespace Prism.Navigation;
+
+public static class NavigationRegistry
 {
-    public static class NavigationRegistry
+    private static readonly List<ViewRegistration> _registrations = new ();
+
+    public static void Register<TView, TViewModel>(string name) =>
+        Register(typeof(TView), typeof(TViewModel), name);
+
+    public static void Register(Type viewType, Type viewModelType, string name)
     {
-        private static readonly List<ViewRegistration> _registrations = new List<ViewRegistration>();
+        if (_registrations.Any(x => x.Name == name))
+            throw new DuplicateNameException($"A view with the name '{name}' has already been registered");
 
-        public static void Register<TView, TViewModel>(string name) =>
-            Register(typeof(TView), typeof(TViewModel), name);
-
-        public static void Register(Type viewType, Type viewModelType, string name)
+        var registration = new ViewRegistration
         {
-            if (_registrations.Any(x => x.Name == name))
-                throw new DuplicateNameException($"A view with the name '{name}' has already been registered");
+            View = viewType,
+            ViewModel = viewModelType,
+            Name = name
+        };
+        _registrations.Add(registration);
+    }
 
-            var registration = new ViewRegistration
-            {
-                View = viewType,
-                ViewModel = viewModelType,
-                Name = name
-            };
-            _registrations.Add(registration);
-        }
-
-        public static object CreateView(IContainerProvider container, string name)
+    public static object CreateView(IContainerProvider container, string name)
+    {
+        try
         {
             var registration = _registrations.FirstOrDefault(x => x.Name == name);
             if (registration is null)
@@ -34,10 +36,10 @@ namespace Prism.Navigation
 
             var view = container.Resolve(registration.View) as BindableObject;
 
-            // Sanity Check
-            if (view is null)
-                throw new KeyNotFoundException($"No view with the name '{name}' has been registered");
-            else if (view.BindingContext is not null)
+            if (view is Page page)
+                page.SetValue(Xaml.Navigation.NavigationScopeProperty, container);
+
+            if (view.BindingContext is not null)
                 return view;
 
             if (registration.ViewModel is not null)
@@ -48,14 +50,22 @@ namespace Prism.Navigation
 
             return view;
         }
-
-        public static Type GetPageType(string name) =>
-            _registrations.FirstOrDefault(x => x.Name == name)?.View;
-
-        public static ViewRegistration GetPageNavigationInfo(Type viewType) => 
-            _registrations.FirstOrDefault(x => x.View == viewType);
-
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void ClearRegistrationCache() => _registrations.Clear();
+        catch (KeyNotFoundException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Unable to create page '{name}'.", ex);
+        }
     }
+
+    public static Type GetPageType(string name) =>
+        _registrations.FirstOrDefault(x => x.Name == name)?.View;
+
+    public static ViewRegistration GetPageNavigationInfo(Type viewType) => 
+        _registrations.FirstOrDefault(x => x.View == viewType);
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static void ClearRegistrationCache() => _registrations.Clear();
 }

@@ -1,5 +1,4 @@
 ﻿using DryIoc;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Prism.DryIoc;
 
