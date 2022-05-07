@@ -1,7 +1,8 @@
-﻿using Prism.AppModel;
+using Prism.AppModel;
 using Prism.Behaviors;
 using Prism.Events;
 using Prism.Ioc;
+using Prism.Modularity;
 using Prism.Navigation;
 using Prism.Services;
 
@@ -21,12 +22,14 @@ public abstract class PrismAppBuilder
 {
     private List<Action<IContainerRegistry>> _registrations { get; }
     private List<Action<IContainerProvider>> _initializations { get; }
+    private IContainerProvider _container { get; }
 
     protected PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
     {
         if(containerExtension is null)
             throw new ArgumentNullException(nameof(containerExtension));
 
+        _container = containerExtension;
         _registrations = new List<Action<IContainerRegistry>>();
         _initializations = new List<Action<IContainerProvider>>();
 
@@ -35,6 +38,9 @@ public abstract class PrismAppBuilder
 
         ContainerLocator.ResetContainer();
         ContainerLocator.SetContainerExtension(() => containerExtension);
+
+        containerExtension.RegisterInstance(this);
+        containerExtension.RegisterSingleton<IMauiInitializeService, PrismInitializationService>();
     }
 
     public MauiAppBuilder MauiBuilder { get; }
@@ -51,6 +57,21 @@ public abstract class PrismAppBuilder
         return this;
     }
 
+    internal void OnInitialized()
+    {
+        if(_container.IsRegistered<IModuleCatalog>() && _container.Resolve<IModuleCatalog>().Modules.Any())
+        {
+            var manager = _container.Resolve<IModuleManager>();
+            manager.Run();
+        }
+
+        _initializations.ForEach(action => action(_container));
+
+        var app = _container.Resolve<IApplication>();
+        if (app is IPrismApplication prismApp)
+            prismApp.OnInitialized();
+    }
+
     public MauiApp Build()
     {
         return MauiBuilder.Build();
@@ -61,7 +82,6 @@ public abstract class PrismAppBuilder
         RegisterDefaultRequiredTypes(container);
 
         _registrations.ForEach(action => action(container));
-        _initializations.ForEach(action => action(container));
     }
 
     private void RegisterDefaultRequiredTypes(IContainerRegistry containerRegistry)
@@ -73,7 +93,5 @@ public abstract class PrismAppBuilder
         //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
         containerRegistry.RegisterSingleton<IPageBehaviorFactory, PageBehaviorFactory>();
         containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
-
-        containerRegistry.RegisterSingleton<IMauiInitializeService, PrismInitializationService>();
     }
 }
