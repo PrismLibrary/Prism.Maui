@@ -1,5 +1,4 @@
-﻿using DryIoc;
-using Microsoft.Maui.Hosting;
+using DryIoc;
 using Prism;
 using Prism.DryIoc;
 
