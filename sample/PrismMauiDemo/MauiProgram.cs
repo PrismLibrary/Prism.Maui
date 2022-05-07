@@ -1,4 +1,4 @@
-﻿using MauiModule;
+using MauiModule;
 using Prism;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -10,8 +10,7 @@ public static class MauiProgram
 {
     public static MauiApp CreateMauiApp()
     {
-        var builder = MauiApp.CreateBuilder();
-        builder
+        return MauiApp.CreateBuilder()
             .UsePrismApp<App>()
             .ConfigureModuleCatalog(moduleCatalog =>
             {
@@ -28,8 +27,7 @@ public static class MauiProgram
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-            });
-
-        return builder.Build();
+            })
+            .Build();
     }
 }

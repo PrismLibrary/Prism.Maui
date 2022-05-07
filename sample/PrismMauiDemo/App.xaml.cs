@@ -10,7 +10,7 @@ public partial class App : PrismApplication
         InitializeComponent();
     }
 
-    protected override async Task OnWindowCreated(IActivationState activationState)
+    protected override async void OnInitialized()
     {
         var result = await NavigationService.NavigateAsync("MainPage/NavigationPage/ViewA");
         if (!result.Success)

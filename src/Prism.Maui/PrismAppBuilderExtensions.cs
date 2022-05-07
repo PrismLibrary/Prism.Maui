@@ -4,44 +4,42 @@ using Microsoft.Maui.Hosting;
 using Prism.Ioc;
 using Prism.Modularity;
 
-namespace Prism
+namespace Prism;
+
+public static class PrismAppBuilderExtensions
 {
-    public static class PrismAppBuilderExtensions
+    private static bool s_didRegisterModules = false;
+
+    public static PrismAppBuilder UsePrismApp<TApp>(this MauiAppBuilder builder, IContainerExtension containerExtension)
+        where TApp : PrismApplication
     {
-        private static bool s_didRegisterModules = false;
+        return new PrismAppBuilder<TApp>(containerExtension, builder);
+    }
 
-        public static PrismAppBuilder UsePrismApp<TApp>(this MauiAppBuilder builder, IContainerExtension containerExtension)
-            where TApp : PrismApplication
+    public static PrismAppBuilder OnInitialized(this PrismAppBuilder builder, Action action)
+    {
+        return builder.OnInitialized(_ => action());
+    }
+
+    /// <summary>
+    /// Configures the <see cref="IModuleCatalog"/> used by Prism.
+    /// </summary>
+    /// <param name="moduleCatalog">The ModuleCatalog to configure</param>
+    public static PrismAppBuilder ConfigureModuleCatalog(this PrismAppBuilder builder, Action<IModuleCatalog> configureCatalog)
+    {
+        if (!s_didRegisterModules)
         {
-            return new PrismAppBuilder<TApp>(containerExtension, builder);
+            var services = builder.MauiBuilder.Services;
+            services.AddSingleton<IModuleCatalog, ModuleCatalog>();
+            services.AddSingleton<IModuleManager, ModuleManager>();
+            services.AddSingleton<IModuleInitializer, ModuleInitializer>();
         }
 
-        public static PrismAppBuilder OnInitialized(this PrismAppBuilder builder, Action action)
+        s_didRegisterModules = true;
+        return builder.OnInitialized(container =>
         {
-            return builder.OnInitialized(_ => action());
-        }
-
-        /// <summary>
-        /// Configures the <see cref="IModuleCatalog"/> used by Prism.
-        /// </summary>
-        /// <param name="moduleCatalog">The ModuleCatalog to configure</param>
-        public static PrismAppBuilder ConfigureModuleCatalog(this PrismAppBuilder builder, Action<IModuleCatalog> configureCatalog)
-        {
-            if (!s_didRegisterModules)
-            {
-                var services = builder.MauiBuilder.Services;
-                services.AddSingleton<IModuleCatalog, ModuleCatalog>();
-                services.AddSingleton<IModuleManager, ModuleManager>();
-                services.AddSingleton<IModuleInitializer, ModuleInitializer>();
-                services.AddSingleton<IMauiInitializeService, PrismModularityInitializationService>();
-            }
-
-            s_didRegisterModules = true;
-            return builder.OnInitialized(container =>
-            {
-                var moduleCatalog = container.Resolve<IModuleCatalog>();
-                configureCatalog(moduleCatalog);
-            });
-        }
+            var moduleCatalog = container.Resolve<IModuleCatalog>();
+            configureCatalog(moduleCatalog);
+        });
     }
 }

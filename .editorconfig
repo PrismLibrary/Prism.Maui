@@ -2,6 +2,7 @@ root = true
 
 [*]
 indent_style = space
+end_of_line = lf
 
 [*.xaml]
 indent_size = 2
