@@ -3,6 +3,7 @@ using Microsoft.Maui;
 using Microsoft.Maui.Hosting;
 using Prism.Ioc;
 using Prism.Modularity;
+using Prism.Mvvm;
 
 namespace Prism;
 
@@ -11,7 +12,7 @@ public static class PrismAppBuilderExtensions
     private static bool s_didRegisterModules = false;
 
     public static PrismAppBuilder UsePrismApp<TApp>(this MauiAppBuilder builder, IContainerExtension containerExtension)
-        where TApp : PrismApplication
+        where TApp : Application
     {
         return new PrismAppBuilder<TApp>(containerExtension, builder);
     }

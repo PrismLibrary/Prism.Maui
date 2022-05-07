@@ -1,15 +1,17 @@
-using Prism.AppModel;
+﻿using Prism.AppModel;
 using Prism.Behaviors;
 using Prism.Events;
+using Prism.Extensions;
 using Prism.Ioc;
 using Prism.Modularity;
+using Prism.Mvvm;
 using Prism.Navigation;
 using Prism.Services;
 
 namespace Prism;
 
 public sealed class PrismAppBuilder<TApp> : PrismAppBuilder
-    where TApp : PrismApplication
+    where TApp : Application
 {
     public PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
         : base(containerExtension, builder)
@@ -23,6 +25,7 @@ public abstract class PrismAppBuilder
     private List<Action<IContainerRegistry>> _registrations { get; }
     private List<Action<IContainerProvider>> _initializations { get; }
     private IContainerProvider _container { get; }
+    private Action<INavigationService> _onAppStarted;
 
     protected PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
     {
@@ -41,9 +44,42 @@ public abstract class PrismAppBuilder
 
         containerExtension.RegisterInstance(this);
         containerExtension.RegisterSingleton<IMauiInitializeService, PrismInitializationService>();
+
+        ConfigureViewModelLocator(containerExtension);
     }
 
     public MauiAppBuilder MauiBuilder { get; }
+
+    private void ConfigureViewModelLocator(IContainerProvider container)
+    {
+        ViewModelLocationProvider2.SetDefaultViewToViewModelTypeResolver(view =>
+        {
+            if (view is not BindableObject bindable)
+                return null;
+
+            return bindable.GetValue(ViewModelLocator.ViewModelProperty) as Type;
+        });
+
+        ViewModelLocationProvider2.SetDefaultViewModelFactory((view, type) =>
+        {
+            var overrides = new List<(Type Type, object Instance)>();
+            if (container.IsRegistered<IResolverOverridesHelper>())
+            {
+                var resolver = container.Resolve<IResolverOverridesHelper>();
+                var resolverOverrides = resolver.GetOverrides();
+                if (resolverOverrides.Any())
+                    overrides.AddRange(resolverOverrides);
+            }
+
+            if (!overrides.Any(x => x.Type == typeof(INavigationService)))
+            {
+                var navService = CreateNavigationService(container, view);
+                overrides.Add((typeof(INavigationService), navService));
+            }
+
+            return container.Resolve(type, overrides.ToArray());
+        });
+    }
 
     public PrismAppBuilder RegisterTypes(Action<IContainerRegistry> registerTypes)
     {
@@ -59,17 +95,37 @@ public abstract class PrismAppBuilder
 
     internal void OnInitialized()
     {
-        if(_container.IsRegistered<IModuleCatalog>() && _container.Resolve<IModuleCatalog>().Modules.Any())
+        _initializations.ForEach(action => action(_container));
+
+        if (_container.IsRegistered<IModuleCatalog>() && _container.Resolve<IModuleCatalog>().Modules.Any())
         {
             var manager = _container.Resolve<IModuleManager>();
             manager.Run();
         }
 
-        _initializations.ForEach(action => action(_container));
-
         var app = _container.Resolve<IApplication>();
-        if (app is IPrismApplication prismApp)
+        if (app is ILegacyPrismApplication prismApp)
             prismApp.OnInitialized();
+
+        if (_onAppStarted is not null)
+            _onAppStarted(_container.Resolve<INavigationService>());
+    }
+
+    public MauiAppBuilder OnAppStart(Action<INavigationService> onAppStarted)
+    {
+        _onAppStarted = onAppStarted;
+        return MauiBuilder;
+    }
+
+    /// <summary>
+    /// Configures the <see cref="ViewModelLocator"/> used by Prism.
+    /// </summary>
+    public PrismAppBuilder ConfigureDefaultModelFactory(Func<IContainerProvider, object, Type, object> viewModelFactory)
+    {
+        ViewModelLocationProvider2.SetDefaultViewModelFactory((view, type) =>
+            viewModelFactory(_container, view, type));
+
+        return this;
     }
 
     public MauiApp Build()
@@ -93,5 +149,19 @@ public abstract class PrismAppBuilder
         //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
         containerRegistry.RegisterSingleton<IPageBehaviorFactory, PageBehaviorFactory>();
         containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
+    }
+
+    private INavigationService CreateNavigationService(IContainerProvider container, object view)
+    {
+        if (view is Page page)
+        {
+            return Navigation.Xaml.Navigation.GetNavigationService(page);
+        }
+        else if (view is VisualElement visualElement && visualElement.TryGetParentPage(out var parent))
+        {
+            return Navigation.Xaml.Navigation.GetNavigationService(parent);
+        }
+
+        return container.Resolve<INavigationService>();
     }
 }
