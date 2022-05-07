@@ -26,7 +26,7 @@ public static class MauiProgram
             })
             .OnAppStart(async navigationService =>
             {
-                var result = await navigationService.NavigateAsync("MainPage/NavigationPage/ViewB");
+                var result = await navigationService.NavigateAsync("MainPage/NavigationPage/ViewA/ViewB/ViewC/ViewD");
                 if (!result.Success)
                 {
                     System.Diagnostics.Debugger.Break();

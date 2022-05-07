@@ -20,6 +20,7 @@ namespace MauiModule.ViewModels
             Title = Regex.Replace(GetType().Name, "ViewModel", string.Empty);
             Id = Guid.NewGuid().ToString();
             NavigateCommand = new DelegateCommand<string>(OnNavigateCommandExecuted);
+            ShowPageDialog = new DelegateCommand(OnShowPageDialog);
             Messages = new ObservableCollection<string>();
         }
 
@@ -31,10 +32,19 @@ namespace MauiModule.ViewModels
 
         public DelegateCommand<string> NavigateCommand { get; }
 
+        public DelegateCommand ShowPageDialog { get; }
+
         private void OnNavigateCommandExecuted(string uri)
         {
+            Messages.Add($"OnNavigateCommandExecuted: {uri}");
             _navigationService.NavigateAsync(uri)
                 .OnNavigationError(ex => Console.WriteLine(ex));
+        }
+
+        private void OnShowPageDialog()
+        {
+            Messages.Add("OnShowPageDialog");
+            _pageDialogs.DisplayAlertAsync("Message", $"Hello from {Title}. This is a Page Dialog Service Alert!", "Ok");
         }
 
         public void Initialize(INavigationParameters parameters)
