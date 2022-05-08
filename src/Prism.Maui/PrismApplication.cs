@@ -19,6 +19,7 @@ public abstract class PrismApplication : Application, ILegacyPrismApplication
     protected PrismApplication()
     {
         _containerExtension = ContainerLocator.Current;
+        RegisterTypes(_containerExtension);
         NavigationService = Container.Resolve<INavigationService>((typeof(IApplication), this));
     }
 
@@ -26,6 +27,8 @@ public abstract class PrismApplication : Application, ILegacyPrismApplication
 
     // Provided to better support legacy apps updating from Prism.Forms
     protected virtual void OnInitialized() { }
+
+    protected virtual void RegisterTypes(IContainerRegistry containerRegistry) { }
 
     protected sealed override Window CreateWindow(IActivationState activationState) =>
         this.GetDefaultPrismWindow();
