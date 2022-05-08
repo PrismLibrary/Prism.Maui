@@ -1,9 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui;
-using Microsoft.Maui.Hosting;
-using Prism.Ioc;
+﻿using Prism.Ioc;
 using Prism.Modularity;
-using Prism.Mvvm;
+using Prism.Navigation;
+using Microsoft.Extensions.Logging;
 
 namespace Prism;
 
@@ -42,5 +40,26 @@ public static class PrismAppBuilderExtensions
             var moduleCatalog = container.Resolve<IModuleCatalog>();
             configureCatalog(moduleCatalog);
         });
+    }
+
+    public static MauiAppBuilder OnAppStart(this PrismAppBuilder builder, Action<INavigationService> onAppStarted) =>
+        builder.OnAppStart((_, n) => onAppStarted(n));
+
+    public static MauiAppBuilder OnAppStart(this PrismAppBuilder builder, Func<IContainerProvider, INavigationService, Task> onAppStarted) =>
+        builder.OnAppStart(async (c, n) => await onAppStarted(c, n));
+
+    public static MauiAppBuilder OnAppStart(this PrismAppBuilder builder, Func<INavigationService, Task> onAppStarted) =>
+        builder.OnAppStart(async (_, n) => await onAppStarted(n));
+
+    public static PrismAppBuilder ConfigureServices(this PrismAppBuilder builder, Action<IServiceCollection> configureServices)
+    {
+        configureServices(builder.MauiBuilder.Services);
+        return builder;
+    }
+
+    public static PrismAppBuilder ConfigureLogging(this PrismAppBuilder builder, Action<ILoggingBuilder> configureLogging)
+    {
+        configureLogging(builder.MauiBuilder.Logging);
+        return builder;
     }
 }
