@@ -25,7 +25,7 @@ public abstract class PrismAppBuilder
     private List<Action<IContainerRegistry>> _registrations { get; }
     private List<Action<IContainerProvider>> _initializations { get; }
     private IContainerProvider _container { get; }
-    private Action<INavigationService> _onAppStarted;
+    private Action<IContainerProvider, INavigationService> _onAppStarted;
 
     protected PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
     {
@@ -108,10 +108,10 @@ public abstract class PrismAppBuilder
             prismApp.OnInitialized();
 
         if (_onAppStarted is not null)
-            _onAppStarted(_container.Resolve<INavigationService>());
+            _onAppStarted(_container, _container.Resolve<INavigationService>());
     }
 
-    public MauiAppBuilder OnAppStart(Action<INavigationService> onAppStarted)
+    public MauiAppBuilder OnAppStart(Action<IContainerProvider, INavigationService> onAppStarted)
     {
         _onAppStarted = onAppStarted;
         return MauiBuilder;
