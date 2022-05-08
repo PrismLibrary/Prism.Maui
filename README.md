@@ -1,26 +1,86 @@
 # Prism.Maui
 
+Prism for .NET MAUI is more than simply a port of Prism for Xamarin.Forms. Many of the features remain largely untouched, however the codebase has been written specifically for MAUI. For existing Prism platforms, PrismApplication is responsible for a lot of service registration. Maui presents a very different paradigm to the app startup process as it uses the AppHostBuilder pattern that you may be familiar with from AspNetCore and other .NET Core applications. Due to the fact that services are registered as part of the MauiAppBuilder bootstrapping, the application bootstrapping that you would typically find as part of the PrismApplication is now instead part of PrismAppBuilder.
+
+As part of this rewrite, some attention to making it easier for legacy Xamarin.Forms apps to be ported to MAUI has been given. In general however, this has been written with specific attention to the updated application initialization patterns that we see with .NET MAUI.
+
+## Support
+
+Please help support Prism and Prism.Maui by becoming a GitHub Sponsor. The work on Prism.Maui is NOT funded by any entity and is done entirely in my spare time. Your financial contributions help support my efforts to provide the best possible experience for the community.
+
+## Using Prism.Maui
+
+To help follow MAUI's App Builder pattern we have introduced the `UsePrism<TApp>` extension on the `MauiAppBuilder`. This will create a `PrismAppBuilder` which gives you specific access to various methods you may want for initializing your application.
+
 ```cs
 // OOB Maui Application
 MauiApp.CreateBuilder()
     .UseMauiApp<App>();
 
 // Prism.Maui
-PrismApp.CreateBuilder()
-    .RegisterServices(containerRegistry => {
-        containerRegistry.RegisterForNavigation<MainPage>();
-    })
-    .ConfigureModuleCatalog(catalog => {
-        catalog.AddModule<AuthModule>();
-    })
+MauiApp.CreateBuilder()
     .UsePrismApp<App>();
 ```
 
-## Service Registration
+Some of the methods available on the `PrismAppBuilder` are going to seem a bit familiar for developers coming from Prism for Xamarin.Forms such as:
 
-For existing Prism platforms, PrismApplication is responsible for a lot of service registration. Maui presents a very different paradigm to the app startup process as it uses the AppHostBuilder pattern that you may be familiar with from AspNetCore and other .NET Core applications. Due to the fact that services are registered as part of the MauiAppBuilder bootstrapping, the application bootstrapping that you would typically find as part of the PrismApplication is now instead part of PrismAppBuilder. This App Builder provides the typical PrismApplication bootstrapping, while returning the MauiAppBuilder when you call UsePrismApp to allow you to continue to configure your app like any other Maui Application.
+```cs
+MauiApp.CreateBuilder()
+    .UsePrismApp<App>()
+    .RegisterServices(container => {
+        container.Register<ISomeService, SomeImplementation>();
+        container.RegisterForNavigation<ViewA, ViewAViewModel>();
+    }
+    .ConfigureModuleCatalog(catalog => {
+        catalog.AddModule<ModuleA>();
+    });
+    .OnInitialized(() => {
+        // Do some initializations here
+    });
+```
 
-For those items such as Pages registered for Navigation which need to be registered with the Prism Container Abstraction, you can register them with the RegisterServices extension off of the PrismAppBuilder. Similarly you can call ConfigureModuleCatalog to register modules or provide delegate to execute as part of the container initialization. Note that these will run prior to the Maui services being registered or the finial container being ready to use.
+You will find that this includes useful extensions that consider that you are wiring up these initializations as part of the App Builder. A common case would be where you may have used the container in PrismApplication in the past, you now have an overload that provides the use of the Container.
+
+```cs
+MauiApp.CreateBuilder()
+    .UsePrismApp<App>()
+    .OnInitialized(container => {
+        var foo = container.Resolve<IFoo>();
+        // Do some initializations here
+    });
+```
+
+The `PrismAppBuilder` additionally provides some new things to make your life easier.
+
+```cs
+MauiApp.CreateBuilder()
+    .UsePrismApp<App>()
+    .OnAppStart(async navigationService =>
+    {
+        var result = await navigationService.NavigateAsync("MainPage/NavigationPage/ViewA");
+        if (!result.Success)
+        {
+            System.Diagnostics.Debugger.Break();
+        }
+    });
+```
+
+### Microsoft Extensions Support
+
+To help make it even easier we have added some special extensions to the `PrismAppBuilder` that will make it easier to use Microsoft Extensions. This includes the `ConfigureLogging` method to make it easier to setup your logging while still using the `PrismAppBuilder`. For those who prefer to use `IServiceCollection` to manage their registrations, you can additionally use the `ConfigureServices` extension and bypass the normal Prism `RegisterServices` method.
+
+```cs
+MauiApp.CreateBuilder()
+    .UsePrismApp<App>()
+    .ConfigureServices(services => {
+        services.AddSingleton<IFoo, Foo>();
+        services.RegisterForNavigation<ViewA, ViewAViewModel>();
+    });
+```
+
+## Upgrading from Prism.Forms
+
+PrismApplication is largely obsolete for Prism.Maui. The PrismAppBuilder does not have an explicit requirement on it. To make it easier on those who are upgrading, we do have legacy support methods to make updating your existing apps a little easier. This includes a `RegisterTypes` & `OnInitialized` method which will get called during the app initialization. It is recommended however that you migrate this code to your App Builder.
 
 ## NOTE
 
