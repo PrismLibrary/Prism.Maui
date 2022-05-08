@@ -1,4 +1,4 @@
-using MauiModule;
+﻿using MauiModule;
 using Prism;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -21,8 +21,6 @@ public static class MauiProgram
             {
                 containerRegistry.RegisterForNavigation<MainPage>();
                 containerRegistry.RegisterForNavigation<SamplePage>();
-                containerRegistry.RegisterForNavigation<NavigationPage>();
-                containerRegistry.RegisterForNavigation<TabbedPage>();
             })
             .OnAppStart(async navigationService =>
             {
