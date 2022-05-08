@@ -1,4 +1,6 @@
-﻿namespace Prism.Ioc;
+﻿using Prism.Navigation;
+
+namespace Prism.Ioc;
 
 public static class MicrosoftDependencyInjectionExtensions
 {
@@ -16,5 +18,29 @@ public static class MicrosoftDependencyInjectionExtensions
             throw new InvalidOperationException("The instance of IContainerExtension does not implement IServiceCollectionAware");
 
         return sca.CreateServiceProvider();
+    }
+
+    public static IServiceCollection RegisterForNavigation<TView>(this IServiceCollection services, string name = null)
+            where TView : Page =>
+            services.RegisterForNavigation(typeof(TView), null, name);
+
+    public static IServiceCollection RegisterForNavigation<TView, TViewModel>(this IServiceCollection services, string name = null)
+        where TView : Page =>
+        services.RegisterForNavigation(typeof(TView), typeof(TViewModel), name);
+
+    public static IServiceCollection RegisterForNavigation(this IServiceCollection services, Type view, Type viewModel, string name = null)
+    {
+        if (view is null)
+            throw new ArgumentNullException(nameof(view));
+
+        if (string.IsNullOrEmpty(name))
+            name = view.Name;
+
+        NavigationRegistry.Register(view, viewModel, name);
+        services.AddTransient(view);
+
+        if (viewModel != null)
+            services.AddTransient(viewModel);
+        return services;
     }
 }

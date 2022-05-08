@@ -1,6 +1,7 @@
 ﻿using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Navigation;
+using Microsoft.Extensions.Logging;
 
 namespace Prism;
 
@@ -49,4 +50,16 @@ public static class PrismAppBuilderExtensions
 
     public static MauiAppBuilder OnAppStart(this PrismAppBuilder builder, Func<INavigationService, Task> onAppStarted) =>
         builder.OnAppStart(async (_, n) => await onAppStarted(n));
+
+    public static PrismAppBuilder ConfigureServices(this PrismAppBuilder builder, Action<IServiceCollection> configureServices)
+    {
+        configureServices(builder.MauiBuilder.Services);
+        return builder;
+    }
+
+    public static PrismAppBuilder ConfigureLogging(this PrismAppBuilder builder, Action<ILoggingBuilder> configureLogging)
+    {
+        configureLogging(builder.MauiBuilder.Logging);
+        return builder;
+    }
 }
