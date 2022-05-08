@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="build\*.targets" Pack="True" PackagePath="build" />
+    <None Include="build\*.targets" Pack="True" PackagePath="buildTransitive" />
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
