@@ -125,7 +125,7 @@ public abstract class PrismAppBuilder
     /// <summary>
     /// Configures the <see cref="ViewModelLocator"/> used by Prism.
     /// </summary>
-    public PrismAppBuilder ConfigureDefaultModelFactory(Func<IContainerProvider, object, Type, object> viewModelFactory)
+    public PrismAppBuilder ConfigureDefaultViewModelFactory(Func<IContainerProvider, object, Type, object> viewModelFactory)
     {
         ViewModelLocationProvider2.SetDefaultViewModelFactory((view, type) =>
             viewModelFactory(_container, view, type));
