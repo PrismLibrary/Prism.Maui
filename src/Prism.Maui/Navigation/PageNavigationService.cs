@@ -22,7 +22,7 @@ namespace Prism.Navigation
         private readonly IContainerProvider _container;
         protected readonly IApplication _application;
         protected readonly IPageBehaviorFactory _pageBehaviorFactory;
-        protected IWindow Window;
+        protected Window Window;
 
         protected Page _page;
         Page IPageAware.Page
@@ -120,7 +120,7 @@ namespace Prism.Navigation
                 }
 
                 bool useModalForDoPop = UseModalGoBack(page, useModalNavigation);
-                Page previousPage = PageUtilities.GetOnNavigatedToTarget(page, Window?.Content, useModalForDoPop);
+                Page previousPage = PageUtilities.GetOnNavigatedToTarget(page, Window?.Page, useModalForDoPop);
 
                 var poppedPage = await DoPop(page.Navigation, useModalForDoPop, animated);
                 if (poppedPage != null)
@@ -207,7 +207,7 @@ namespace Prism.Navigation
         {
             try
             {
-                if (parameters == null)
+                if (parameters is null)
                     parameters = new NavigationParameters();
 
                 parameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);
@@ -346,7 +346,7 @@ namespace Prism.Navigation
                 return;
             }
 
-            if (currentPage == null)
+            if (currentPage is null)
             {
                 await ProcessNavigationForRootPage(nextSegment, segments, parameters, useModalNavigation, animated);
                 return;
@@ -562,7 +562,7 @@ namespace Prism.Navigation
             bool isPresented = GetFlyoutPageIsPresented(currentPage);
 
             var detail = currentPage.Detail;
-            if (detail == null)
+            if (detail is null)
             {
                 var newDetail = CreatePageFromSegment(nextSegment);
                 await ProcessNavigation(newDetail, segments, parameters, useModalNavigation, animated);
@@ -776,7 +776,7 @@ namespace Prism.Navigation
         {
             string segmentName = UriParsingHelper.GetSegmentName(segment);
             var page = CreatePage(segmentName);
-            if (page == null)
+            if (page is null)
             {
                 var innerException = new NullReferenceException(string.Format("{0} could not be created. Please make sure you have registered {0} for navigation.", segmentName));
                 throw new NavigationException(NavigationException.NoPageIsRegistered, _page, innerException);
@@ -973,14 +973,14 @@ namespace Prism.Navigation
 
         protected virtual Task DoPush(Page currentPage, Page page, bool? useModalNavigation, bool animated, bool insertBeforeLast = false, int navigationOffset = 0)
         {
-            if (page == null)
+            if (page is null)
                 throw new ArgumentNullException(nameof(page));
 
             // Prevent Page from using Parent's ViewModel
             if (page.BindingContext is null)
                 page.BindingContext = new object();
 
-            if (currentPage == null)
+            if (currentPage is null)
             {
                 if (Window is null)
                 {
@@ -990,8 +990,10 @@ namespace Prism.Navigation
                     };
                     ((List<Window>)_application.Windows).Add(Window as PrismWindow);
                 }
-                else if (!Window.SetPage(page))
-                    throw new Exception("Unable to set the Page on the IWindow. No Setter or backing field could be found for either the Page or Content property.");
+                else
+                {
+                    Window.Page = page;
+                }
 
                 return Task.FromResult<object>(null);
             }
@@ -1099,7 +1101,7 @@ namespace Prism.Navigation
         {
             try
             {
-                return Window.Content as Page;
+                return Window?.Page;
             }
 #if DEBUG
             catch (Exception ex)

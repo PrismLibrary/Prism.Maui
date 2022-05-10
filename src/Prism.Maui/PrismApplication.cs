@@ -1,5 +1,4 @@
-﻿using Prism.Extensions;
-using Prism.Ioc;
+﻿using Prism.Ioc;
 using Prism.Navigation;
 using Application = Microsoft.Maui.Controls.Application;
 
@@ -29,7 +28,4 @@ public abstract class PrismApplication : Application, ILegacyPrismApplication
     protected virtual void OnInitialized() { }
 
     protected virtual void RegisterTypes(IContainerRegistry containerRegistry) { }
-
-    protected sealed override Window CreateWindow(IActivationState activationState) =>
-        this.GetDefaultPrismWindow();
 }
