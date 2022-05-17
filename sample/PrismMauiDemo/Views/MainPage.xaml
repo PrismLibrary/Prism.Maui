@@ -23,6 +23,9 @@
         <Button Text="SamplePage"
                 Command="{Binding NavigateCommand}"
                 CommandParameter="NavigationPage/SamplePage" />
+        <Button Text="Root Page"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="/RootPage" />
       </StackLayout>
     </ContentPage>
   </FlyoutPage.Flyout>

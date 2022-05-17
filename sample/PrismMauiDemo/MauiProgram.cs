@@ -20,6 +20,7 @@ public static class MauiProgram
             .RegisterTypes(containerRegistry =>
             {
                 containerRegistry.RegisterForNavigation<MainPage>();
+                containerRegistry.RegisterForNavigation<RootPage>();
                 containerRegistry.RegisterForNavigation<SamplePage>();
             })
             .OnAppStart(async navigationService =>
