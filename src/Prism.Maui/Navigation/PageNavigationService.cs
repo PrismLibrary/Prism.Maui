@@ -982,6 +982,12 @@ namespace Prism.Navigation
 
             if (currentPage is null)
             {
+                var pageWindow = _page?.GetParentWindow();
+                if (Window is null && pageWindow is not null)
+                    Window = pageWindow;
+                else if (_application.Windows.OfType<PrismWindow>().Any(x => x.Name == PrismWindow.DefaultWindowName))
+                    Window = _application.Windows.OfType<PrismWindow>().First(x => x.Name == PrismWindow.DefaultWindowName);
+
                 if (Window is null)
                 {
                     Window = new PrismWindow
@@ -992,7 +998,17 @@ namespace Prism.Navigation
                 }
                 else
                 {
-                    Window.Page = page;
+                    // BUG: https://github.com/dotnet/maui/issues/7275
+                    //Window.Page = page;
+
+                    // HACK: This is the only way CURRENTLY to ensure that the UI resets for Absolute Navigation
+                    var newWindow = new PrismWindow
+                    {
+                        Page = page
+                    };
+                    _application.OpenWindow(newWindow);
+                    _application.CloseWindow(Window);
+                    Window = null;
                 }
 
                 return Task.FromResult<object>(null);
