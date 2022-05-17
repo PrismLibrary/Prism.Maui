@@ -982,17 +982,36 @@ namespace Prism.Navigation
 
             if (currentPage is null)
             {
+                var pageWindow = _page?.GetParentWindow();
+                if (Window is null && pageWindow is not null)
+                    Window = pageWindow;
+                else if (_application.Windows.OfType<PrismWindow>().Any(x => x.Name == PrismWindow.DefaultWindowName))
+                    Window = _application.Windows.OfType<PrismWindow>().First(x => x.Name == PrismWindow.DefaultWindowName);
+
                 if (Window is null)
                 {
                     Window = new PrismWindow
                     {
                         Page = page
-                    };
+                    }; ;
                     ((List<Window>)_application.Windows).Add(Window as PrismWindow);
                 }
                 else
                 {
-                    Window.Page = page;
+                    page.Dispatcher.Dispatch(() =>
+                    {
+                        //Window.Page = null;
+                        Window.Page = page;
+                    });
+
+                    // NOTE: This works...
+                    //var newWindow = new PrismWindow
+                    //{
+                    //    Page = page
+                    //};
+                    //_application.OpenWindow(newWindow);
+                    //_application.CloseWindow(Window);
+                    //Window = null;
                 }
 
                 return Task.FromResult<object>(null);
