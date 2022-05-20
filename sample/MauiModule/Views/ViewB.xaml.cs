@@ -1,15 +1,9 @@
-using System;
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
+namespace MauiModule.Views;
 
-namespace MauiModule.Views
+public partial class ViewB : ContentPage
 {
-    public partial class ViewB : ContentPage
+    public ViewB()
     {
-        public ViewB()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

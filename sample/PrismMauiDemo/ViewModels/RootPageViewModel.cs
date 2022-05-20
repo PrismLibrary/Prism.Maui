@@ -1,7 +1,4 @@
-﻿using Prism.Commands;
-using Prism.Navigation;
-
-namespace PrismMauiDemo.ViewModels;
+﻿namespace PrismMauiDemo.ViewModels;
 
 public class RootPageViewModel
 {

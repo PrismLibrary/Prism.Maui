@@ -1,9 +1,5 @@
 ﻿using MauiModule;
 using MauiModule.ViewModels;
-using Prism;
-using Prism.Ioc;
-using Prism.Modularity;
-using Prism.Navigation;
 using PrismMauiDemo.Views;
 
 namespace PrismMauiDemo;

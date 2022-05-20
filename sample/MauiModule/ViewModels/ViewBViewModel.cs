@@ -1,10 +1,9 @@
-﻿namespace MauiModule.ViewModels
+﻿namespace MauiModule.ViewModels;
+
+public class ViewBViewModel : ViewModelBase
 {
-    public class ViewBViewModel : ViewModelBase
+    public ViewBViewModel(BaseServices baseServices) 
+        : base(baseServices)
     {
-        public ViewBViewModel(BaseServices baseServices) 
-            : base(baseServices)
-        {
-        }
     }
 }
