@@ -88,6 +88,15 @@ namespace Prism.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Multiple Views have been registered for the navigation key &apos;{0}&apos;: {1}.
+        /// </summary>
+        internal static string MultipleViewsRegisteredForNavigationKey {
+            get {
+                return ResourceManager.GetString("MultipleViewsRegisteredForNavigationKey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to NavigationMode is not available.
         /// </summary>
         internal static string NavigationModeNotAvailable {
