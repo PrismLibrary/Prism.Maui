@@ -38,7 +38,7 @@ As this is special preview build there are no docs, be sure to check out the sou
 
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" 
-                      Version="3.5.103"
+                      Version="3.5.104"
                       PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub"
                       Version="1.1.1"
