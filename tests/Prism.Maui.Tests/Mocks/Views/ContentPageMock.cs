@@ -24,7 +24,7 @@ namespace Prism.Maui.Tests.Mocks.Views
 
         public ContentPageMock(PageNavigationEventRecorder recorder)
         {
-            ViewModelLocator.SetAutowireViewModel(this, true);
+            //ViewModelLocator.SetAutowireViewModel(this, true);
 
             PageNavigationEventRecorder = recorder;
             if (recorder != null)

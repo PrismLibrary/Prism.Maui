@@ -16,17 +16,12 @@ namespace Prism.Maui.Tests.Mocks
 
         public IContainerRegistry Register(string key, Type type)
         {
-            if (!_registeredPages.ContainsKey(key))
-            {
-                _registeredPages.Add(key, type);
-                NavigationRegistry.Register(type, null, key);
-            }
-            return this;
+            throw new NotImplementedException();
         }
 
         public object Resolve(Type type)
         {
-            throw new NotImplementedException();
+            return Activator.CreateInstance(type);
         }
 
         public object Resolve(Type type, string name)
@@ -39,7 +34,7 @@ namespace Prism.Maui.Tests.Mocks
 
         public IContainerRegistry Register(Type from, Type to)
         {
-            throw new NotImplementedException();
+            return this;
         }
 
         public IContainerRegistry Register(Type from, Type to, string name)

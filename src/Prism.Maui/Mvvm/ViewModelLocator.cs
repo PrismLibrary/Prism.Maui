@@ -73,6 +73,9 @@ public static class ViewModelLocator
         }
 
         ViewModelLocationProvider2.AutoWireViewModelChanged(view, Bind);
+
+        if (view is BindableObject bindable && bindable.BindingContext is null)
+            bindable.BindingContext = new object();
     }
 
     /// <summary>
