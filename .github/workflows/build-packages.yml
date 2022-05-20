@@ -61,7 +61,7 @@ jobs:
             apiKey: ${{ secrets.IN_HOUSE_API_KEY }}
 
   deploy-sponsors:
-    name: Deploy Internal
+    name: Deploy Sponsor Connect
     runs-on: windows-latest
     needs: build
     env:
