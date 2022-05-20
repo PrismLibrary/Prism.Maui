@@ -1,8 +1,5 @@
-﻿using Microsoft.Maui.Controls;
+﻿namespace Prism.Behaviors;
 
-namespace Prism.Behaviors
+public class TabbedPageActiveAwareBehavior : MultiPageActiveAwareBehavior<Page>
 {
-    public class TabbedPageActiveAwareBehavior : MultiPageActiveAwareBehavior<Page>
-    {
-    }
 }

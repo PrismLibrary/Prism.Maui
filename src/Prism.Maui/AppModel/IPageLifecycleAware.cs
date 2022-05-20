@@ -1,8 +1,7 @@
-﻿namespace Prism.AppModel
+﻿namespace Prism.AppModel;
+
+public interface IPageLifecycleAware
 {
-    public interface IPageLifecycleAware
-    {
-        void OnAppearing();
-        void OnDisappearing();
-    }
+    void OnAppearing();
+    void OnDisappearing();
 }

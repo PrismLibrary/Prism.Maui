@@ -1,33 +1,31 @@
-﻿using Microsoft.Maui.Controls;
-using Prism.Navigation;
+﻿using Prism.Navigation;
 
-namespace Prism.Ioc
+namespace Prism.Ioc;
+
+public static class NavigationRegistrationExtensions
 {
-    public static class NavigationRegistrationExtensions
+    public static IContainerRegistry RegisterForNavigation<TView>(this IContainerRegistry container, string name = null)
+        where TView : Page =>
+        container.RegisterForNavigation(typeof(TView), null, name);
+
+    public static IContainerRegistry RegisterForNavigation<TView, TViewModel>(this IContainerRegistry container, string name = null)
+        where TView : Page =>
+        container.RegisterForNavigation(typeof(TView), typeof(TViewModel), name);
+
+    public static IContainerRegistry RegisterForNavigation(this IContainerRegistry container, Type view, Type viewModel, string name = null)
     {
-        public static IContainerRegistry RegisterForNavigation<TView>(this IContainerRegistry container, string name = null)
-            where TView : Page =>
-            container.RegisterForNavigation(typeof(TView), null, name);
+        if (view is null)
+            throw new ArgumentNullException(nameof(view));
 
-        public static IContainerRegistry RegisterForNavigation<TView, TViewModel>(this IContainerRegistry container, string name = null)
-            where TView : Page =>
-            container.RegisterForNavigation(typeof(TView), typeof(TViewModel), name);
+        if (string.IsNullOrEmpty(name))
+            name = view.Name;
 
-        public static IContainerRegistry RegisterForNavigation(this IContainerRegistry container, Type view, Type viewModel, string name = null)
-        {
-            if (view is null)
-                throw new ArgumentNullException(nameof(view));
+        NavigationRegistry.Register(view, viewModel, name);
+        container.Register(view);
 
-            if (string.IsNullOrEmpty(name))
-                name = view.Name;
+        if (viewModel != null)
+            container.Register(viewModel);
 
-            NavigationRegistry.Register(view, viewModel, name);
-            container.Register(view);
-
-            if (viewModel != null)
-                container.Register(viewModel);
-
-            return container;
-        }
+        return container;
     }
 }

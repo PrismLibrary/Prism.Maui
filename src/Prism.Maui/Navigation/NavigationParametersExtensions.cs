@@ -1,21 +1,20 @@
 ﻿using Prism.Properties;
 
-namespace Prism.Navigation
+namespace Prism.Navigation;
+
+public static class NavigationParametersExtensions
 {
-    public static class NavigationParametersExtensions
+    public static NavigationMode GetNavigationMode(this INavigationParameters parameters)
     {
-        public static NavigationMode GetNavigationMode(this INavigationParameters parameters)
-        {
-            var internalParams = (INavigationParametersInternal)parameters;
-            if (internalParams.ContainsKey(KnownInternalParameters.NavigationMode))
-                return internalParams.GetValue<NavigationMode>(KnownInternalParameters.NavigationMode);
+        var internalParams = (INavigationParametersInternal)parameters;
+        if (internalParams.ContainsKey(KnownInternalParameters.NavigationMode))
+            return internalParams.GetValue<NavigationMode>(KnownInternalParameters.NavigationMode);
 
-            throw new System.ArgumentNullException(Resources.NavigationModeNotAvailable);
-        }
+        throw new System.ArgumentNullException(Resources.NavigationModeNotAvailable);
+    }
 
-        internal static INavigationParametersInternal GetNavigationParametersInternal(this INavigationParameters parameters)
-        {
-            return (INavigationParametersInternal)parameters;
-        }
+    internal static INavigationParametersInternal GetNavigationParametersInternal(this INavigationParameters parameters)
+    {
+        return (INavigationParametersInternal)parameters;
     }
 }

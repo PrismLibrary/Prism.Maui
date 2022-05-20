@@ -1,26 +1,23 @@
-﻿using Microsoft.Maui.Controls;
+﻿namespace Prism.Extensions;
 
-namespace Prism.Extensions
+internal static class VisualElementExtensions
 {
-    internal static class VisualElementExtensions
+    public static bool TryGetParentPage(this VisualElement element, out Page page)
     {
-        public static bool TryGetParentPage(this VisualElement element, out Page page)
-        {
-            page = GetParentPage(element);
-            return page != null;
-        }
+        page = GetParentPage(element);
+        return page != null;
+    }
 
-        private static Page GetParentPage(Element visualElement)
+    private static Page GetParentPage(Element visualElement)
+    {
+        switch (visualElement.Parent)
         {
-            switch (visualElement.Parent)
-            {
-                case Page page:
-                    return page;
-                case null:
-                    return null;
-                default:
-                    return GetParentPage(visualElement.Parent);
-            }
+            case Page page:
+                return page;
+            case null:
+                return null;
+            default:
+                return GetParentPage(visualElement.Parent);
         }
     }
 }

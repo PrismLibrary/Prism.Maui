@@ -1,8 +1,7 @@
-﻿namespace Prism.Services.Dialogs
+﻿namespace Prism.Services.Dialogs;
+
+public interface IDialogResult
 {
-    public interface IDialogResult
-    {
-        Exception Exception { get; }
-        IDialogParameters Parameters { get; }
-    }
+    Exception Exception { get; }
+    IDialogParameters Parameters { get; }
 }

@@ -1,4 +1,6 @@
-﻿internal interface ILegacyPrismApplication
+﻿namespace Prism;
+
+internal interface ILegacyPrismApplication
 {
     void OnInitialized();
 }

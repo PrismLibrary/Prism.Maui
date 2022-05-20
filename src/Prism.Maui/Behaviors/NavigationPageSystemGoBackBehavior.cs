@@ -1,29 +1,27 @@
-﻿using Microsoft.Maui.Controls;
-using Prism.Common;
+﻿using Prism.Common;
 using Prism.Navigation;
 
-namespace Prism.Behaviors
+namespace Prism.Behaviors;
+
+public class NavigationPageSystemGoBackBehavior : BehaviorBase<NavigationPage>
 {
-    public class NavigationPageSystemGoBackBehavior : BehaviorBase<NavigationPage>
+    protected override void OnAttachedTo(NavigationPage bindable)
     {
-        protected override void OnAttachedTo(NavigationPage bindable)
-        {
-            bindable.Popped += NavigationPage_Popped;
-            base.OnAttachedTo(bindable);
-        }
+        bindable.Popped += NavigationPage_Popped;
+        base.OnAttachedTo(bindable);
+    }
 
-        protected override void OnDetachingFrom(NavigationPage bindable)
-        {
-            bindable.Popped -= NavigationPage_Popped;
-            base.OnDetachingFrom(bindable);
-        }
+    protected override void OnDetachingFrom(NavigationPage bindable)
+    {
+        bindable.Popped -= NavigationPage_Popped;
+        base.OnDetachingFrom(bindable);
+    }
 
-        private void NavigationPage_Popped(object sender, NavigationEventArgs e)
+    private void NavigationPage_Popped(object sender, NavigationEventArgs e)
+    {
+        if (PageNavigationService.NavigationSource == PageNavigationSource.Device)
         {
-            if (PageNavigationService.NavigationSource == PageNavigationSource.Device)
-            {
-                PageUtilities.HandleSystemGoBack(e.Page, AssociatedObject.CurrentPage);
-            }
+            PageUtilities.HandleSystemGoBack(e.Page, AssociatedObject.CurrentPage);
         }
     }
 }
