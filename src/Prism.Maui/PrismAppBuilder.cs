@@ -104,9 +104,9 @@ public abstract class PrismAppBuilder
         }
 
         var app = _container.Resolve<IApplication>();
-        if (NavigationRegistry.GetPageType(nameof(NavigationPage)) is null)
+        if (!NavigationRegistry.IsRegistered(nameof(NavigationPage)))
             ((IContainerRegistry)_container).RegisterForNavigation<NavigationPage>();
-        if (NavigationRegistry.GetPageType(nameof(TabbedPage)) is null)
+        if (!NavigationRegistry.IsRegistered(nameof(TabbedPage)))
             ((IContainerRegistry)_container).RegisterForNavigation<TabbedPage>();
 
         if (app is ILegacyPrismApplication prismApp)

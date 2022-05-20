@@ -67,6 +67,9 @@ public static class NavigationRegistry
         }
     }
 
+    public static bool IsRegistered(string name) =>
+        _registrations.Any(x => x.Name == name);
+
     public static Type GetPageType(string name)
     {
         var registrations = _registrations.Where(x => x.Name == name);
