@@ -27,6 +27,14 @@ public static class NavigationBuilderExtensions
                 o.UseModalNavigation(useModalNavigation.Value);
         });
 
+    public static ICreateTabBuilder AddNavigationSegment<TViewModel>(this ICreateTabBuilder builder)
+        where TViewModel : class, INotifyPropertyChanged =>
+        builder.AddNavigationSegment<TViewModel>(b => { });
+
+    public static ICreateTabBuilder AddNavigationSegment<TViewModel>(this ICreateTabBuilder builder, Action<ISegmentBuilder> configureSegment)
+        where TViewModel : class, INotifyPropertyChanged =>
+        builder.AddNavigationSegment(GetNavigationKey<TViewModel>(), configureSegment);
+
     public static INavigationBuilder AddNavigationSegment<TViewModel>(this INavigationBuilder builder)
         where TViewModel : class, INotifyPropertyChanged =>
         builder.AddNavigationSegment<TViewModel>(b => { });
@@ -44,6 +52,19 @@ public static class NavigationBuilderExtensions
         builder.AddNavigationPage(b => { });
 
     public static INavigationBuilder AddNavigationPage(this INavigationBuilder builder, Action<ISegmentBuilder> configureSegment)
+    {
+        var registrationInfo = NavigationRegistry.Registrations
+            .FirstOrDefault(x => x.View.IsAssignableTo(typeof(NavigationPage)));
+        if (registrationInfo is null)
+            throw new NavigationException(NavigationException.NoPageIsRegistered, nameof(NavigationPage));
+
+        return builder.AddNavigationSegment(registrationInfo.Name, configureSegment);
+    }
+
+    public static ICreateTabBuilder AddNavigationPage(this ICreateTabBuilder builder) =>
+        builder.AddNavigationPage(b => { });
+
+    public static ICreateTabBuilder AddNavigationPage(this ICreateTabBuilder builder, Action<ISegmentBuilder> configureSegment)
     {
         var registrationInfo = NavigationRegistry.Registrations
             .FirstOrDefault(x => x.View.IsAssignableTo(typeof(NavigationPage)));
