@@ -9,7 +9,7 @@ public static class ViewModelLocator
     /// Instructs Prism whether or not to automatically create an instance of a ViewModel using a convention, and assign the associated View's <see cref="BindableObject.BindingContext"/> to that instance.
     /// </summary>
     public static readonly BindableProperty AutowireViewModelProperty =
-        BindableProperty.CreateAttached("AutowireViewModel", typeof(bool?), typeof(ViewModelLocator), null, propertyChanged: OnAutowireViewModelChanged);
+        BindableProperty.CreateAttached("AutowireViewModel", typeof(ViewModelLocatorBehavior), typeof(ViewModelLocator), ViewModelLocatorBehavior.Automatic, propertyChanged: OnAutowireViewModelChanged);
 
     internal static readonly BindableProperty ViewModelProperty =
         BindableProperty.CreateAttached("ViewModelType",
@@ -23,9 +23,9 @@ public static class ViewModelLocator
     /// </summary>
     /// <param name="bindable"></param>
     /// <returns></returns>
-    public static bool? GetAutowireViewModel(BindableObject bindable)
+    public static ViewModelLocatorBehavior GetAutowireViewModel(BindableObject bindable)
     {
-        return (bool?)bindable.GetValue(AutowireViewModelProperty);
+        return (ViewModelLocatorBehavior)bindable.GetValue(AutowireViewModelProperty);
     }
 
     /// <summary>
@@ -33,7 +33,7 @@ public static class ViewModelLocator
     /// </summary>
     /// <param name="bindable"></param>
     /// <param name="value"></param>
-    public static void SetAutowireViewModel(BindableObject bindable, bool? value)
+    public static void SetAutowireViewModel(BindableObject bindable, ViewModelLocatorBehavior value)
     {
         bindable.SetValue(AutowireViewModelProperty, value);
     }
@@ -53,6 +53,26 @@ public static class ViewModelLocator
             return;
         else if(newValue is Type)
             bindable.SetValue(AutowireViewModelProperty, true);
+    }
+
+    internal static void Autowire(object view)
+    {
+        if (view is Element element &&
+            ((ViewModelLocatorBehavior)element.GetValue(AutowireViewModelProperty) == ViewModelLocatorBehavior.Disabled
+            || (element.BindingContext is not null && element.BindingContext != element.Parent)))
+            return;
+
+        else if(view is TabbedPage tabbed)
+        {
+            foreach (var child in tabbed.Children)
+                Autowire(child);
+        }
+        else if(view is NavigationPage navigationPage && navigationPage.RootPage is not null)
+        {
+            Autowire(navigationPage.RootPage);
+        }
+
+        ViewModelLocationProvider2.AutoWireViewModelChanged(view, Bind);
     }
 
     /// <summary>

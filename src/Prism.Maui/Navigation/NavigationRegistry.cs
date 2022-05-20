@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Data;
+using Prism.Behaviors;
+using Prism.Common;
 using Prism.Ioc;
 using Prism.Mvvm;
 
@@ -36,8 +38,13 @@ public static class NavigationRegistry
 
             var view = container.Resolve(registration.View) as BindableObject;
 
+            view.SetValue(Xaml.Navigation.NavigationScopeProperty, container);
+
             if (view is Page page)
-                page.SetValue(Xaml.Navigation.NavigationScopeProperty, container);
+            {
+                var behaviors = container.Resolve<IPageBehaviorFactory>();
+                ConfigurePage(container, page, behaviors);
+            }
 
             if (view.BindingContext is not null)
                 return view;
@@ -45,8 +52,7 @@ public static class NavigationRegistry
             if (registration.ViewModel is not null)
                 view.SetValue(ViewModelLocator.ViewModelProperty, registration.ViewModel);
 
-            else if ((bool?)view.GetValue(ViewModelLocator.AutowireViewModelProperty) is null)
-                ViewModelLocator.SetAutowireViewModel(view, true);
+            ViewModelLocator.Autowire(view);
 
             return view;
         }
@@ -68,4 +74,32 @@ public static class NavigationRegistry
 
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static void ClearRegistrationCache() => _registrations.Clear();
+
+    private static void ConfigurePage(IContainerProvider container, Page page, IPageBehaviorFactory behaviors)
+    {
+        if(page is TabbedPage tabbed)
+        {
+            foreach(var child in tabbed.Children)
+            {
+                var scope = container.CreateScope();
+                ConfigurePage(scope, child, behaviors);
+            }
+        }
+        else if(page is NavigationPage navPage && navPage.RootPage is not null)
+        {
+            var scope = container.CreateScope();
+            ConfigurePage(scope, navPage.RootPage, behaviors);
+        }
+
+        if (page.GetValue(Xaml.Navigation.NavigationScopeProperty) is null)
+            page.SetValue(Xaml.Navigation.NavigationScopeProperty, container);
+
+        var navService = container.Resolve<INavigationService>();
+        if (navService is IPageAware pa)
+            pa.Page = page;
+
+        page.SetValue(Xaml.Navigation.NavigationServiceProperty, navService);
+
+        behaviors.ApplyPageBehaviors(page);
+    }
 }

@@ -26,6 +26,7 @@ namespace Prism.Ioc
 
             if (viewModel != null)
                 container.Register(viewModel);
+
             return container;
         }
     }

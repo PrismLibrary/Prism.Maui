@@ -41,6 +41,7 @@ public static class MicrosoftDependencyInjectionExtensions
 
         if (viewModel != null)
             services.AddTransient(viewModel);
+
         return services;
     }
 }
