@@ -8,5 +8,8 @@
     <Button Text="Main Page"
             Command="{Binding NavigateCommand}"
             CommandParameter="/MainPage/NavigationPage/ViewA/ViewB/ViewC/ViewD" />
+    <Button Text="Tabbed Page"
+            Command="{Binding NavigateCommand}"
+            CommandParameter="/TabbedPage?createTab=ViewA&amp;createTab=ViewB&amp;createTab=ViewC&amp;createTab=ViewD" />
   </StackLayout>
 </ContentPage>

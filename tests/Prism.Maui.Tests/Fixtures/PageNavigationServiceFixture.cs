@@ -11,13 +11,14 @@ using Prism.Ioc;
 using Prism.Navigation;
 using Xunit;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui;
 
 namespace Prism.Maui.Tests.Navigation
 {
     public class PageNavigationServiceFixture : IDisposable
     {
         PageNavigationContainerMock _container;
-        ApplicationMock _applicationProvider;
+        ApplicationMock _app;
 
         public PageNavigationServiceFixture()
         {
@@ -25,41 +26,43 @@ namespace Prism.Maui.Tests.Navigation
             //Microsoft.Maui.Controls.Compatibility.Forms.Init(activationState);
 
             ContainerLocator.ResetContainer();
+            NavigationRegistry.ClearRegistrationCache();
             _container = new PageNavigationContainerMock();
             ContainerLocator.SetContainerExtension(() => _container);
 
-            _container.Register("PageMock", typeof(PageMock));
+            _container.RegisterForNavigation<PageMock>();
 
-            _container.Register("ContentPage", typeof(ContentPageMock));
-            _container.Register("ContentPage1", typeof(ContentPageMock1));
-            _container.Register(typeof(ContentPageMockViewModel).FullName, typeof(ContentPageMock));
-            _container.Register(typeof(ContentPageMock1ViewModel).FullName, typeof(ContentPageMock1));
+            _container.RegisterForNavigation<ContentPageMock>("ContentPage");
+            _container.RegisterForNavigation<ContentPageMock1>("ContentPage1");
 
-            _container.Register("SecondContentPageMock", typeof(SecondContentPageMock));
+            _container.RegisterForNavigation<ContentPageMock>(typeof(ContentPageMockViewModel).FullName);
+            _container.RegisterForNavigation<ContentPageMock1>(typeof(ContentPageMock1ViewModel).FullName);
 
-            _container.Register("NavigationPage", typeof(NavigationPageMock));
-            _container.Register("NavigationPage-Empty", typeof(NavigationPageEmptyMock));
-            _container.Register("NavigationPage-Empty-Reused", typeof(NavigationPageEmptyMock_Reused));
-            _container.Register("NavigationPageWithStack", typeof(NavigationPageWithStackMock));
-            _container.Register("NavigationPageWithStackNoMatch", typeof(NavigationPageWithStackNoMatchMock));
+            _container.RegisterForNavigation<SecondContentPageMock>("SecondContentPageMock");
 
-            _container.Register("FlyoutPage", typeof(FlyoutPageMock));
-            _container.Register("FlyoutPage-Empty", typeof(FlyoutPageEmptyMock));
+            _container.RegisterForNavigation<NavigationPageMock>("NavigationPage");
+            _container.RegisterForNavigation<NavigationPageEmptyMock>("NavigationPage-Empty");
+            _container.RegisterForNavigation<NavigationPageEmptyMock_Reused>("NavigationPage-Empty-Reused");
+            _container.RegisterForNavigation<NavigationPageWithStackMock>("NavigationPageWithStack");
+            _container.RegisterForNavigation<NavigationPageWithStackNoMatchMock>("NavigationPageWithStackNoMatch");
+
+            _container.RegisterForNavigation<FlyoutPageMock>("FlyoutPage");
+            _container.RegisterForNavigation<FlyoutPageEmptyMock>("FlyoutPage-Empty");
 
 
-            _container.Register("TabbedPage", typeof(TabbedPageMock));
-            _container.Register("TabbedPage-Empty", typeof(TabbedPageEmptyMock));
-            _container.Register("Tab1", typeof(Tab1Mock));
-            _container.Register("Tab2", typeof(Tab2Mock));
-            _container.Register("Tab3", typeof(Tab3Mock));
+            _container.RegisterForNavigation<TabbedPageMock>("TabbedPage");
+            _container.RegisterForNavigation<TabbedPageEmptyMock>("TabbedPage-Empty");
+            _container.RegisterForNavigation<Tab1Mock>("Tab1");
+            _container.RegisterForNavigation<Tab2Mock>("Tab2");
+            _container.RegisterForNavigation<Tab3Mock>("Tab3");
 
-            _applicationProvider = new ApplicationMock();
+            _app = new ApplicationMock();
         }
 
         [Fact]
         public void IPageAware_NullByDefault()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var page = ((IPageAware)navigationService).Page;
             Assert.Null(page);
         }
@@ -69,7 +72,7 @@ namespace Prism.Maui.Tests.Navigation
         {
             Assert.ThrowsAsync<NullReferenceException>(async () =>
             {
-                var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+                var navigationService = new PageNavigationServiceMock(_container, _app);
                 var rootPage = new ContentPage();
                 ((IPageAware)navigationService).Page = rootPage;
 
@@ -82,7 +85,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToContentPage_ByName()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -95,7 +98,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToContentPage_ByRelativeUri()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -119,7 +122,7 @@ namespace Prism.Maui.Tests.Navigation
 
             var navigatedPage = applicationProvider.MainPage as Page;
             Assert.IsType<ContentPageMock>(navigatedPage);
-            Assert.NotEqual(rootPage, _applicationProvider.MainPage);
+            Assert.NotEqual(rootPage, _app.MainPage);
 
             var record = recorder.TakeFirst();
             Assert.Equal(navigatedPage, record.Sender);
@@ -178,7 +181,7 @@ namespace Prism.Maui.Tests.Navigation
 
             var navigatedPage = applicationProvider.MainPage as Page;
             Assert.IsType<ContentPageMock>(navigatedPage);
-            Assert.NotEqual(rootPage, _applicationProvider.MainPage);
+            Assert.NotEqual(rootPage, _app.MainPage);
 
             var record = recorder.TakeFirst();
             Assert.Equal(navigatedPage, record.Sender);
@@ -228,7 +231,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToContentPage_ByName_WithNavigationParameters()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -253,7 +256,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToContentPage_ThenGoBack()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -272,7 +275,7 @@ namespace Prism.Maui.Tests.Navigation
         public async void NavigateAsync_ToContentPage_ThenGoBack()
         {
             var pageMock = new ContentPageMock();
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             ((IPageAware)navigationService).Page = pageMock;
 
             var rootPage = new NavigationPage(pageMock);
@@ -300,7 +303,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToContentPage_ViewModelHasINavigationAware()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -313,7 +316,7 @@ namespace Prism.Maui.Tests.Navigation
             Assert.NotNull(viewModel);
             Assert.True(viewModel.OnNavigatedToCalled);
 
-            var nextPageNavService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var nextPageNavService = new PageNavigationServiceMock(_container, _app);
             ((IPageAware)nextPageNavService).Page = rootPage.Navigation.ModalStack[0];
             await nextPageNavService.NavigateAsync("NavigationPage");
 
@@ -323,7 +326,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToContentPage_PageHasINavigationAware()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -335,7 +338,7 @@ namespace Prism.Maui.Tests.Navigation
             Assert.NotNull(contentPage);
             Assert.True(contentPage.OnNavigatedToCalled);
 
-            var nextPageNavService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var nextPageNavService = new PageNavigationServiceMock(_container, _app);
             ((IPageAware)nextPageNavService).Page = contentPage;
 
             await nextPageNavService.NavigateAsync("NavigationPage");
@@ -347,7 +350,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToContentPage_PageHasIConfirmNavigation_True()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPageMock();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -362,7 +365,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToContentPage_PageHasIConfirmNavigation_False()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPageMock();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -382,7 +385,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToContentPage_ViewModelHasIConfirmNavigation_True()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage() { BindingContext = new ContentPageMockViewModel() };
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -399,7 +402,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToContentPage_ViewModelHasIConfirmNavigation_False()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage() { BindingContext = new ContentPageMockViewModel() };
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -420,7 +423,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void GoBack_ViewModelWithIConfirmNavigationFalse_ResultException()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage() { BindingContext = new ContentPageMockViewModel() };
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -443,7 +446,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void GoBackToRoot_ViewModelWithIConfirmNavigationFalse_ResultException()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage() { BindingContext = new ContentPageMockViewModel() };
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -466,7 +469,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void NavigateAsync_ViewModelWithIConfirmNavigationFalse_ResultException()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage() { BindingContext = new ContentPageMockViewModel() };
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -489,7 +492,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToNavigatonPage_ViewModelHasINavigationAware()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -506,7 +509,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToFlyoutPage_ViewModelHasINavigationAware()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -525,7 +528,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_ToTabbedPage_ByName_ViewModelHasINavigationAware()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -544,7 +547,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromNavigationPage_ToContentPage_ByName()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -559,7 +562,7 @@ namespace Prism.Maui.Tests.Navigation
         public async Task Navigate_FromNavigationPage_WithoutChildPage_ToContentPage()
         {
             var recorder = new PageNavigationEventRecorder();
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider, recorder);
+            var navigationService = new PageNavigationServiceMock(_container, _app, recorder);
             var navigationPage = new NavigationPageEmptyMock(recorder);
 
             ((IPageAware)navigationService).Page = navigationPage;
@@ -609,7 +612,7 @@ namespace Prism.Maui.Tests.Navigation
         public async Task NavigateAsync_From_ChildPageOfNavigationPage()
         {
             var recorder = new PageNavigationEventRecorder(); ;
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider, recorder);
+            var navigationService = new PageNavigationServiceMock(_container, _app, recorder);
             var contentPageMock = new ContentPageMock(recorder);
             var navigationPage = new NavigationPageMock(recorder, contentPageMock);
 
@@ -664,7 +667,7 @@ namespace Prism.Maui.Tests.Navigation
         public async Task NavigateAsync_From_NavigationPage_With_ChildPage_And_DoesNotReplaseRootPage()
         {
             var recorder = new PageNavigationEventRecorder(); ;
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider, recorder);
+            var navigationService = new PageNavigationServiceMock(_container, _app, recorder);
             var contentPageMock = new ContentPageMock(recorder);
             var contentPageMockViewModel = contentPageMock.BindingContext;
             var navigationPage = new NavigationPageMock(recorder, contentPageMock);
@@ -859,7 +862,7 @@ namespace Prism.Maui.Tests.Navigation
         public async Task NavigateAsync_From_NavigationPage_When_NotClearNavigationStack_And_SamePage()
         {
             var recorder = new PageNavigationEventRecorder(); ;
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider, recorder);
+            var navigationService = new PageNavigationServiceMock(_container, _app, recorder);
             var contentPageMock = new ContentPageMock(recorder);
             var navigationPage = new NavigationPageMock(recorder, contentPageMock);
             navigationPage.ClearNavigationStackOnNavigation = false;
@@ -919,7 +922,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async Task DeepNavigate_ToNavigationPage_ToTabbedPage_SelectContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -939,7 +942,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_ContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -952,7 +955,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_NavigationPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -965,7 +968,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_NavigationPage_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -978,7 +981,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_NavigationPage_ToContentPage_ByAbsoluteName()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -986,7 +989,7 @@ namespace Prism.Maui.Tests.Navigation
 
             Assert.Equal(0, rootPage.Navigation.ModalStack.Count);
 
-            var navPage = _applicationProvider.MainPage as Page;
+            var navPage = _app.MainPage as Page;
             Assert.IsType<NavigationPageMock>(navPage);
             Assert.Single(navPage.Navigation.NavigationStack);
         }
@@ -994,7 +997,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_NavigationPage_ToContentPage_ByAbsoluteUri()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1002,7 +1005,7 @@ namespace Prism.Maui.Tests.Navigation
 
             Assert.Equal(0, rootPage.Navigation.ModalStack.Count);
 
-            var navPage = _applicationProvider.MainPage as Page;
+            var navPage = _app.MainPage as Page;
             Assert.IsType<NavigationPageMock>(navPage);
             Assert.Single(navPage.Navigation.NavigationStack);
         }
@@ -1010,7 +1013,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_EmptyNavigationPage_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1024,7 +1027,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_EmptyNavigationPage_ToContentPage_toContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1043,7 +1046,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_To_EmptyNavigationPage_ToContentPage_toContentPage_toContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1058,7 +1061,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_NavigationPageWithNavigationStack_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1071,7 +1074,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_NavigationPageWithNavigationStack_ToContentPage_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1089,7 +1092,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_NavigationPageWithDifferentNavigationStack_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1102,7 +1105,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_TabbedPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1115,7 +1118,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_From_ContentPage_To_FlyoutPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1130,7 +1133,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromFlyoutPage_ToSamePage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new FlyoutPageMock();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1150,7 +1153,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_ToEmptyFlyoutPage_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1168,7 +1171,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_ToEmptyFlyoutPage_ToContentPage_UseModalNavigation()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1186,7 +1189,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_ToEmptyFlyoutPage_ToContentPage_NotUseModalNavigation()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPageMock();
             var navigationPage = new NavigationPage(rootPage);
             ((IPageAware)navigationService).Page = rootPage;
@@ -1207,7 +1210,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_ToEmptyFlyoutPage_ToNavigationPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1260,7 +1263,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_ToFlyoutPage_ToDifferentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1275,7 +1278,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_ToFlyoutPage_ToSamePage_ToTabbedPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1293,7 +1296,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromFlyoutPage_ToTabbedPage_IsPresented()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new FlyoutPageMock();
             ((IPageAware)navigationService).Page = rootPage;
             rootPage.IsPresentedAfterNavigation = true;
@@ -1310,7 +1313,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromFlyoutPage_ToTabbedPage_IsNotPresented()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new FlyoutPageMock();
             ((IPageAware)navigationService).Page = rootPage;
             rootPage.IsPresentedAfterNavigation = false;
@@ -1327,7 +1330,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromFlyoutPage_ToTabbedPage_IsPresented_FromViewModel()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new FlyoutPageEmptyMock();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1345,7 +1348,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromFlyoutPage_ToTabbedPage_IsNotPresented_FromViewModel()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new FlyoutPageEmptyMock();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1363,7 +1366,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_ToFlyoutPage_ToNavigationPage_ToTabbedPage_SelectTab()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1381,7 +1384,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_ToFlyoutPage_ToNavigationPage_ToContentPage_ToTabbedPage_SelectTab()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1400,7 +1403,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void DeepNavigate_FromFlyoutPage_ToExistingNavigationPage_ToExistingTabbedPage_SelectTab()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new FlyoutPageEmptyMock();
             rootPage.Detail = new NavigationPageEmptyMock_Reused();
             await rootPage.Detail.Navigation.PushAsync(new TabbedPageMock());
@@ -1428,7 +1431,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromContentPage_ToTabbedPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1441,7 +1444,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromNavigationPage_ToTabbedPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1454,7 +1457,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromContentPage_ToTabbedPage_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1471,7 +1474,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromNavigationPage_ToTabbedPage_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1485,7 +1488,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromContentPage_ToTabbedPage_SelectedTab()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1500,7 +1503,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromContentPage_ToTabbedPage_SelectedTab_NavigationPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1518,7 +1521,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromContentPage_ToTabbedPage_SelectedTab_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1536,7 +1539,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromNavigationPage_ToTabbedPage_SelectedTab_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1556,7 +1559,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromNavigationPage_ToTabbedPage_SelectedTab_NavigationPage_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1580,7 +1583,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromFlyoutPage_ToNavigationPage_ToTabbedPage_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new FlyoutPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1597,7 +1600,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromFlyoutPage_ToNavigationPage_ToTabbedPage_SelectedTab()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new FlyoutPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1616,7 +1619,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromFlyoutPage_ToNavigationPage_ToTabbedPage_SelectedTab_ToContentPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new FlyoutPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1635,7 +1638,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromContentPage_ToTabbedPage_CreateTabs()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1652,7 +1655,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromContentPage_ToTabbedPage_CreateTabs_SelectTab()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1670,7 +1673,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromContentPage_ToTabbedPage_CreateTabs_WithNavigationPage()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1690,7 +1693,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void Navigate_FromContentPage_ToTabbedPage_CreateTabs_WithNavigationPage_SelectTab()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new ContentPage();
             ((IPageAware)navigationService).Page = rootPage;
 
@@ -1716,7 +1719,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async Task RemoveAndNavigate_OneLevel()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
 
             await rootPage.Navigation.PushAsync(new ContentPageMock() { Title = "Page 1" });
@@ -1738,7 +1741,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async Task RemoveAndNavigate_TwoLevels()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
 
             await rootPage.Navigation.PushAsync(new ContentPageMock() { Title = "Page 1" });
@@ -1760,7 +1763,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async Task RemoveAndNavigate_ThreeLevels()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
 
             await rootPage.Navigation.PushAsync(new ContentPageMock() { Title = "Page 1" });
@@ -1782,7 +1785,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async Task RemoveAndNavigate_FourLevels()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
 
             await rootPage.Navigation.PushAsync(new ContentPageMock() { Title = "Page 1" });
@@ -1808,7 +1811,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async Task RemoveAndGoBack_OneLevel()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
 
             await rootPage.Navigation.PushAsync(new ContentPageMock() { Title = "Page 1" });
@@ -1830,7 +1833,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async Task RemoveAndGoBack_TwoLevels()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
 
             await rootPage.Navigation.PushAsync(new ContentPageMock() { Title = "Page 1" });
@@ -1852,7 +1855,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async Task RemoveAndGoBack_ThreeLevels()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
 
             await rootPage.Navigation.PushAsync(new ContentPageMock() { Title = "Page 1" });
@@ -1874,7 +1877,7 @@ namespace Prism.Maui.Tests.Navigation
         [Fact]
         public async void RemoveAndGoBack_WithNavigationParameters()
         {
-            var navigationService = new PageNavigationServiceMock(_container, _applicationProvider);
+            var navigationService = new PageNavigationServiceMock(_container, _app);
             var rootPage = new NavigationPage();
 
             await rootPage.Navigation.PushAsync(new ContentPageMock() { Title = "Page 1" });

@@ -18,7 +18,7 @@ namespace Prism.Maui.Tests.Mocks.Views
             Flyout = new ContentPageMock(recorder) { Title = "Master" };
             Detail = new ContentPageMock(recorder);
 
-            ViewModelLocator.SetAutowireViewModel(this, true);
+            //ViewModelLocator.SetAutowireViewModel(this, true);
 
             PageNavigationEventRecorder = recorder;
             ((IPageNavigationEventRecordable)BindingContext).PageNavigationEventRecorder = recorder;
@@ -29,7 +29,7 @@ namespace Prism.Maui.Tests.Mocks.Views
             Flyout = masterPage;
             Detail = detailPage;
 
-            ViewModelLocator.SetAutowireViewModel(this, true);
+            //ViewModelLocator.SetAutowireViewModel(this, true);
 
             PageNavigationEventRecorder = recorder;
             ((IPageNavigationEventRecordable)BindingContext).PageNavigationEventRecorder = recorder;
@@ -46,7 +46,7 @@ namespace Prism.Maui.Tests.Mocks.Views
     {
         public FlyoutPageEmptyMock()
         {
-            ViewModelLocator.SetAutowireViewModel(this, true);
+            //ViewModelLocator.SetAutowireViewModel(this, true);
             Flyout = new ContentPageMock { Title = "Master" };
         }
     }

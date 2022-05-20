@@ -22,6 +22,11 @@ namespace MauiModule.ViewModels
             NavigateCommand = new DelegateCommand<string>(OnNavigateCommandExecuted);
             ShowPageDialog = new DelegateCommand(OnShowPageDialog);
             Messages = new ObservableCollection<string>();
+            Messages.CollectionChanged += (sender, args) =>
+            {
+                foreach (string message in args.NewItems)
+                    Console.WriteLine($"{Title} - {message}");
+            };
         }
 
         public string Title { get; }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 
@@ -20,7 +18,7 @@ namespace Prism.Maui.Tests.Mocks
                 _currentWindow.Page = page;
         }
 
-        public Page MainPage => _currentWindow.Page;
+        public Page MainPage => _currentWindow?.Page;
 
         public IReadOnlyList<IWindow> Windows => _windows;
         public IElementHandler Handler { get; set; }
@@ -28,7 +26,10 @@ namespace Prism.Maui.Tests.Mocks
 
         public void CloseWindow(IWindow window)
         {
-            throw new NotImplementedException();
+            if (!_windows.Contains(window))
+                throw new Exception("Application doesn't contain this window");
+
+            _windows.Remove(window);
         }
 
         public IWindow CreateWindow(IActivationState activationState)
@@ -38,7 +39,10 @@ namespace Prism.Maui.Tests.Mocks
 
         public void OpenWindow(IWindow window)
         {
-            throw new NotImplementedException();
+            if (_windows.Contains(window))
+                throw new Exception("Application already has this window");
+
+            _windows.Add(window);
         }
 
         public void ThemeChanged()

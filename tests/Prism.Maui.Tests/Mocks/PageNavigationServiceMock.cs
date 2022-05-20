@@ -13,7 +13,7 @@ namespace Prism.Maui.Tests.Mocks
         PageNavigationEventRecorder _recorder;
 
         public PageNavigationServiceMock(IContainerExtension containerMock, IApplication applicationProviderMock, PageNavigationEventRecorder recorder = null)
-            : base(containerMock, applicationProviderMock, new PageBehaviorFactory())
+            : base(containerMock, applicationProviderMock)
         {
             _containerMock = containerMock;
             _recorder = recorder;
@@ -21,7 +21,7 @@ namespace Prism.Maui.Tests.Mocks
 
         protected override Page CreatePage(string name)
         {
-            var page = _containerMock.Resolve<object>(name) as Page;
+            var page = base.CreatePage(name);
 
             PageUtilities.InvokeViewAndViewModelAction<IPageNavigationEventRecordable>(
                 page,

@@ -1,4 +1,6 @@
 ﻿using Microsoft.Maui.Controls;
+using Prism.Common;
+using Prism.Navigation;
 
 namespace Prism.Behaviors
 {
@@ -18,10 +20,10 @@ namespace Prism.Behaviors
 
         private void NavigationPage_Popped(object sender, NavigationEventArgs e)
         {
-            //if (PageNavigationService.NavigationSource == PageNavigationSource.Device)
-            //{
-            //    PageUtilities.HandleSystemGoBack(e.Page, AssociatedObject.CurrentPage);
-            //}
+            if (PageNavigationService.NavigationSource == PageNavigationSource.Device)
+            {
+                PageUtilities.HandleSystemGoBack(e.Page, AssociatedObject.CurrentPage);
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Prism.Maui.Tests.Mocks.Views
 
         public TabbedPageMock(PageNavigationEventRecorder recorder)
         {
-            ViewModelLocator.SetAutowireViewModel(this, true);
+            //ViewModelLocator.SetAutowireViewModel(this, true);
 
             Children.Add(new Tab1Mock(recorder) { Title = "Page 1" });
             Children.Add(new Tab2Mock() { Title = "Page 2", BindingContext = null });

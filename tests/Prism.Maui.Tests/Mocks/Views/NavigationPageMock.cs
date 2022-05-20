@@ -20,7 +20,7 @@ namespace Prism.Maui.Tests.Mocks.Views
 
         public NavigationPageMock(PageNavigationEventRecorder recorder, Page page) : base(page)
         {
-            ViewModelLocator.SetAutowireViewModel(this, true);
+            //ViewModelLocator.SetAutowireViewModel(this, true);
 
             PageNavigationEventRecorder = recorder;
             ((IPageNavigationEventRecordable)BindingContext).PageNavigationEventRecorder = recorder;
@@ -59,7 +59,7 @@ namespace Prism.Maui.Tests.Mocks.Views
 
         public NavigationPageEmptyMock(PageNavigationEventRecorder recorder)
         {
-            ViewModelLocator.SetAutowireViewModel(this, true);
+            //ViewModelLocator.SetAutowireViewModel(this, true);
 
             PageNavigationEventRecorder = recorder;
             ((IPageNavigationEventRecordable)BindingContext).PageNavigationEventRecorder = recorder;

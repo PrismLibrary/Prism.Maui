@@ -5,6 +5,7 @@ using Prism.Behaviors;
 using Prism.Common;
 using Prism.Ioc;
 using Prism.Mvvm;
+using Prism.Properties;
 
 namespace Prism.Navigation;
 
@@ -76,7 +77,7 @@ public static class NavigationRegistry
         if (!registrations.Any())
             throw new KeyNotFoundException(name);
         if (registrations.Count() > 1)
-            throw new InvalidOperationException($"Multiple Views have been registered for the navigation key '{name}': {string.Join(", ", registrations.Select(x => x.View.FullName))}");
+            throw new InvalidOperationException(string.Format(Resources.MultipleViewsRegisteredForNavigationKey, name, string.Join(", ", registrations.Select(x => x.View.FullName))));
 
         return registrations.First().View;
     }

@@ -1,5 +1,6 @@
 ﻿using Prism.AppModel;
 using Prism.Behaviors;
+using Prism.Controls;
 using Prism.Events;
 using Prism.Extensions;
 using Prism.Ioc;
@@ -105,7 +106,11 @@ public abstract class PrismAppBuilder
 
         var app = _container.Resolve<IApplication>();
         if (!NavigationRegistry.IsRegistered(nameof(NavigationPage)))
-            ((IContainerRegistry)_container).RegisterForNavigation<NavigationPage>();
+        {
+            NavigationRegistry.Register(typeof(PrismNavigationPage), null, nameof(NavigationPage));
+            ((IContainerRegistry)_container).Register(typeof(PrismNavigationPage), () => new PrismNavigationPage());
+        }
+
         if (!NavigationRegistry.IsRegistered(nameof(TabbedPage)))
             ((IContainerRegistry)_container).RegisterForNavigation<TabbedPage>();
 

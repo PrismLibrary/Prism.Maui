@@ -14,9 +14,8 @@ namespace Prism.Navigation
         internal const string RemovePageInstruction = "__RemovePage/";
         internal const string RemovePageSegment = "__RemovePage";
 
-        // Brian appears to still be thinking...
-        //not sure I like this static property, think about this a little more
-        protected internal static PageNavigationSource NavigationSource { get; protected set; } = PageNavigationSource.Device;
+        // TODO: Move this out of the PageNavigationService
+        internal static PageNavigationSource NavigationSource { get; set; } = PageNavigationSource.Device;
 
         private readonly IContainerProvider _container;
         protected readonly IApplication _application;

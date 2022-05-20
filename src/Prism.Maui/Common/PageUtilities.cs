@@ -227,6 +227,23 @@ namespace Prism.Common
             return GetOnNavigatedToTargetFromChild(page);
         };
 
+        public static async Task HandleNavigationPageGoBack(NavigationPage navigationPage)
+        {
+            var previousPage = navigationPage.CurrentPage;
+            var parameters = new NavigationParameters();
+            parameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);
+            if (!CanNavigate(previousPage, parameters) ||
+                !await CanNavigateAsync(previousPage, parameters))
+                return;
+
+            PageNavigationService.NavigationSource = PageNavigationSource.NavigationService;
+            await navigationPage.PopAsync();
+            PageNavigationService.NavigationSource = PageNavigationSource.Device;
+            OnNavigatedFrom(previousPage, parameters);
+            OnNavigatedTo(navigationPage.CurrentPage, parameters);
+            DestroyPage(previousPage);
+        }
+
         public static void HandleSystemGoBack(IView previousPage, IView currentPage)
         {
             var parameters = new NavigationParameters();
