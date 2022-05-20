@@ -27,45 +27,28 @@ jobs:
         run: |
           dotnet workload install maui
 
-      # - name: Configure and Restore Packages
-      #   run: |
-      #     $authToken = $env:SponsorConnectToken
-      #     if([string]::IsNullOrEmpty($authToken))
-      #     {
-      #       Write-Error "No Auth Token is available"
-      #     }
-
-      #     Write-Host "Downloading Nuget.exe ..."
-      #     Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile nuget.exe
-
-      #     Write-Host "Setting Feed credentials for Sponsor Connect"
-      #     nuget sources update -Name SponsorConnect -Username dansiegel -Password $authToken -ConfigFile nuget.config -ValidAuthenticationTypes basic
-      #     nuget restore src\Prism.Maui\Prism.Maui.csproj
-      #     nuget restore src\Prism.DryIoc.Maui\Prism.DryIoc.Maui.csproj
-      #   shell: powershell
-      #   env:
-      #     SponsorConnectToken: ${{ secrets.SPONSOR_CONNECT_TOKEN }}
-
       - name: NuGet Restore
         run: dotnet restore build.slnf
 
       - name: Build Packages
         run: dotnet build build.slnf -c Release
 
-      - name: Sign Packages
-        run: build\Sign-Packages.ps1
-        shell: powershell
-        env:
-          SignClientAADInstance: ${{ secrets.SIGNCLIENTAADINSTANCE }}
-          SignClientUser: ${{ secrets.SIGNCLIENTUSER }}
-          SignClientSecret: ${{ secrets.SIGNCLIENTSECRET }}
-          SignClientClientId: ${{ secrets.SIGNCLIENTCLIENTID }}
-          SignClientTenantId: ${{ secrets.SIGNCLIENTTENANTID }}
-          SignServiceResourceId: ${{ secrets.SIGNSERVICERESOURCEID }}
-          SignServiceUrl: ${{ secrets.SIGNSERVICEURL }}
-
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
+        with:
+          name: NuGet
+          path: Artifacts/
+
+  deploy-internal:
+    name: Deploy Internal
+    runs-on: windows-latest
+    needs: build
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
         with:
           name: NuGet
           path: Artifacts/
@@ -76,6 +59,20 @@ jobs:
             filename: 'Artifacts/*.nupkg'
             feedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
             apiKey: ${{ secrets.IN_HOUSE_API_KEY }}
+
+  deploy-sponsors:
+    name: Deploy Internal
+    runs-on: windows-latest
+    needs: build
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: NuGet
+          path: Artifacts/
 
       - name: NuGet Publish (Sponsor Connect)
         uses: dansiegel/publish-nuget@v1.01
