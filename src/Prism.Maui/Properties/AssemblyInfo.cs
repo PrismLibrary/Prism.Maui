@@ -2,6 +2,7 @@
 
 [assembly: XmlnsDefinition("http://prismlibrary.com", "Prism")]
 [assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Behaviors")]
+[assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Controls")]
 [assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Ioc")]
 [assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Modularity")]
 [assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Mvvm")]

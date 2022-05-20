@@ -13,6 +13,8 @@ public static class NavigationRegistry
 {
     private static readonly List<ViewRegistration> _registrations = new ();
 
+    internal static IEnumerable<ViewRegistration> Registrations => _registrations;
+
     public static void Register<TView, TViewModel>(string name) =>
         Register(typeof(TView), typeof(TViewModel), name);
 

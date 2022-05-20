@@ -3,12 +3,13 @@ using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
 using Prism.AppModel;
 using Prism.Commands;
+using Prism.Mvvm;
 using Prism.Navigation;
 using Prism.Services;
 
 namespace MauiModule.ViewModels
 {
-    public abstract class ViewModelBase : IInitialize, INavigatedAware, IPageLifecycleAware
+    public abstract class ViewModelBase : BindableBase, IInitialize, INavigatedAware, IPageLifecycleAware
     {
         protected INavigationService _navigationService { get; }
         protected IPageDialogService _pageDialogs { get; }
