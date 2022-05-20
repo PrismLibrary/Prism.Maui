@@ -1,6 +1,5 @@
 using Prism.Behaviors;
 using Prism.Common;
-using Prism.Extensions;
 using Prism.Ioc;
 using Application = Microsoft.Maui.Controls.Application;
 
@@ -21,7 +20,6 @@ namespace Prism.Navigation
 
         private readonly IContainerProvider _container;
         protected readonly IApplication _application;
-        protected readonly IPageBehaviorFactory _pageBehaviorFactory;
         protected Window Window;
 
         protected Page _page;
@@ -51,11 +49,10 @@ namespace Prism.Navigation
         /// <param name="container">The <see cref="IContainerProvider"/> that will be used to resolve pages for navigation.</param>
         /// <param name="application">The <see cref="IApplication"/> that will let us ensure the Application.MainPage is set.</param>
         /// <param name="pageBehaviorFactory">The <see cref="IPageBehaviorFactory"/> that will apply base and custom behaviors to pages created in the <see cref="PageNavigationService"/>.</param>
-        public PageNavigationService(IContainerProvider container, IApplication application, IPageBehaviorFactory pageBehaviorFactory)
+        public PageNavigationService(IContainerProvider container, IApplication application)
         {
             _container = container;
             _application = application;
-            _pageBehaviorFactory = pageBehaviorFactory;
         }
 
         /// <summary>
@@ -758,7 +755,7 @@ namespace Prism.Navigation
                 if (page is null)
                     throw new NullReferenceException($"The resolved type for {segmentName} was null. You may be attempting to navigate to a Non-Page type");
 
-                return SetNavigationServiceForPage(page);
+                return page;
             }
             catch (Exception ex)
             {
@@ -782,22 +779,8 @@ namespace Prism.Navigation
                 throw new NavigationException(NavigationException.NoPageIsRegistered, _page, innerException);
             }
 
-            PageUtilities.SetAutowireViewModel(page);
-            _pageBehaviorFactory.ApplyPageBehaviors(page);
             ConfigurePages(page, segment);
 
-            return page;
-        }
-
-        /// <summary>
-        /// Ensures that the <see cref="Page"/> has an attached <see cref="IScopedProvider"/> and <see cref="INavigationService"/>
-        /// that can be more easily reused.
-        /// </summary>
-        /// <param name="page">The <see cref="Page"/> the <see cref="INavigationService"/> instance will be created for.</param>
-        /// <returns>The <see cref="Page"/></returns>
-        protected Page SetNavigationServiceForPage(Page page)
-        {
-            Xaml.Navigation.GetNavigationService(page);
             return page;
         }
 
@@ -811,17 +794,6 @@ namespace Prism.Navigation
 
         void ConfigureTabbedPage(TabbedPage tabbedPage, string segment)
         {
-            foreach (var child in tabbedPage.Children)
-            {
-                PageUtilities.SetAutowireViewModel(child);
-                _pageBehaviorFactory.ApplyPageBehaviors(child);
-                if (child is NavigationPage navPage)
-                {
-                    PageUtilities.SetAutowireViewModel(navPage.CurrentPage);
-                    _pageBehaviorFactory.ApplyPageBehaviors(navPage.CurrentPage);
-                }
-            }
-
             var parameters = UriParsingHelper.GetSegmentParameters(segment);
 
             var tabsToCreate = parameters.GetValues<string>(KnownNavigationParameters.CreateTab);
@@ -902,7 +874,7 @@ namespace Prism.Navigation
         {
             var navigationStack = new Stack<string>();
 
-            if (!String.IsNullOrWhiteSpace(nextSegment))
+            if (!string.IsNullOrWhiteSpace(nextSegment))
                 navigationStack.Push(nextSegment);
 
             var illegalSegments = new Queue<string>();

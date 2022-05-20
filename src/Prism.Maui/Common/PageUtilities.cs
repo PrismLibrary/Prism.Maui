@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
-using Prism.Mvvm;
 using Prism.Navigation;
 using NavigationMode = Prism.Navigation.NavigationMode;
 
@@ -274,26 +273,6 @@ namespace Prism.Common
 
             return potentialDescendant.GetTypeInfo().IsSubclassOf(potentialBase)
                    || potentialDescendant == potentialBase;
-        }
-
-        /// <summary>
-        /// Sets the AutowireViewModel property on the View to <c>true</c> if there is currently
-        /// no BindingContext and the AutowireViewModel property has not been set.
-        /// </summary>
-        /// <param name="element">The View typically a <see cref="Page"/> or <see cref="View"/>.</param>
-        [EditorBrowsable(EditorBrowsableState.Never)]
-        public static void SetAutowireViewModel(VisualElement element)
-        {
-            if (element.BindingContext is null && ViewModelLocator.GetAutowireViewModel(element) is null)
-            {
-                ViewModelLocator.SetAutowireViewModel(element, true);
-            }
-            else if (element.BindingContext == element.Parent?.BindingContext)
-            {
-                //if the parent binding context is the same as the element, then it was probably inherited
-                //and we don't want that. Set the VML
-                ViewModelLocator.SetAutowireViewModel(element, true);
-            }
         }
     }
 }
