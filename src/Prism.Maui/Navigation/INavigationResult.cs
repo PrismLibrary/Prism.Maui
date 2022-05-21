@@ -1,9 +1,8 @@
-﻿namespace Prism.Navigation
-{
-    public interface INavigationResult
-    {
-        bool Success { get; }
+﻿namespace Prism.Navigation;
 
-        Exception Exception { get; }
-    }
+public interface INavigationResult
+{
+    bool Success { get; }
+
+    Exception Exception { get; }
 }

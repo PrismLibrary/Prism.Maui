@@ -1,9 +1,8 @@
-﻿namespace Prism.Navigation
-{
-    public record NavigationResult : INavigationResult
-    {
-        public bool Success { get; init; }
+﻿namespace Prism.Navigation;
 
-        public Exception Exception { get; init; }
-    }
+public record NavigationResult : INavigationResult
+{
+    public bool Success { get; init; }
+
+    public Exception Exception { get; init; }
 }

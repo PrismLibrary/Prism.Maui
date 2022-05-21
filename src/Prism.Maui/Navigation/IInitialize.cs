@@ -1,7 +1,6 @@
-﻿namespace Prism.Navigation
+﻿namespace Prism.Navigation;
+
+public interface IInitialize
 {
-    public interface IInitialize
-    {
-        void Initialize(INavigationParameters parameters);
-    }
+    void Initialize(INavigationParameters parameters);
 }

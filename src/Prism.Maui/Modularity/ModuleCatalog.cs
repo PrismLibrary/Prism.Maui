@@ -1,10 +1,7 @@
-﻿using Microsoft.Maui.Controls;
+﻿namespace Prism.Modularity;
 
-namespace Prism.Modularity
+[ContentProperty(nameof(Items))]
+public class ModuleCatalog : ModuleCatalogBase
 {
-    [ContentProperty(nameof(Items))]
-    public class ModuleCatalog : ModuleCatalogBase
-    {
 
-    }
 }

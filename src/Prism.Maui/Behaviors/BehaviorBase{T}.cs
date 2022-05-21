@@ -1,50 +1,47 @@
-﻿using Microsoft.Maui.Controls;
+﻿namespace Prism.Behaviors;
 
-namespace Prism.Behaviors
+/// <summary>
+/// Base class that extends on Xamarin Forms Behaviors.
+/// </summary>
+/// <typeparam name="T"></typeparam>
+public class BehaviorBase<T> : Behavior<T> where T : BindableObject
 {
     /// <summary>
-    /// Base class that extends on Xamarin Forms Behaviors.
+    /// The Object associated with the Behavior
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class BehaviorBase<T> : Behavior<T> where T : BindableObject
+    public T AssociatedObject { get; private set; }
+
+    /// <inheritDoc />
+    protected override void OnAttachedTo(T bindable)
     {
-        /// <summary>
-        /// The Object associated with the Behavior
-        /// </summary>
-        public T AssociatedObject { get; private set; }
+        base.OnAttachedTo(bindable);
+        AssociatedObject = bindable;
 
-        /// <inheritDoc />
-        protected override void OnAttachedTo(T bindable)
+        if (bindable.BindingContext != null)
         {
-            base.OnAttachedTo(bindable);
-            AssociatedObject = bindable;
-
-            if (bindable.BindingContext != null)
-            {
-                BindingContext = bindable.BindingContext;
-            }
-
-            bindable.BindingContextChanged += OnBindingContextChanged;
+            BindingContext = bindable.BindingContext;
         }
 
-        /// <inheritDoc />
-        protected override void OnDetachingFrom(T bindable)
-        {
-            base.OnDetachingFrom(bindable);
-            bindable.BindingContextChanged -= OnBindingContextChanged;
-            AssociatedObject = null;
-        }
+        bindable.BindingContextChanged += OnBindingContextChanged;
+    }
 
-        void OnBindingContextChanged(object sender, EventArgs e)
-        {
-            OnBindingContextChanged();
-        }
+    /// <inheritDoc />
+    protected override void OnDetachingFrom(T bindable)
+    {
+        base.OnDetachingFrom(bindable);
+        bindable.BindingContextChanged -= OnBindingContextChanged;
+        AssociatedObject = null;
+    }
 
-        /// <inheritDoc />
-        protected override void OnBindingContextChanged()
-        {
-            base.OnBindingContextChanged();
-            BindingContext = AssociatedObject.BindingContext;
-        }
+    void OnBindingContextChanged(object sender, EventArgs e)
+    {
+        OnBindingContextChanged();
+    }
+
+    /// <inheritDoc />
+    protected override void OnBindingContextChanged()
+    {
+        base.OnBindingContextChanged();
+        BindingContext = AssociatedObject.BindingContext;
     }
 }

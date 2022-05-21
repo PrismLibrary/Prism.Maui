@@ -1,7 +1,6 @@
-﻿namespace Prism.Navigation
+﻿namespace Prism.Navigation;
+
+internal static class KnownInternalParameters
 {
-    internal static class KnownInternalParameters
-    {
-        public const string NavigationMode = "__NavigationMode";
-    }
+    public const string NavigationMode = "__NavigationMode";
 }

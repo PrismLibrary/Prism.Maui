@@ -1,8 +1,7 @@
-﻿namespace Prism.Navigation
+﻿namespace Prism.Navigation;
+
+public enum PageNavigationSource
 {
-    public enum PageNavigationSource
-    {
-        NavigationService,
-        Device
-    }
+    NavigationService,
+    Device
 }

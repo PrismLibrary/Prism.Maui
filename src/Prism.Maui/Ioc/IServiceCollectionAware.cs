@@ -1,10 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿namespace Prism.Ioc;
 
-namespace Prism.Ioc
+public interface IServiceCollectionAware
 {
-    public interface IServiceCollectionAware
-    {
-        void Populate(IServiceCollection services);
-        IServiceProvider CreateServiceProvider();
-    }
+    void Populate(IServiceCollection services);
+    IServiceProvider CreateServiceProvider();
 }

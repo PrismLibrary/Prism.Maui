@@ -1,7 +1,5 @@
 ﻿using MauiModule.ViewModels;
 using MauiModule.Views;
-using Prism.Ioc;
-using Prism.Modularity;
 
 namespace MauiModule
 {

@@ -1,29 +1,28 @@
 ﻿using Prism.Ioc;
 
-namespace Prism.Modularity
+namespace Prism.Modularity;
+
+public class ModuleInitializer : IModuleInitializer
 {
-    public class ModuleInitializer : IModuleInitializer
+    readonly IContainerExtension _container;
+
+    public ModuleInitializer(IContainerExtension container)
     {
-        readonly IContainerExtension _container;
+        _container = container;
+    }
 
-        public ModuleInitializer(IContainerExtension container)
+    public void Initialize(IModuleInfo moduleInfo)
+    {
+        var module = CreateModule(Type.GetType(moduleInfo.ModuleType, true));
+        if (module != null)
         {
-            _container = container;
+            module.RegisterTypes(_container);
+            module.OnInitialized(_container);
         }
+    }
 
-        public void Initialize(IModuleInfo moduleInfo)
-        {
-            var module = CreateModule(Type.GetType(moduleInfo.ModuleType, true));
-            if (module != null)
-            {
-                module.RegisterTypes(_container);
-                module.OnInitialized(_container);
-            }
-        }
-
-        protected virtual IModule CreateModule(Type moduleType)
-        {
-            return (IModule)_container.Resolve(moduleType);
-        }
+    protected virtual IModule CreateModule(Type moduleType)
+    {
+        return (IModule)_container.Resolve(moduleType);
     }
 }

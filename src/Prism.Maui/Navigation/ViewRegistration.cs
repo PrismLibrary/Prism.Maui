@@ -1,9 +1,8 @@
-﻿namespace Prism.Navigation
+﻿namespace Prism.Navigation;
+
+public record ViewRegistration
 {
-    public record ViewRegistration
-    {
-        public Type View { get; init; }
-        public Type ViewModel { get; init; }
-        public string Name { get; init; }
-    }
+    public Type View { get; init; }
+    public Type ViewModel { get; init; }
+    public string Name { get; init; }
 }
