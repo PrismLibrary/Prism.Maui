@@ -30,7 +30,7 @@ MauiApp.CreateBuilder()
     .RegisterServices(container => {
         container.Register<ISomeService, SomeImplementation>();
         container.RegisterForNavigation<ViewA, ViewAViewModel>();
-    }
+    })
     .ConfigureModuleCatalog(catalog => {
         catalog.AddModule<ModuleA>();
     });
@@ -82,6 +82,40 @@ MauiApp.CreateBuilder()
 
 PrismApplication is largely obsolete for Prism.Maui. The PrismAppBuilder does not have an explicit requirement on it. To make it easier on those who are upgrading, we do have legacy support methods to make updating your existing apps a little easier. This includes a `RegisterTypes` & `OnInitialized` method which will get called during the app initialization. It is recommended however that you migrate this code to your App Builder.
 
+## Navigation Builders
+
+Creating a complex navigation stack via a URI can be intimidating for some. For others it can pose a challenge as they require a dynamically built navigation stack. And still other developers have often requested a ViewModel first approach to navigation in Prism. The NavigationBuilder is a great way to help solve these various problems. The NavigationBuilder can be created using an extension on the INavigationService. There is no way to clear the NavigationBuilder, so you should NOT attempt to store this as a property on your ViewModel, and you should instead create a new instance whenever you need to navigate. The samples below are meant to show you some of what is possible. It is not in any way meant as guidance for creating a navigation stack using the most completely random approach possible. Pick a standard approach and follow it. The Builders are meant to expose an API that is easy to use and can help people with different preferences for how to build their navigation stack.
+
+```cs
+// Shown with option OnError callback
+navigationService.CreateBuilder()
+    .AddNavigationSegment("MainPage")
+    .AddNavigationPage()
+    .AddNavigationSegment<ViewAViewModel>()
+    .AddNavigationSegment("ViewB")
+    .Navigate(HandleNavigationError);
+
+// This returns the INavigationResult... 
+// Also available with overloads to provide OnSuccess & OnError callbacks
+navigationService.CreateBuilder()
+    .AddTabbedSegment(b =>
+    {
+        b.CreateTab(t => t.AddNavigationSegment<ViewAViewModel>())
+            .CreateTab("ViewB")
+            .CreateTab(t => t.AddNavigationPage().AddNavigationSegment<ViewCViewModel>())
+            .SelectTab<ViewBViewModel>();
+    })
+    .NavigateAsync();
+```
+
+It's also important to note that the builders will make some attempt to stop you from breaking the MVVM pattern and you will get an exception if you attempt to do:
+
+```cs
+navigationService.CreateBuilder()
+    .AddNavigationSegment<ViewA>()
+    .Navigate();
+```
+
 ## NOTE
 
-Prism.Maui is current an experimental Alpha. Any preview build is largely meant to solicit additional developer feedback. APIs will likely change and break prior to being merged into the Prism repo and released as a fully official build.
+Prism.Maui is currently a Beta. Any preview build is largely meant to solicit additional developer feedback. APIs will likely change and break prior to being merged into the Prism repo and released as a fully official build.
