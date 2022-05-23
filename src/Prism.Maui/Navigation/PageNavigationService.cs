@@ -1,5 +1,6 @@
 using Prism.Behaviors;
 using Prism.Common;
+using Prism.Events;
 using Prism.Ioc;
 using Application = Microsoft.Maui.Controls.Application;
 
@@ -19,6 +20,7 @@ public class PageNavigationService : INavigationService, IPageAware
 
     private readonly IContainerProvider _container;
     protected readonly IApplication _application;
+    protected readonly IEventAggregator _eventAggregator;
     protected Window Window;
 
     protected Page _page;
@@ -48,10 +50,11 @@ public class PageNavigationService : INavigationService, IPageAware
     /// <param name="container">The <see cref="IContainerProvider"/> that will be used to resolve pages for navigation.</param>
     /// <param name="application">The <see cref="IApplication"/> that will let us ensure the Application.MainPage is set.</param>
     /// <param name="pageBehaviorFactory">The <see cref="IPageBehaviorFactory"/> that will apply base and custom behaviors to pages created in the <see cref="PageNavigationService"/>.</param>
-    public PageNavigationService(IContainerProvider container, IApplication application)
+    public PageNavigationService(IContainerProvider container, IApplication application, IEventAggregator eventAggregator)
     {
         _container = container;
         _application = application;
+        _eventAggregator = eventAggregator;
     }
 
     /// <summary>
