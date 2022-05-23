@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6CAB3327-8C0
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prism.DryIoc.Maui", "src\Prism.DryIoc.Maui\Prism.DryIoc.Maui.csproj", "{6C5C1F1F-DA92-4307-862F-5034BF8B0858}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prism.Maui", "src\Prism.Maui\Prism.Maui.csproj", "{6171FE41-1F11-4CFA-8FD8-8222B97C7C63}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prism.Maui", "src\Prism.Maui\Prism.Maui.csproj", "{6171FE41-1F11-4CFA-8FD8-8222B97C7C63}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Prism.DryIoc.Shared", "src\Prism.DryIoc.Shared\Prism.DryIoc.Shared.shproj", "{6E7EC81D-DA39-4C4F-A898-0148558C34F4}"
 EndProject
@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiModule", "sample\MauiModule\MauiModule.csproj", "{EB8CD219-0CA7-4AE3-A7B7-6D883400CCE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prism.Maui.Rx", "src\Prism.Maui.Rx\Prism.Maui.Rx.csproj", "{D364B3F0-2D41-4EF8-BE1D-D83825322F61}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -127,6 +129,22 @@ Global
 		{EB8CD219-0CA7-4AE3-A7B7-6D883400CCE0}.Release|x64.Build.0 = Release|Any CPU
 		{EB8CD219-0CA7-4AE3-A7B7-6D883400CCE0}.Release|x86.ActiveCfg = Release|Any CPU
 		{EB8CD219-0CA7-4AE3-A7B7-6D883400CCE0}.Release|x86.Build.0 = Release|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Debug|arm64.Build.0 = Debug|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Debug|x64.Build.0 = Debug|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Debug|x86.Build.0 = Debug|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Release|arm64.ActiveCfg = Release|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Release|arm64.Build.0 = Release|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Release|x64.ActiveCfg = Release|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Release|x64.Build.0 = Release|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Release|x86.ActiveCfg = Release|Any CPU
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -138,6 +156,7 @@ Global
 		{3BFAB205-050B-47B7-9AB8-BE799E07DA90} = {7CB47440-CCBC-4E16-B2B9-9FD472154117}
 		{16AEEF3D-B119-4EE0-9B1F-B9E0FDF0EEAB} = {06F06128-578F-449D-B3D6-D04A531B1018}
 		{EB8CD219-0CA7-4AE3-A7B7-6D883400CCE0} = {06F06128-578F-449D-B3D6-D04A531B1018}
+		{D364B3F0-2D41-4EF8-BE1D-D83825322F61} = {6CAB3327-8C0A-4D0B-BF18-CEFD15B84BA7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7E696A15-8B47-4BC2-8997-071E61157406}
