@@ -60,42 +60,9 @@ public class PageNavigationService : INavigationService, IPageAware
     /// <summary>
     /// Navigates to the most recent entry in the back navigation history by popping the calling Page off the navigation stack.
     /// </summary>
-    /// <returns>If <c>true</c> a go back operation was successful. If <c>false</c> the go back operation failed.</returns>
-    public virtual Task<INavigationResult> GoBackAsync()
-    {
-        return GoBackAsync(null);
-    }
-
-    /// <summary>
-    /// Navigates to the most recent entry in the back navigation history by popping the calling Page off the navigation stack.
-    /// </summary>
     /// <param name="parameters">The navigation parameters</param>
     /// <returns>If <c>true</c> a go back operation was successful. If <c>false</c> the go back operation failed.</returns>
-    public virtual Task<INavigationResult> GoBackAsync(INavigationParameters parameters)
-    {
-        return GoBackInternal(parameters, null, true);
-    }
-
-    /// <summary>
-    /// Navigates to the most recent entry in the back navigation history by popping the calling Page off the navigation stack.
-    /// </summary>
-    /// <param name="parameters">The navigation parameters</param>
-    /// <param name="useModalNavigation">If <c>true</c> uses PopModalAsync, if <c>false</c> uses PopAsync</param>
-    /// <param name="animated">If <c>true</c> the transition is animated, if <c>false</c> there is no animation on transition.</param>
-    /// <returns><see cref="INavigationResult"/> indicating whether the request was successful or if there was an encountered <see cref="Exception"/>.</returns>
-    public virtual Task<INavigationResult> GoBackAsync(INavigationParameters parameters, bool? useModalNavigation, bool animated)
-    {
-        return GoBackInternal(parameters, useModalNavigation, animated);
-    }
-
-    /// <summary>
-    /// Navigates to the most recent entry in the back navigation history by popping the calling Page off the navigation stack.
-    /// </summary>
-    /// <param name="parameters">The navigation parameters</param>
-    /// <param name="useModalNavigation">If <c>true</c> uses PopModalAsync, if <c>false</c> uses PopAsync</param>
-    /// <param name="animated">If <c>true</c> the transition is animated, if <c>false</c> there is no animation on transition.</param>
-    /// <returns>If <c>true</c> a go back operation was successful. If <c>false</c> the go back operation failed.</returns>
-    protected async virtual Task<INavigationResult> GoBackInternal(INavigationParameters parameters, bool? useModalNavigation, bool animated)
+    public virtual async Task<INavigationResult> GoBackAsync(INavigationParameters parameters)
     {
         Page page = null;
         try
@@ -195,17 +162,7 @@ public class PageNavigationService : INavigationService, IPageAware
     /// <param name="parameters">The navigation parameters</param>
     /// <returns><see cref="INavigationResult"/> indicating whether the request was successful or if there was an encountered <see cref="Exception"/>.</returns>
     /// <remarks>Only works when called from a View within a NavigationPage</remarks>
-    public virtual Task<INavigationResult> GoBackToRootAsync(INavigationParameters parameters)
-    {
-        return GoBackToRootInternal(parameters);
-    }
-
-    /// <summary>
-    /// When navigating inside a NavigationPage: Pops all but the root Page off the navigation stack
-    /// </summary>
-    /// <param name="parameters">The navigation parameters</param>
-    /// <remarks>Only works when called from a View within a NavigationPage</remarks>
-    protected async virtual Task<INavigationResult> GoBackToRootInternal(INavigationParameters parameters)
+    public virtual async Task<INavigationResult> GoBackToRootAsync(INavigationParameters parameters)
     {
         try
         {
