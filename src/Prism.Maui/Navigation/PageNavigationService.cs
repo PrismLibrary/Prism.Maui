@@ -49,7 +49,7 @@ public class PageNavigationService : INavigationService, IPageAware
     /// </summary>
     /// <param name="container">The <see cref="IContainerProvider"/> that will be used to resolve pages for navigation.</param>
     /// <param name="application">The <see cref="IApplication"/> that will let us ensure the Application.MainPage is set.</param>
-    /// <param name="pageBehaviorFactory">The <see cref="IPageBehaviorFactory"/> that will apply base and custom behaviors to pages created in the <see cref="PageNavigationService"/>.</param>
+    /// <param name="eventAggregator">The <see cref="IEventAggregator"/> that will raise <see cref="NavigationRequestEvent"/>.</param>
     public PageNavigationService(IContainerProvider container, IApplication application, IEventAggregator eventAggregator)
     {
         _container = container;
@@ -212,23 +212,6 @@ public class PageNavigationService : INavigationService, IPageAware
     }
 
     /// <summary>
-    /// Initiates navigation to the target specified by the <paramref name="name"/>.
-    /// </summary>
-    /// <param name="name">The name of the target to navigate to.</param>
-    /// <param name="parameters">The navigation parameters</param>
-    /// <param name="useModalNavigation">If <c>true</c> uses PopModalAsync, if <c>false</c> uses PopAsync</param>
-    /// <param name="animated">If <c>true</c> the transition is animated, if <c>false</c> there is no animation on transition.</param>
-    protected virtual Task<INavigationResult> NavigateInternal(string name, INavigationParameters parameters, bool? useModalNavigation, bool animated)
-    {
-        if (name.StartsWith(RemovePageRelativePath))
-        {
-            name = name.Replace(RemovePageRelativePath, RemovePageInstruction);
-        }
-
-        return NavigateInternal(UriParsingHelper.Parse(name), parameters, useModalNavigation, animated);
-    }
-
-    /// <summary>
     /// Initiates navigation to the target specified by the <paramref name="uri"/>.
     /// </summary>
     /// <param name="uri">The Uri to navigate to</param>
@@ -237,23 +220,7 @@ public class PageNavigationService : INavigationService, IPageAware
     /// <example>
     /// NavigateAsync(new Uri("MainPage?id=3&amp;name=brian", UriKind.RelativeSource), parameters);
     /// </example>
-    public virtual Task<INavigationResult> NavigateAsync(Uri uri, INavigationParameters parameters)
-    {
-        return NavigateInternal(uri, parameters, null, true);
-    }
-
-    /// <summary>
-    /// Initiates navigation to the target specified by the <paramref name="uri"/>.
-    /// </summary>
-    /// <param name="uri">The Uri to navigate to</param>
-    /// <param name="parameters">The navigation parameters</param>
-    /// <param name="useModalNavigation">If <c>true</c> uses PopModalAsync, if <c>false</c> uses PopAsync</param>
-    /// <param name="animated">If <c>true</c> the transition is animated, if <c>false</c> there is no animation on transition.</param>
-    /// <remarks>Navigation parameters can be provided in the Uri and by using the <paramref name="parameters"/>.</remarks>
-    /// <example>
-    /// Navigate(new Uri("MainPage?id=3&amp;name=brian", UriKind.RelativeSource), parameters);
-    /// </example>
-    protected async virtual Task<INavigationResult> NavigateInternal(Uri uri, INavigationParameters parameters, bool? useModalNavigation, bool animated)
+    public virtual async Task<INavigationResult> NavigateAsync(Uri uri, INavigationParameters parameters)
     {
         try
         {
@@ -266,12 +233,12 @@ public class PageNavigationService : INavigationService, IPageAware
 
             if (uri.IsAbsoluteUri)
             {
-                await ProcessNavigationForAbsoluteUri(navigationSegments, parameters, useModalNavigation, animated);
+                await ProcessNavigationForAbsoluteUri(navigationSegments, parameters, null, true);
                 return new NavigationResult { Success = true };
             }
             else
             {
-                await ProcessNavigation(GetCurrentPage(), navigationSegments, parameters, useModalNavigation, animated);
+                await ProcessNavigation(GetCurrentPage(), navigationSegments, parameters, null, true);
                 return new NavigationResult { Success = true };
             }
         }
@@ -304,9 +271,9 @@ public class PageNavigationService : INavigationService, IPageAware
         var nextSegment = segments.Dequeue();
 
         var pageParameters = UriParsingHelper.GetSegmentParameters(nextSegment);
-        var useModalNavigation = pageParameters.ContainsKey(KnownNavigationParameters.UseModalNavigation) ? pageParameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation) : false;
+        //var useModalNavigation = pageParameters.ContainsKey(KnownNavigationParameters.UseModalNavigation) ? pageParameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation) : false;
 
-        var animated = pageParameters.ContainsKey(KnownNavigationParameters.Animated) ? pageParameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;
+        //var animated = pageParameters.ContainsKey(KnownNavigationParameters.Animated) ? pageParameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;
 
         if (nextSegment == RemovePageSegment)
         {
