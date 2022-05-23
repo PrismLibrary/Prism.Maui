@@ -100,16 +100,18 @@ public class PageNavigationService : INavigationService, IPageAware
         Page page = null;
         try
         {
+            if (parameters is null)
+                parameters = new NavigationParameters();
+
             NavigationSource = PageNavigationSource.NavigationService;
 
             page = GetCurrentPage();
             if (IsRoot(GetPageFromWindow(), page))
                 throw new NavigationException(NavigationException.CannotPopApplicationMainPage, page);
 
-            var segmentParameters = UriParsingHelper.GetSegmentParameters(null, parameters);
-            segmentParameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);
+            parameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);
 
-            var canNavigate = await PageUtilities.CanNavigateAsync(page, segmentParameters);
+            var canNavigate = await PageUtilities.CanNavigateAsync(page, parameters);
             if (!canNavigate)
             {
                 return new NavigationResult
@@ -118,14 +120,15 @@ public class PageNavigationService : INavigationService, IPageAware
                 };
             }
 
-            bool useModalForDoPop = UseModalGoBack(page, useModalNavigation);
+            bool useModalForDoPop = UseModalGoBack(page, parameters);
             Page previousPage = PageUtilities.GetOnNavigatedToTarget(page, Window?.Page, useModalForDoPop);
 
+            bool animated = parameters.ContainsKey(KnownNavigationParameters.Animated) ? parameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;
             var poppedPage = await DoPop(page.Navigation, useModalForDoPop, animated);
             if (poppedPage != null)
             {
-                PageUtilities.OnNavigatedFrom(page, segmentParameters);
-                PageUtilities.OnNavigatedTo(previousPage, segmentParameters);
+                PageUtilities.OnNavigatedFrom(page, parameters);
+                PageUtilities.OnNavigatedTo(previousPage, parameters);
                 PageUtilities.DestroyPage(poppedPage);
 
                 return new NavigationResult { Success = true };
@@ -226,7 +229,10 @@ public class PageNavigationService : INavigationService, IPageAware
             var root = pagesToDestroy.Last();
             pagesToDestroy.Remove(root); //don't destroy the root page
 
-            await page.Navigation.PopToRootAsync();
+            bool animated = parameters.ContainsKey(KnownNavigationParameters.Animated) ? parameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;
+            NavigationSource = PageNavigationSource.NavigationService;
+            await page.Navigation.PopToRootAsync(animated);
+            NavigationSource = PageNavigationSource.Device;
 
             foreach (var destroyPage in pagesToDestroy)
             {
@@ -241,6 +247,10 @@ public class PageNavigationService : INavigationService, IPageAware
         catch (Exception ex)
         {
             return new NavigationResult { Exception = ex };
+        }
+        finally
+        {
+            NavigationSource = PageNavigationSource.Device;
         }
     }
 
@@ -290,6 +300,9 @@ public class PageNavigationService : INavigationService, IPageAware
     {
         try
         {
+            if (parameters is null)
+                parameters = new NavigationParameters();
+
             NavigationSource = PageNavigationSource.NavigationService;
 
             var navigationSegments = UriParsingHelper.GetUriSegments(uri);
@@ -334,10 +347,9 @@ public class PageNavigationService : INavigationService, IPageAware
         var nextSegment = segments.Dequeue();
 
         var pageParameters = UriParsingHelper.GetSegmentParameters(nextSegment);
-        if (pageParameters.ContainsKey(KnownNavigationParameters.UseModalNavigation))
-        {
-            useModalNavigation = pageParameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation);
-        }
+        var useModalNavigation = pageParameters.ContainsKey(KnownNavigationParameters.UseModalNavigation) ? pageParameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation) : false;
+
+        var animated = pageParameters.ContainsKey(KnownNavigationParameters.Animated) ? pageParameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;
 
         if (nextSegment == RemovePageSegment)
         {
@@ -1043,10 +1055,10 @@ public class PageNavigationService : INavigationService, IPageAware
         return useModalNavigation;
     }
 
-    internal bool UseModalGoBack(Page currentPage, bool? useModalNavigationDefault)
+    internal bool UseModalGoBack(Page currentPage, INavigationParameters parameters)
     {
-        if (useModalNavigationDefault.HasValue)
-            return useModalNavigationDefault.Value;
+        if (parameters.ContainsKey(KnownNavigationParameters.UseModalNavigation))
+            return parameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation);
         else if (currentPage is NavigationPage navPage)
             return GoBackModal(navPage);
         else if (PageUtilities.HasNavigationPageParent(currentPage, out var navParent))
