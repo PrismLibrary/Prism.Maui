@@ -229,19 +229,8 @@ public static class PageUtilities
 
     public static async Task HandleNavigationPageGoBack(NavigationPage navigationPage)
     {
-        var previousPage = navigationPage.CurrentPage;
-        var parameters = new NavigationParameters();
-        parameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);
-        if (!CanNavigate(previousPage, parameters) ||
-            !await CanNavigateAsync(previousPage, parameters))
-            return;
-
-        PageNavigationService.NavigationSource = PageNavigationSource.NavigationService;
-        await navigationPage.PopAsync();
-        PageNavigationService.NavigationSource = PageNavigationSource.Device;
-        OnNavigatedFrom(previousPage, parameters);
-        OnNavigatedTo(navigationPage.CurrentPage, parameters);
-        DestroyPage(previousPage);
+        var navigationService = Navigation.Xaml.Navigation.GetNavigationService(navigationPage);
+        await navigationService.GoBackAsync();
     }
 
     public static void HandleSystemGoBack(IView previousPage, IView currentPage)
