@@ -81,10 +81,7 @@ public class PageNavigationService : INavigationService, IPageAware
             var canNavigate = await PageUtilities.CanNavigateAsync(page, parameters);
             if (!canNavigate)
             {
-                return new NavigationResult
-                {
-                    Exception = new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, page)
-                };
+                throw new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, page);
             }
 
             bool useModalForDoPop = UseModalGoBack(page, parameters);
@@ -98,22 +95,19 @@ public class PageNavigationService : INavigationService, IPageAware
                 PageUtilities.OnNavigatedTo(previousPage, parameters);
                 PageUtilities.DestroyPage(poppedPage);
 
-                return new NavigationResult { Success = true };
+                return Notify(NavigationRequestType.GoBack, parameters);
             }
         }
         catch (Exception ex)
         {
-            return new NavigationResult { Exception = ex };
+            return Notify(NavigationRequestType.GoBack, parameters, ex);
         }
         finally
         {
             NavigationSource = PageNavigationSource.Device;
         }
 
-        return new NavigationResult
-        {
-            Exception = GetGoBackException(page, GetPageFromWindow())
-        };
+        return Notify(NavigationRequestType.GoBack, parameters, GetGoBackException(page, GetPageFromWindow()));
     }
 
     private static Exception GetGoBackException(Page currentPage, IView mainPage)
@@ -175,10 +169,7 @@ public class PageNavigationService : INavigationService, IPageAware
             var canNavigate = await PageUtilities.CanNavigateAsync(page, parameters);
             if (!canNavigate)
             {
-                return new NavigationResult
-                {
-                    Exception = new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, page)
-                };
+                throw new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, page);
             }
 
             var pagesToDestroy = page.Navigation.NavigationStack.ToList(); // get all pages to destroy
@@ -199,11 +190,11 @@ public class PageNavigationService : INavigationService, IPageAware
 
             PageUtilities.OnNavigatedTo(root, parameters);
 
-            return new NavigationResult { Success = true };
+            return Notify(NavigationRequestType.GoToRoot, parameters);
         }
         catch (Exception ex)
         {
-            return new NavigationResult { Exception = ex };
+            return Notify(NavigationRequestType.GoToRoot, parameters, ex);
         }
         finally
         {
@@ -234,17 +225,17 @@ public class PageNavigationService : INavigationService, IPageAware
             if (uri.IsAbsoluteUri)
             {
                 await ProcessNavigationForAbsoluteUri(navigationSegments, parameters, null, true);
-                return new NavigationResult { Success = true };
             }
             else
             {
                 await ProcessNavigation(GetCurrentPage(), navigationSegments, parameters, null, true);
-                return new NavigationResult { Success = true };
             }
+
+            return Notify(uri, parameters);
         }
         catch (Exception ex)
         {
-            return new NavigationResult { Exception = ex };
+            return Notify(uri, parameters, ex);
         }
         finally
         {
@@ -1007,6 +998,42 @@ public class PageNavigationService : INavigationService, IPageAware
     internal static bool UseReverseNavigation(Page currentPage, Type nextPageType)
     {
         return PageUtilities.HasNavigationPageParent(currentPage) && PageUtilities.IsSameOrSubclassOf<ContentPage>(nextPageType);
+    }
+
+    private INavigationResult Notify(NavigationRequestType type, INavigationParameters parameters, Exception exception = null)
+    {
+        var result = new NavigationResult
+        {
+            Exception = exception,
+            Success = exception is null
+        };
+        _eventAggregator.GetEvent<NavigationRequestEvent>().Publish(new NavigationRequestContext
+        {
+            Parameters = parameters,
+            Result = result,
+            Type = type,
+        });
+
+        return result;
+    }
+
+    private INavigationResult Notify(Uri uri, INavigationParameters parameters, Exception exception = null)
+    {
+        var result = new NavigationResult
+        {
+            Exception = exception,
+            Success = exception is null,
+        };
+
+        _eventAggregator.GetEvent<NavigationRequestEvent>().Publish(new NavigationRequestContext
+        {
+            Parameters = parameters,
+            Result = result,
+            Type = NavigationRequestType.Navigate,
+            Uri = uri,
+        });
+
+        return result;
     }
 
     protected static bool IsRoot(Page mainPage, Page currentPage)
