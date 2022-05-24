@@ -46,8 +46,7 @@ public static class NavigationRegistry
 
             if (view is Page page)
             {
-                var behaviors = container.Resolve<IPageBehaviorFactory>();
-                ConfigurePage(container, page, behaviors);
+                ConfigurePage(container, page);
             }
 
             if (view.BindingContext is not null)
@@ -114,20 +113,20 @@ public static class NavigationRegistry
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static void ClearRegistrationCache() => _registrations.Clear();
 
-    private static void ConfigurePage(IContainerProvider container, Page page, IPageBehaviorFactory behaviors)
+    private static void ConfigurePage(IContainerProvider container, Page page)
     {
         if(page is TabbedPage tabbed)
         {
             foreach(var child in tabbed.Children)
             {
                 var scope = container.CreateScope();
-                ConfigurePage(scope, child, behaviors);
+                ConfigurePage(scope, child);
             }
         }
         else if(page is NavigationPage navPage && navPage.RootPage is not null)
         {
             var scope = container.CreateScope();
-            ConfigurePage(scope, navPage.RootPage, behaviors);
+            ConfigurePage(scope, navPage.RootPage);
         }
 
         if (page.GetValue(Xaml.Navigation.NavigationScopeProperty) is null)
@@ -139,6 +138,8 @@ public static class NavigationRegistry
 
         page.SetValue(Xaml.Navigation.NavigationServiceProperty, navService);
 
-        behaviors.ApplyPageBehaviors(page);
+        var behaviorFactories = container.Resolve<IEnumerable<IPageBehaviorFactory>>();
+        foreach (var factory in behaviorFactories)
+            factory.ApplyPageBehaviors(page);
     }
 }

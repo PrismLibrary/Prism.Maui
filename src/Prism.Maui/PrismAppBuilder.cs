@@ -157,8 +157,13 @@ public abstract class PrismAppBuilder
         containerRegistry.RegisterSingleton<IPageDialogService, PageDialogService>();
         //containerRegistry.RegisterSingleton<IDialogService, DialogService>();
         //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
-        containerRegistry.RegisterSingleton<IPageBehaviorFactory, PageBehaviorFactory>();
         containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
+
+        containerRegistry.RegisterPageBehavior<NavigationPage, NavigationPageSystemGoBackBehavior>();
+        containerRegistry.RegisterPageBehavior<NavigationPage, NavigationPageActiveAwareBehavior>();
+        containerRegistry.RegisterPageBehavior<TabbedPage, TabbedPageActiveAwareBehavior>();
+        containerRegistry.RegisterPageBehavior<PageLifeCycleAwareBehavior>();
+        containerRegistry.RegisterPageBehavior<PageScopeBehavior>();
     }
 
     private INavigationService CreateNavigationService(IContainerProvider container, object view)
