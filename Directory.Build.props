@@ -16,9 +16,11 @@
     <PrismLicenseFile>$(MSBuildThisFileDirectory)LICENSE</PrismLicenseFile>
     <PackageTags>prism;maui;dotnet-maui;xaml;mvvm;ios;android;mac;winui</PackageTags>
     <Copyright>Copyright Dan Siegel 2021</Copyright>
-    <Description>This is a special preview package. In order to use this be sure that you have installed the Maui workload with Visual Studio 2022 preview 4 or later. Alternatively you may use Maui-Check to ensure that your environment has the required prerequesites to build from the command line with Visual Studio Code.
+    <Description>
+      Prism is a fully open source version of the Prism guidance originally produced by Microsoft Patterns &amp; Practices. Prism provides an implementation of a collection of design patterns that are helpful in writing well structured, maintainable, and testable XAML applications, including MVVM, dependency injection, commanding, event aggregation, and more. Prism's core functionality is a shared library targeting the .NET Framework and .NET Standard. Features that need to be platform specific are implemented in the respective libraries for the target platform (WPF, Uno Platform, Xamarin Forms, and .NET MAUI).
 
-As this is special preview build there are no docs, be sure to check out the source repo at: https://github.com/dansiegel/prism.maui </Description>
+      Prism for .NET MAUI helps you more easily design and build rich, flexible, and easy to maintain .NET MAUI applications. This library provides user interface composition as well as modularity support.
+    </Description>
 <!-- HACK: WinUI seems to have issues without this -->
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
     <DisableEmbeddedXbf>false</DisableEmbeddedXbf>
@@ -38,7 +40,7 @@ As this is special preview build there are no docs, be sure to check out the sou
 
   <ItemGroup>
     <PackageReference Include="Nerdbank.GitVersioning" 
-                      Version="3.5.104"
+                      Version="3.5.107"
                       PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub"
                       Version="1.1.1"

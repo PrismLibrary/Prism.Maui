@@ -21,6 +21,7 @@ public class NavigationPageSystemGoBackBehavior : BehaviorBase<NavigationPage>
     {
         if (PageNavigationService.NavigationSource == PageNavigationSource.Device)
         {
+            System.Diagnostics.Trace.WriteLine("NavigationPage has encountered an unhandled GoBack. Be sure to inherit from PrismNavigationPage.");
             PageUtilities.HandleSystemGoBack(e.Page, AssociatedObject.CurrentPage);
         }
     }

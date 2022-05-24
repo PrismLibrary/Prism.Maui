@@ -1,5 +1,6 @@
 using Prism.Behaviors;
 using Prism.Common;
+using Prism.Events;
 using Prism.Ioc;
 using Application = Microsoft.Maui.Controls.Application;
 
@@ -19,6 +20,7 @@ public class PageNavigationService : INavigationService, IPageAware
 
     private readonly IContainerProvider _container;
     protected readonly IApplication _application;
+    protected readonly IEventAggregator _eventAggregator;
     protected Window Window;
 
     protected Page _page;
@@ -47,20 +49,12 @@ public class PageNavigationService : INavigationService, IPageAware
     /// </summary>
     /// <param name="container">The <see cref="IContainerProvider"/> that will be used to resolve pages for navigation.</param>
     /// <param name="application">The <see cref="IApplication"/> that will let us ensure the Application.MainPage is set.</param>
-    /// <param name="pageBehaviorFactory">The <see cref="IPageBehaviorFactory"/> that will apply base and custom behaviors to pages created in the <see cref="PageNavigationService"/>.</param>
-    public PageNavigationService(IContainerProvider container, IApplication application)
+    /// <param name="eventAggregator">The <see cref="IEventAggregator"/> that will raise <see cref="NavigationRequestEvent"/>.</param>
+    public PageNavigationService(IContainerProvider container, IApplication application, IEventAggregator eventAggregator)
     {
         _container = container;
         _application = application;
-    }
-
-    /// <summary>
-    /// Navigates to the most recent entry in the back navigation history by popping the calling Page off the navigation stack.
-    /// </summary>
-    /// <returns>If <c>true</c> a go back operation was successful. If <c>false</c> the go back operation failed.</returns>
-    public virtual Task<INavigationResult> GoBackAsync()
-    {
-        return GoBackAsync(null);
+        _eventAggregator = eventAggregator;
     }
 
     /// <summary>
@@ -68,79 +62,52 @@ public class PageNavigationService : INavigationService, IPageAware
     /// </summary>
     /// <param name="parameters">The navigation parameters</param>
     /// <returns>If <c>true</c> a go back operation was successful. If <c>false</c> the go back operation failed.</returns>
-    public virtual Task<INavigationResult> GoBackAsync(INavigationParameters parameters)
-    {
-        return GoBackInternal(parameters, null, true);
-    }
-
-    /// <summary>
-    /// Navigates to the most recent entry in the back navigation history by popping the calling Page off the navigation stack.
-    /// </summary>
-    /// <param name="parameters">The navigation parameters</param>
-    /// <param name="useModalNavigation">If <c>true</c> uses PopModalAsync, if <c>false</c> uses PopAsync</param>
-    /// <param name="animated">If <c>true</c> the transition is animated, if <c>false</c> there is no animation on transition.</param>
-    /// <returns><see cref="INavigationResult"/> indicating whether the request was successful or if there was an encountered <see cref="Exception"/>.</returns>
-    public virtual Task<INavigationResult> GoBackAsync(INavigationParameters parameters, bool? useModalNavigation, bool animated)
-    {
-        return GoBackInternal(parameters, useModalNavigation, animated);
-    }
-
-    /// <summary>
-    /// Navigates to the most recent entry in the back navigation history by popping the calling Page off the navigation stack.
-    /// </summary>
-    /// <param name="parameters">The navigation parameters</param>
-    /// <param name="useModalNavigation">If <c>true</c> uses PopModalAsync, if <c>false</c> uses PopAsync</param>
-    /// <param name="animated">If <c>true</c> the transition is animated, if <c>false</c> there is no animation on transition.</param>
-    /// <returns>If <c>true</c> a go back operation was successful. If <c>false</c> the go back operation failed.</returns>
-    protected async virtual Task<INavigationResult> GoBackInternal(INavigationParameters parameters, bool? useModalNavigation, bool animated)
+    public virtual async Task<INavigationResult> GoBackAsync(INavigationParameters parameters)
     {
         Page page = null;
         try
         {
+            if (parameters is null)
+                parameters = new NavigationParameters();
+
             NavigationSource = PageNavigationSource.NavigationService;
 
             page = GetCurrentPage();
             if (IsRoot(GetPageFromWindow(), page))
                 throw new NavigationException(NavigationException.CannotPopApplicationMainPage, page);
 
-            var segmentParameters = UriParsingHelper.GetSegmentParameters(null, parameters);
-            segmentParameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);
+            parameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);
 
-            var canNavigate = await PageUtilities.CanNavigateAsync(page, segmentParameters);
+            var canNavigate = await PageUtilities.CanNavigateAsync(page, parameters);
             if (!canNavigate)
             {
-                return new NavigationResult
-                {
-                    Exception = new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, page)
-                };
+                throw new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, page);
             }
 
-            bool useModalForDoPop = UseModalGoBack(page, useModalNavigation);
+            bool useModalForDoPop = UseModalGoBack(page, parameters);
             Page previousPage = PageUtilities.GetOnNavigatedToTarget(page, Window?.Page, useModalForDoPop);
 
+            bool animated = parameters.ContainsKey(KnownNavigationParameters.Animated) ? parameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;
             var poppedPage = await DoPop(page.Navigation, useModalForDoPop, animated);
             if (poppedPage != null)
             {
-                PageUtilities.OnNavigatedFrom(page, segmentParameters);
-                PageUtilities.OnNavigatedTo(previousPage, segmentParameters);
+                PageUtilities.OnNavigatedFrom(page, parameters);
+                PageUtilities.OnNavigatedTo(previousPage, parameters);
                 PageUtilities.DestroyPage(poppedPage);
 
-                return new NavigationResult { Success = true };
+                return Notify(NavigationRequestType.GoBack, parameters);
             }
         }
         catch (Exception ex)
         {
-            return new NavigationResult { Exception = ex };
+            return Notify(NavigationRequestType.GoBack, parameters, ex);
         }
         finally
         {
             NavigationSource = PageNavigationSource.Device;
         }
 
-        return new NavigationResult
-        {
-            Exception = GetGoBackException(page, GetPageFromWindow())
-        };
+        return Notify(NavigationRequestType.GoBack, parameters, GetGoBackException(page, GetPageFromWindow()));
     }
 
     private static Exception GetGoBackException(Page currentPage, IView mainPage)
@@ -189,17 +156,7 @@ public class PageNavigationService : INavigationService, IPageAware
     /// <param name="parameters">The navigation parameters</param>
     /// <returns><see cref="INavigationResult"/> indicating whether the request was successful or if there was an encountered <see cref="Exception"/>.</returns>
     /// <remarks>Only works when called from a View within a NavigationPage</remarks>
-    public virtual Task<INavigationResult> GoBackToRootAsync(INavigationParameters parameters)
-    {
-        return GoBackToRootInternal(parameters);
-    }
-
-    /// <summary>
-    /// When navigating inside a NavigationPage: Pops all but the root Page off the navigation stack
-    /// </summary>
-    /// <param name="parameters">The navigation parameters</param>
-    /// <remarks>Only works when called from a View within a NavigationPage</remarks>
-    protected async virtual Task<INavigationResult> GoBackToRootInternal(INavigationParameters parameters)
+    public virtual async Task<INavigationResult> GoBackToRootAsync(INavigationParameters parameters)
     {
         try
         {
@@ -212,10 +169,7 @@ public class PageNavigationService : INavigationService, IPageAware
             var canNavigate = await PageUtilities.CanNavigateAsync(page, parameters);
             if (!canNavigate)
             {
-                return new NavigationResult
-                {
-                    Exception = new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, page)
-                };
+                throw new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, page);
             }
 
             var pagesToDestroy = page.Navigation.NavigationStack.ToList(); // get all pages to destroy
@@ -223,7 +177,10 @@ public class PageNavigationService : INavigationService, IPageAware
             var root = pagesToDestroy.Last();
             pagesToDestroy.Remove(root); //don't destroy the root page
 
-            await page.Navigation.PopToRootAsync();
+            bool animated = parameters.ContainsKey(KnownNavigationParameters.Animated) ? parameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;
+            NavigationSource = PageNavigationSource.NavigationService;
+            await page.Navigation.PopToRootAsync(animated);
+            NavigationSource = PageNavigationSource.Device;
 
             foreach (var destroyPage in pagesToDestroy)
             {
@@ -233,29 +190,16 @@ public class PageNavigationService : INavigationService, IPageAware
 
             PageUtilities.OnNavigatedTo(root, parameters);
 
-            return new NavigationResult { Success = true };
+            return Notify(NavigationRequestType.GoToRoot, parameters);
         }
         catch (Exception ex)
         {
-            return new NavigationResult { Exception = ex };
+            return Notify(NavigationRequestType.GoToRoot, parameters, ex);
         }
-    }
-
-    /// <summary>
-    /// Initiates navigation to the target specified by the <paramref name="name"/>.
-    /// </summary>
-    /// <param name="name">The name of the target to navigate to.</param>
-    /// <param name="parameters">The navigation parameters</param>
-    /// <param name="useModalNavigation">If <c>true</c> uses PopModalAsync, if <c>false</c> uses PopAsync</param>
-    /// <param name="animated">If <c>true</c> the transition is animated, if <c>false</c> there is no animation on transition.</param>
-    protected virtual Task<INavigationResult> NavigateInternal(string name, INavigationParameters parameters, bool? useModalNavigation, bool animated)
-    {
-        if (name.StartsWith(RemovePageRelativePath))
+        finally
         {
-            name = name.Replace(RemovePageRelativePath, RemovePageInstruction);
+            NavigationSource = PageNavigationSource.Device;
         }
-
-        return NavigateInternal(UriParsingHelper.Parse(name), parameters, useModalNavigation, animated);
     }
 
     /// <summary>
@@ -267,44 +211,31 @@ public class PageNavigationService : INavigationService, IPageAware
     /// <example>
     /// NavigateAsync(new Uri("MainPage?id=3&amp;name=brian", UriKind.RelativeSource), parameters);
     /// </example>
-    public virtual Task<INavigationResult> NavigateAsync(Uri uri, INavigationParameters parameters)
-    {
-        return NavigateInternal(uri, parameters, null, true);
-    }
-
-    /// <summary>
-    /// Initiates navigation to the target specified by the <paramref name="uri"/>.
-    /// </summary>
-    /// <param name="uri">The Uri to navigate to</param>
-    /// <param name="parameters">The navigation parameters</param>
-    /// <param name="useModalNavigation">If <c>true</c> uses PopModalAsync, if <c>false</c> uses PopAsync</param>
-    /// <param name="animated">If <c>true</c> the transition is animated, if <c>false</c> there is no animation on transition.</param>
-    /// <remarks>Navigation parameters can be provided in the Uri and by using the <paramref name="parameters"/>.</remarks>
-    /// <example>
-    /// Navigate(new Uri("MainPage?id=3&amp;name=brian", UriKind.RelativeSource), parameters);
-    /// </example>
-    protected async virtual Task<INavigationResult> NavigateInternal(Uri uri, INavigationParameters parameters, bool? useModalNavigation, bool animated)
+    public virtual async Task<INavigationResult> NavigateAsync(Uri uri, INavigationParameters parameters)
     {
         try
         {
+            if (parameters is null)
+                parameters = new NavigationParameters();
+
             NavigationSource = PageNavigationSource.NavigationService;
 
             var navigationSegments = UriParsingHelper.GetUriSegments(uri);
 
             if (uri.IsAbsoluteUri)
             {
-                await ProcessNavigationForAbsoluteUri(navigationSegments, parameters, useModalNavigation, animated);
-                return new NavigationResult { Success = true };
+                await ProcessNavigationForAbsoluteUri(navigationSegments, parameters, null, true);
             }
             else
             {
-                await ProcessNavigation(GetCurrentPage(), navigationSegments, parameters, useModalNavigation, animated);
-                return new NavigationResult { Success = true };
+                await ProcessNavigation(GetCurrentPage(), navigationSegments, parameters, null, true);
             }
+
+            return Notify(uri, parameters);
         }
         catch (Exception ex)
         {
-            return new NavigationResult { Exception = ex };
+            return Notify(uri, parameters, ex);
         }
         finally
         {
@@ -331,10 +262,9 @@ public class PageNavigationService : INavigationService, IPageAware
         var nextSegment = segments.Dequeue();
 
         var pageParameters = UriParsingHelper.GetSegmentParameters(nextSegment);
-        if (pageParameters.ContainsKey(KnownNavigationParameters.UseModalNavigation))
-        {
-            useModalNavigation = pageParameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation);
-        }
+        //var useModalNavigation = pageParameters.ContainsKey(KnownNavigationParameters.UseModalNavigation) ? pageParameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation) : false;
+
+        //var animated = pageParameters.ContainsKey(KnownNavigationParameters.Animated) ? pageParameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;
 
         if (nextSegment == RemovePageSegment)
         {
@@ -1040,10 +970,10 @@ public class PageNavigationService : INavigationService, IPageAware
         return useModalNavigation;
     }
 
-    internal bool UseModalGoBack(Page currentPage, bool? useModalNavigationDefault)
+    internal bool UseModalGoBack(Page currentPage, INavigationParameters parameters)
     {
-        if (useModalNavigationDefault.HasValue)
-            return useModalNavigationDefault.Value;
+        if (parameters.ContainsKey(KnownNavigationParameters.UseModalNavigation))
+            return parameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation);
         else if (currentPage is NavigationPage navPage)
             return GoBackModal(navPage);
         else if (PageUtilities.HasNavigationPageParent(currentPage, out var navParent))
@@ -1068,6 +998,42 @@ public class PageNavigationService : INavigationService, IPageAware
     internal static bool UseReverseNavigation(Page currentPage, Type nextPageType)
     {
         return PageUtilities.HasNavigationPageParent(currentPage) && PageUtilities.IsSameOrSubclassOf<ContentPage>(nextPageType);
+    }
+
+    private INavigationResult Notify(NavigationRequestType type, INavigationParameters parameters, Exception exception = null)
+    {
+        var result = new NavigationResult
+        {
+            Exception = exception,
+            Success = exception is null
+        };
+        _eventAggregator.GetEvent<NavigationRequestEvent>().Publish(new NavigationRequestContext
+        {
+            Parameters = parameters,
+            Result = result,
+            Type = type,
+        });
+
+        return result;
+    }
+
+    private INavigationResult Notify(Uri uri, INavigationParameters parameters, Exception exception = null)
+    {
+        var result = new NavigationResult
+        {
+            Exception = exception,
+            Success = exception is null,
+        };
+
+        _eventAggregator.GetEvent<NavigationRequestEvent>().Publish(new NavigationRequestContext
+        {
+            Parameters = parameters,
+            Result = result,
+            Type = NavigationRequestType.Navigate,
+            Uri = uri,
+        });
+
+        return result;
     }
 
     protected static bool IsRoot(Page mainPage, Page currentPage)

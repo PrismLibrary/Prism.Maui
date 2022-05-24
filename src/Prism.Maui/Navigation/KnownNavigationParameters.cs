@@ -18,6 +18,11 @@ public static class KnownNavigationParameters
     public const string UseModalNavigation = "useModalNavigation";
 
     /// <summary>
+    /// Used to control whether the navigation should be animated.
+    /// </summary>
+    public const string Animated = "animated";
+
+    /// <summary>
     /// Used to define a navigation parameter that is bound directly to a CommandParameter via <code>{Binding .}</code>.
     /// </summary>
     public const string XamlParam = "xamlParam";

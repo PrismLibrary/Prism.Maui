@@ -16,10 +16,21 @@ public static class MauiProgram
             })
             .RegisterTypes(containerRegistry =>
             {
+                containerRegistry.RegisterGlobalNavigationObserver();
                 containerRegistry.RegisterForNavigation<MainPage>();
                 containerRegistry.RegisterForNavigation<RootPage>();
                 containerRegistry.RegisterForNavigation<SamplePage>();
             })
+            .AddGlobalNavigationObserver(context => context.Subscribe(x =>
+            {
+                if (x.Type == NavigationRequestType.Navigate)
+                    Console.WriteLine($"Navigation: {x.Type} - {x.Uri}");
+                else
+                    Console.WriteLine($"Navigation: {x.Type}");
+
+                var status = x.Cancelled ? "Cancelled" : x.Result.Success ? "Success" : "Failed";
+                Console.WriteLine($"Result: {status}");
+            }))
             .OnAppStart(navigationService => navigationService.CreateBuilder()
                 .AddNavigationSegment("MainPage")
                 .AddNavigationPage()
