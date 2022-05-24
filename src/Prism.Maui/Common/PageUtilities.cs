@@ -229,7 +229,7 @@ public static class PageUtilities
 
     public static async Task HandleNavigationPageGoBack(NavigationPage navigationPage)
     {
-        var navigationService = Navigation.Xaml.Navigation.GetNavigationService(navigationPage);
+        var navigationService = Navigation.Xaml.Navigation.GetNavigationService(navigationPage.CurrentPage);
         await navigationService.GoBackAsync();
     }
 
