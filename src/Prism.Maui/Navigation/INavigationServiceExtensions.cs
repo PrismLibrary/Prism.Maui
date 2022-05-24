@@ -118,4 +118,164 @@ public static class INavigationServiceExtensions
         }
         return navParams;
     }
+
+    private static void ProcessNavigationPath(Page page, Stack<string> stack)
+    {
+        if (page.Parent is Page parent)
+        {
+            if (parent is NavigationPage)
+            {
+                var index = PageUtilities.GetCurrentPageIndex(page, page.Navigation.NavigationStack);
+                if (index > 0)
+                {
+                    int previousPageIndex = index - 1;
+                    for (int x = previousPageIndex; x >= 0; x--)
+                    {
+                        AddSegmentToStack(page.Navigation.NavigationStack[x], stack);
+                    }
+                }
+
+                AddSegmentToStack(parent, stack);
+            }
+            else if (parent is FlyoutPage)
+            {
+                AddSegmentToStack(parent, stack);
+            }
+
+            ProcessNavigationPath(parent, stack);
+        }
+        else
+        {
+            ProcessModalNavigation(page, stack);
+        }
+    }
+
+    private static void ProcessModalNavigation(Page page, Stack<string> stack)
+    {
+        var index = PageUtilities.GetCurrentPageIndex(page, page.Navigation.ModalStack);
+        int previousPageIndex = index - 1;
+        for (int x = previousPageIndex; x >= 0; x--)
+        {
+            var childPage = page.Navigation.ModalStack[x];
+            if (childPage is NavigationPage navigationPage)
+            {
+                AddUseModalNavigationParameter(stack);
+                ProcessModalNavigationPagePath(navigationPage, stack);
+            }
+            else if (childPage is FlyoutPage flyout)
+            {
+                ProcessModalFlyoutPagePath(flyout, stack);
+            }
+            else
+            {
+                AddSegmentToStack(childPage, stack);
+            }
+        }
+
+        ProcessMainPagePath(Application.Current?.MainPage, page, stack);
+    }
+
+    private static void ProcessMainPagePath(Page mainPage, Page previousPage, Stack<string> stack)
+    {
+        if (mainPage == null)
+            return;
+
+        if (previousPage == mainPage)
+            return;
+
+        if (mainPage is NavigationPage mainPageAsNavigationPage)
+        {
+            AddUseModalNavigationParameter(stack);
+            ProcessModalNavigationPagePath(mainPageAsNavigationPage, stack);
+        }
+        else if (mainPage is FlyoutPage flyout)
+        {
+            var detail = flyout.Detail;
+            if (detail is NavigationPage detailAsNavigationPage)
+            {
+                AddUseModalNavigationParameter(stack);
+                ProcessModalNavigationPagePath(detailAsNavigationPage, stack);
+            }
+            else
+            {
+                AddSegmentToStack(detail, stack);
+            }
+
+            AddSegmentToStack(mainPage, stack);
+        }
+        else
+        {
+            AddSegmentToStack(mainPage, stack);
+        }
+    }
+
+    private static void ProcessModalNavigationPagePath(NavigationPage page, Stack<string> stack)
+    {
+        var navStack = page.Navigation.NavigationStack.Reverse();
+        foreach (var child in navStack)
+        {
+            AddSegmentToStack(child, stack);
+        }
+
+        AddSegmentToStack(page, stack);
+    }
+
+    private static void ProcessModalFlyoutPagePath(FlyoutPage page, Stack<string> stack)
+    {
+        if (page.Detail is NavigationPage navigationPage)
+        {
+            AddUseModalNavigationParameter(stack);
+            ProcessModalNavigationPagePath(navigationPage, stack);
+        }
+        else
+        {
+            AddSegmentToStack(page.Detail, stack);
+        }
+
+        AddSegmentToStack(page, stack);
+    }
+
+    private static Page ProcessCurrentPageNavigationPath(Page page, Stack<string> stack)
+    {
+        var currentPageKeyInfo = NavigationRegistry.GetPageNavigationInfo(page.GetType());
+        string currentSegment = $"{currentPageKeyInfo.Name}";
+
+        if (page.Parent is Page parent)
+        {
+            var parentKeyInfo = NavigationRegistry.GetPageNavigationInfo(parent.GetType());
+
+            if (parent is TabbedPage)
+            {
+                //set the selected tab to the current page
+                currentSegment = $"{parentKeyInfo.Name}?{KnownNavigationParameters.SelectedTab}={currentPageKeyInfo.Name}";
+                page = parent;
+            }
+            else if (parent is FlyoutPage)
+            {
+                currentSegment = $"{parentKeyInfo.Name}/{currentPageKeyInfo.Name}";
+                page = parent;
+            }
+        }
+
+        stack.Push(currentSegment);
+
+        return page;
+    }
+
+    private static void AddSegmentToStack(Page page, Stack<string> stack)
+    {
+        if (page == null)
+            return;
+
+        var keyInfo = NavigationRegistry.GetPageNavigationInfo(page.GetType());
+        if (keyInfo != null)
+            stack.Push(keyInfo.Name);
+    }
+
+    private static void AddUseModalNavigationParameter(Stack<string> stack)
+    {
+        var lastPageName = stack.Pop();
+        lastPageName = $"{lastPageName}?{KnownNavigationParameters.UseModalNavigation}=true";
+        stack.Push(lastPageName);
+    }
 }

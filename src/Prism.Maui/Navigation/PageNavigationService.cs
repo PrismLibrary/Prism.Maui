@@ -73,22 +73,22 @@ public class PageNavigationService : INavigationService
 
             parameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);
 
-            var canNavigate = await PageUtilities.CanNavigateAsync(page, parameters);
+            var canNavigate = await MvvmHelpers.CanNavigateAsync(page, parameters);
             if (!canNavigate)
             {
                 throw new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, page);
             }
 
             bool useModalForDoPop = UseModalGoBack(page, parameters);
-            Page previousPage = PageUtilities.GetOnNavigatedToTarget(page, Window?.Page, useModalForDoPop);
+            Page previousPage = MvvmHelpers.GetOnNavigatedToTarget(page, Window?.Page, useModalForDoPop);
 
             bool animated = parameters.ContainsKey(KnownNavigationParameters.Animated) ? parameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;
             var poppedPage = await DoPop(page.Navigation, useModalForDoPop, animated);
             if (poppedPage != null)
             {
-                PageUtilities.OnNavigatedFrom(page, parameters);
-                PageUtilities.OnNavigatedTo(previousPage, parameters);
-                PageUtilities.DestroyPage(poppedPage);
+                MvvmHelpers.OnNavigatedFrom(page, parameters);
+                MvvmHelpers.OnNavigatedTo(previousPage, parameters);
+                MvvmHelpers.DestroyPage(poppedPage);
 
                 return Notify(NavigationRequestType.GoBack, parameters);
             }
@@ -163,7 +163,7 @@ public class PageNavigationService : INavigationService
             parameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.Back);
 
             var page = GetCurrentPage();
-            var canNavigate = await PageUtilities.CanNavigateAsync(page, parameters);
+            var canNavigate = await MvvmHelpers.CanNavigateAsync(page, parameters);
             if (!canNavigate)
             {
                 throw new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, page);
@@ -181,11 +181,11 @@ public class PageNavigationService : INavigationService
 
             foreach (var destroyPage in pagesToDestroy)
             {
-                PageUtilities.OnNavigatedFrom(destroyPage, parameters);
-                PageUtilities.DestroyPage(destroyPage);
+                MvvmHelpers.OnNavigatedFrom(destroyPage, parameters);
+                MvvmHelpers.DestroyPage(destroyPage);
             }
 
-            PageUtilities.OnNavigatedTo(root, parameters);
+            MvvmHelpers.OnNavigatedTo(root, parameters);
 
             return Notify(NavigationRequestType.GoToRoot, parameters);
         }
@@ -298,7 +298,7 @@ public class PageNavigationService : INavigationService
 
     protected virtual Task ProcessNavigationForRemovePageSegments(Page currentPage, string nextSegment, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
     {
-        if (!PageUtilities.HasDirectNavigationPageParent(currentPage))
+        if (!MvvmHelpers.HasDirectNavigationPageParent(currentPage))
         {
             throw new NavigationException(NavigationException.RelativeNavigationRequiresNavigationPage, currentPage);
         }
@@ -366,7 +366,7 @@ public class PageNavigationService : INavigationService
         foreach (var page in pagesToRemove)
         {
             navigationPage.Navigation.RemovePage(page);
-            PageUtilities.DestroyPage(page);
+            MvvmHelpers.DestroyPage(page);
         }
     }
 
@@ -389,7 +389,7 @@ public class PageNavigationService : INavigationService
         });
         if (currentPage != null)
         {
-            PageUtilities.DestroyWithModalStack(currentPage, modalStack);
+            MvvmHelpers.DestroyWithModalStack(currentPage, modalStack);
         }
     }
 
@@ -469,7 +469,7 @@ public class PageNavigationService : INavigationService
 
         foreach (var destroyPage in destroyPages)
         {
-            PageUtilities.DestroyPage(destroyPage);
+            MvvmHelpers.DestroyPage(destroyPage);
         }
     }
 
@@ -522,7 +522,7 @@ public class PageNavigationService : INavigationService
             detailIsNavPage = true;
 
             //we only care if we the next segment is also a NavigationPage.
-            if (PageUtilities.IsSameOrSubclassOf<NavigationPage>(nextSegmentType))
+            if (MvvmHelpers.IsSameOrSubclassOf<NavigationPage>(nextSegmentType))
             {
                 //first we check to see if we are being forced to reuse the NavPage by checking the interface
                 reuseNavPage = !GetClearNavigationPageNavigationStack(navPage);
@@ -567,7 +567,7 @@ public class PageNavigationService : INavigationService
 
                 currentPage.IsPresented = isPresented;
                 currentPage.Detail = newDetail;
-                PageUtilities.DestroyPage(detail);
+                MvvmHelpers.DestroyPage(detail);
             });
             return;
         }
@@ -600,7 +600,7 @@ public class PageNavigationService : INavigationService
         var segmentParameters = UriParsingHelper.GetSegmentParameters(toSegment, parameters);
         segmentParameters.GetNavigationParametersInternal().Add(KnownInternalParameters.NavigationMode, NavigationMode.New);
 
-        var canNavigate = await PageUtilities.CanNavigateAsync(fromPage, segmentParameters);
+        var canNavigate = await MvvmHelpers.CanNavigateAsync(fromPage, segmentParameters);
         if (!canNavigate)
         {
             throw new NavigationException(NavigationException.IConfirmNavigationReturnedFalse, toPage);
@@ -622,7 +622,7 @@ public class PageNavigationService : INavigationService
 
     static async Task OnInitializedAsync(Page toPage, INavigationParameters parameters)
     {
-        await PageUtilities.OnInitializedAsync(toPage, parameters);
+        await MvvmHelpers.OnInitializedAsync(toPage, parameters);
 
         if (toPage is TabbedPage tabbedPage)
         {
@@ -630,11 +630,11 @@ public class PageNavigationService : INavigationService
             {
                 if (child is NavigationPage navigationPage)
                 {
-                    await PageUtilities.OnInitializedAsync(navigationPage.CurrentPage, parameters);
+                    await MvvmHelpers.OnInitializedAsync(navigationPage.CurrentPage, parameters);
                 }
                 else
                 {
-                    await PageUtilities.OnInitializedAsync(child, parameters);
+                    await MvvmHelpers.OnInitializedAsync(child, parameters);
                 }
             }
         }
@@ -642,34 +642,34 @@ public class PageNavigationService : INavigationService
 
     private static void OnNavigatedTo(Page toPage, INavigationParameters parameters)
     {
-        PageUtilities.OnNavigatedTo(toPage, parameters);
+        MvvmHelpers.OnNavigatedTo(toPage, parameters);
 
         if (toPage is TabbedPage tabbedPage)
         {
             if (tabbedPage.CurrentPage is NavigationPage navigationPage)
             {
-                PageUtilities.OnNavigatedTo(navigationPage.CurrentPage, parameters);
+                MvvmHelpers.OnNavigatedTo(navigationPage.CurrentPage, parameters);
             }
             else if (tabbedPage.BindingContext != tabbedPage.CurrentPage.BindingContext)
             {
-                PageUtilities.OnNavigatedTo(tabbedPage.CurrentPage, parameters);
+                MvvmHelpers.OnNavigatedTo(tabbedPage.CurrentPage, parameters);
             }
         }
     }
 
     private static void OnNavigatedFrom(Page fromPage, INavigationParameters parameters)
     {
-        PageUtilities.OnNavigatedFrom(fromPage, parameters);
+        MvvmHelpers.OnNavigatedFrom(fromPage, parameters);
 
         if (fromPage is TabbedPage tabbedPage)
         {
             if (tabbedPage.CurrentPage is NavigationPage navigationPage)
             {
-                PageUtilities.OnNavigatedFrom(navigationPage.CurrentPage, parameters);
+                MvvmHelpers.OnNavigatedFrom(navigationPage.CurrentPage, parameters);
             }
             else if (tabbedPage.BindingContext != tabbedPage.CurrentPage.BindingContext)
             {
-                PageUtilities.OnNavigatedFrom(tabbedPage.CurrentPage, parameters);
+                MvvmHelpers.OnNavigatedFrom(tabbedPage.CurrentPage, parameters);
             }
         }
     }
@@ -835,7 +835,7 @@ public class PageNavigationService : INavigationService
             else
             {
                 var pageType = NavigationRegistry.GetPageType(UriParsingHelper.GetSegmentName(item));
-                if (PageUtilities.IsSameOrSubclassOf<FlyoutPage>(pageType))
+                if (MvvmHelpers.IsSameOrSubclassOf<FlyoutPage>(pageType))
                 {
                     illegalSegments.Enqueue(item);
                     illegalPageFound = true;
@@ -962,7 +962,7 @@ public class PageNavigationService : INavigationService
         else if (currentPage is NavigationPage)
             useModalNavigation = false;
         else
-            useModalNavigation = !PageUtilities.HasNavigationPageParent(currentPage);
+            useModalNavigation = !MvvmHelpers.HasNavigationPageParent(currentPage);
 
         return useModalNavigation;
     }
@@ -973,7 +973,7 @@ public class PageNavigationService : INavigationService
             return parameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation);
         else if (currentPage is NavigationPage navPage)
             return GoBackModal(navPage);
-        else if (PageUtilities.HasNavigationPageParent(currentPage, out var navParent))
+        else if (MvvmHelpers.HasNavigationPageParent(currentPage, out var navParent))
             return GoBackModal(navParent);
         else
             return true;
@@ -994,7 +994,7 @@ public class PageNavigationService : INavigationService
 
     internal static bool UseReverseNavigation(Page currentPage, Type nextPageType)
     {
-        return PageUtilities.HasNavigationPageParent(currentPage) && PageUtilities.IsSameOrSubclassOf<ContentPage>(nextPageType);
+        return MvvmHelpers.HasNavigationPageParent(currentPage) && MvvmHelpers.IsSameOrSubclassOf<ContentPage>(nextPageType);
     }
 
     private INavigationResult Notify(NavigationRequestType type, INavigationParameters parameters, Exception exception = null)
