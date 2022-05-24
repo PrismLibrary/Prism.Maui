@@ -1,4 +1,5 @@
-﻿using Prism.Ioc;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Prism.Ioc;
 
 namespace Prism.Navigation;
 
@@ -14,4 +15,19 @@ public static class NavigationObserverRegistrationExtensions
         s_IsRegistered = true;
         return container.RegisterSingleton<IGlobalNavigationObserver, GlobalNavigationObserver>();
     }
+
+    public static IServiceCollection RegisterGlobalNavigationObserver(this IServiceCollection services)
+    {
+        if (s_IsRegistered)
+            return services;
+
+        s_IsRegistered = true;
+        return services.AddSingleton<IGlobalNavigationObserver, GlobalNavigationObserver>();
+    }
+
+    public static PrismAppBuilder AddGlobalNavigationObserver(this PrismAppBuilder builder, Action<IObservable<NavigationRequestContext>> addObservable) =>
+        builder.OnInitialized(c => addObservable(c.Resolve<IGlobalNavigationObserver>().NavigationRequest));
+
+    public static PrismAppBuilder AddGlobalNavigationObserver(this PrismAppBuilder builder, Action<IContainerProvider, IObservable<NavigationRequestContext>> addObservable) =>
+        builder.OnInitialized(c => addObservable(c, c.Resolve<IGlobalNavigationObserver>().NavigationRequest));
 }
