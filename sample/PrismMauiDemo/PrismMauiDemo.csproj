@@ -51,6 +51,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Prism.DryIoc.Maui\Prism.DryIoc.Maui.csproj" />
+    <ProjectReference Include="..\..\src\Prism.Maui.Rx\Prism.Maui.Rx.csproj" />
     <ProjectReference Include="..\..\src\Prism.Maui\Prism.Maui.csproj" />
     <ProjectReference Include="..\MauiModule\MauiModule.csproj" />
   </ItemGroup>

@@ -26,8 +26,20 @@ public static class NavigationObserverRegistrationExtensions
     }
 
     public static PrismAppBuilder AddGlobalNavigationObserver(this PrismAppBuilder builder, Action<IObservable<NavigationRequestContext>> addObservable) =>
-        builder.OnInitialized(c => addObservable(c.Resolve<IGlobalNavigationObserver>().NavigationRequest));
+        builder.OnInitialized(c =>
+        {
+            if (!s_IsRegistered)
+                throw new Exception("IGlobalNavigationObserver has not been registered. Be sure to call 'container.RegisterGlobalNavigationObserver()'.");
+
+            addObservable(c.Resolve<IGlobalNavigationObserver>().NavigationRequest);
+        });
 
     public static PrismAppBuilder AddGlobalNavigationObserver(this PrismAppBuilder builder, Action<IContainerProvider, IObservable<NavigationRequestContext>> addObservable) =>
-        builder.OnInitialized(c => addObservable(c, c.Resolve<IGlobalNavigationObserver>().NavigationRequest));
+        builder.OnInitialized(c =>
+        {
+            if (!s_IsRegistered)
+                throw new Exception("IGlobalNavigationObserver has not been registered. Be sure to call 'container.RegisterGlobalNavigationObserver()'.");
+
+            addObservable(c, c.Resolve<IGlobalNavigationObserver>().NavigationRequest);
+        });
 }
