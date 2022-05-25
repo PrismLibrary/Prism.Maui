@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using Prism.Navigation;
+using Prism.Regions.Navigation;
 using NavigationMode = Prism.Navigation.NavigationMode;
 
 namespace Prism.Common;
@@ -99,6 +100,37 @@ public static class MvvmHelpers
         }
 
         return null;
+    }
+
+    public static bool IsNavigationTarget(object view, INavigationContext navigationContext)
+    {
+        if (view is IRegionAware viewAsRegionAware)
+        {
+            return viewAsRegionAware.IsNavigationTarget(navigationContext);
+        }
+
+        if (view is BindableObject bindable && bindable.BindingContext is IRegionAware vmAsRegionAware)
+        {
+            return vmAsRegionAware.IsNavigationTarget(navigationContext);
+        }
+
+        var uri = navigationContext.Uri;
+        if (!uri.IsAbsoluteUri)
+            uri = new Uri(new Uri("app://prism.regions"), uri);
+        var path = uri.LocalPath.Substring(1);
+        var viewType = view.GetType();
+
+        return path == viewType.Name || path == viewType.FullName;
+    }
+
+    public static void OnNavigatedFrom(object view, INavigationContext navigationContext)
+    {
+        InvokeViewAndViewModelAction<IRegionAware>(view, x => x.OnNavigatedFrom(navigationContext));
+    }
+
+    public static void OnNavigatedTo(object view, INavigationContext navigationContext)
+    {
+        InvokeViewAndViewModelAction<IRegionAware>(view, x => x.OnNavigatedTo(navigationContext));
     }
 
     public static Task<bool> CanNavigateAsync(object page, INavigationParameters parameters)
