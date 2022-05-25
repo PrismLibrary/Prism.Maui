@@ -14,6 +14,7 @@ public static class MauiProgram
             .ConfigureModuleCatalog(moduleCatalog =>
             {
                 moduleCatalog.AddModule<MauiAppModule>();
+                moduleCatalog.AddModule<MauiTestRegionsModule>();
             })
             .RegisterTypes(containerRegistry =>
             {
