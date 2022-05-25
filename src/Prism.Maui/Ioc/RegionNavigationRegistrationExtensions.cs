@@ -8,8 +8,6 @@ namespace Prism.Ioc;
 
 public static class RegionNavigationRegistrationExtensions
 {
-    private static bool s_IsRegistered;
-
     /// <summary>
     /// Registers a <see cref="View"/> for region navigation.
     /// </summary>
@@ -84,12 +82,8 @@ public static class RegionNavigationRegistrationExtensions
         return services;
     }
 
-    public static IContainerRegistry RegisterRegionServices(IContainerRegistry containerRegistry, Action<RegionAdapterMappings> configureAdapters = null, Action<IRegionBehaviorFactory> configureBehaviors = null)
+    internal static IContainerRegistry RegisterRegionServices(this IContainerRegistry containerRegistry, Action<RegionAdapterMappings> configureAdapters = null, Action<IRegionBehaviorFactory> configureBehaviors = null)
     {
-        if (s_IsRegistered)
-            return containerRegistry;
-
-        s_IsRegistered = true;
         containerRegistry.RegisterSingleton<RegionAdapterMappings>(p =>
         {
             var regionAdapterMappings = new RegionAdapterMappings();
@@ -128,52 +122,5 @@ public static class RegionNavigationRegistrationExtensions
         containerRegistry.Register<IRegionNavigationService, RegionNavigationService>();
         //containerRegistry.RegisterManySingleton<RegionResolverOverrides>(typeof(IResolverOverridesHelper), typeof(IActiveRegionHelper));
         return containerRegistry.RegisterSingleton<IRegionManager, RegionManager>();
-    }
-
-    private static IServiceCollection RegisterServices(IServiceCollection services, Action<RegionAdapterMappings> configureAdapters = null, Action<IRegionBehaviorFactory> configureBehaviors = null)
-    {
-        if (s_IsRegistered)
-            return services;
-
-        s_IsRegistered = true;
-
-        services.AddSingleton<RegionAdapterMappings>(p =>
-        {
-            var regionAdapterMappings = new RegionAdapterMappings();
-            configureAdapters?.Invoke(regionAdapterMappings);
-
-            regionAdapterMappings.RegisterDefaultMapping<CarouselView, CarouselViewRegionAdapter>();
-            // TODO: CollectionView is buggy with only last View showing despite multiple Active Views
-            // BUG: iOS Crash with CollectionView https://github.com/xamarin/Xamarin.Forms/issues/9970
-            //regionAdapterMappings.RegisterDefaultMapping<CollectionView, CollectionViewRegionAdapter>();
-            regionAdapterMappings.RegisterDefaultMapping<Layout<View>, LayoutViewRegionAdapter>();
-            regionAdapterMappings.RegisterDefaultMapping<ScrollView, ScrollViewRegionAdapter>();
-            regionAdapterMappings.RegisterDefaultMapping<ContentView, ContentViewRegionAdapter>();
-            return regionAdapterMappings;
-        });
-
-        services.AddSingleton<IRegionManager, RegionManager>();
-        services.AddSingleton<IRegionNavigationContentLoader, RegionNavigationContentLoader>();
-        services.AddSingleton<IRegionViewRegistry, RegionViewRegistry>();
-        services.AddTransient<RegionBehaviorFactory>();
-        services.AddSingleton<IRegionBehaviorFactory>(p =>
-        {
-            var regionBehaviors = p.GetService<RegionBehaviorFactory>();
-            regionBehaviors.AddIfMissing<BindRegionContextToVisualElementBehavior>(BindRegionContextToVisualElementBehavior.BehaviorKey);
-            regionBehaviors.AddIfMissing<RegionActiveAwareBehavior>(RegionActiveAwareBehavior.BehaviorKey);
-            regionBehaviors.AddIfMissing<SyncRegionContextWithHostBehavior>(SyncRegionContextWithHostBehavior.BehaviorKey);
-            regionBehaviors.AddIfMissing<RegionManagerRegistrationBehavior>(RegionManagerRegistrationBehavior.BehaviorKey);
-            regionBehaviors.AddIfMissing<RegionMemberLifetimeBehavior>(RegionMemberLifetimeBehavior.BehaviorKey);
-            regionBehaviors.AddIfMissing<ClearChildViewsRegionBehavior>(ClearChildViewsRegionBehavior.BehaviorKey);
-            regionBehaviors.AddIfMissing<AutoPopulateRegionBehavior>(AutoPopulateRegionBehavior.BehaviorKey);
-            regionBehaviors.AddIfMissing<DestructibleRegionBehavior>(DestructibleRegionBehavior.BehaviorKey);
-            configureBehaviors?.Invoke(regionBehaviors);
-            return regionBehaviors;
-        });
-        services.AddTransient<IRegionNavigationJournalEntry, RegionNavigationJournalEntry>();
-        services.AddTransient<IRegionNavigationJournal, RegionNavigationJournal>();
-        services.AddTransient<IRegionNavigationService, RegionNavigationService>();
-        //services.RegisterManySingleton<RegionResolverOverrides>(typeof(IResolverOverridesHelper), typeof(IActiveRegionHelper));
-        return services.AddSingleton<IRegionManager, RegionManager>();
     }
 }
