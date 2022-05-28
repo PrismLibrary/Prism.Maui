@@ -1,4 +1,5 @@
 ﻿using Prism.AppModel;
+using Prism.Common;
 using FlowDirection = Prism.AppModel.FlowDirection;
 using MauiFlow = Microsoft.Maui.FlowDirection;
 
@@ -9,13 +10,7 @@ namespace Prism.Services;
 /// </summary>
 public class PageDialogService : IPageDialogService
 {
-    private IApplication _application { get; }
-
-    /// <summary>
-    /// Gets the <see cref="IWindow"/>.
-    /// </summary>
-    protected IWindow _window => _application.Windows[0];
-
+    private IPageAccessor _pageAccessor { get; }
     /// <summary>
     /// Gets the <see cref="IKeyboardMapper"/>.
     /// </summary>
@@ -24,11 +19,11 @@ public class PageDialogService : IPageDialogService
     /// <summary>
     /// Creates a new <see cref="IPageDialogService"/>
     /// </summary>
-    /// <param name="application">The <see cref="IApplication"/>.</param>
+    /// <param name="pageAccessor">The <see cref="IPageAccessor"/>.</param>
     /// <param name="keyboardMapper">The <see cref="IKeyboardMapper"/>.</param>
-    public PageDialogService(IApplication application, IKeyboardMapper keyboardMapper)
+    public PageDialogService(IPageAccessor pageAccessor, IKeyboardMapper keyboardMapper)
     {
-        _application = application;
+        _pageAccessor = pageAccessor;
         _keyboardMapper = keyboardMapper;
     }
 
@@ -62,7 +57,7 @@ public class PageDialogService : IPageDialogService
     /// <returns><c>true</c> if non-destructive button pressed; otherwise <c>false</c>/></returns>
     public virtual Task<bool> DisplayAlertAsync(string title, string message, string acceptButton, string cancelButton, FlowDirection flowDirection)
     {
-        return GetMainPage().DisplayAlert(title, message, acceptButton, cancelButton, (MauiFlow)flowDirection);
+        return _pageAccessor.Page.DisplayAlert(title, message, acceptButton, cancelButton, (MauiFlow)flowDirection);
     }
 
     /// <summary>
@@ -77,7 +72,7 @@ public class PageDialogService : IPageDialogService
     /// <returns></returns>
     public virtual Task DisplayAlertAsync(string title, string message, string cancelButton)
     {
-        return GetMainPage().DisplayAlert(title, message, cancelButton);
+        return _pageAccessor.Page.DisplayAlert(title, message, cancelButton);
     }
 
     /// <summary>
@@ -93,7 +88,7 @@ public class PageDialogService : IPageDialogService
     /// <returns></returns>
     public virtual Task DisplayAlertAsync(string title, string message, string cancelButton, FlowDirection flowDirection)
     {
-        return GetMainPage().DisplayAlert(title, message, cancelButton, (MauiFlow)flowDirection);
+        return _pageAccessor.Page.DisplayAlert(title, message, cancelButton, (MauiFlow)flowDirection);
     }
 
     /// <summary>
@@ -120,7 +115,7 @@ public class PageDialogService : IPageDialogService
     /// <returns>Text for the pressed button</returns>
     public virtual Task<string> DisplayActionSheetAsync(string title, string cancelButton, string destroyButton, FlowDirection flowDirection, params string[] otherButtons)
     {
-        return GetMainPage().DisplayActionSheet(title, cancelButton, destroyButton, (MauiFlow)flowDirection, otherButtons);
+        return _pageAccessor.Page.DisplayActionSheet(title, cancelButton, destroyButton, (MauiFlow)flowDirection, otherButtons);
     }
 
     /// <summary>
@@ -182,14 +177,6 @@ public class PageDialogService : IPageDialogService
     public virtual Task<string> DisplayPromptAsync(string title, string message, string accept = "OK", string cancel = "Cancel", string placeholder = default, int maxLength = -1, KeyboardType keyboardType = KeyboardType.Default, string initialValue = "")
     {
         var keyboard = _keyboardMapper.Map(keyboardType);
-        return GetMainPage().DisplayPromptAsync(title, message, accept, cancel, placeholder, maxLength, keyboard, initialValue);
-    }
-
-    protected Page GetMainPage()
-    {
-        if (_window.Content is Page page)
-            return page;
-
-        throw new NullReferenceException("The Application Window View has not been set or has been set to something other than a Page.");
+        return _pageAccessor.Page.DisplayPromptAsync(title, message, accept, cancel, placeholder, maxLength, keyboard, initialValue);
     }
 }

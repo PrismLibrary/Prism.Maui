@@ -132,11 +132,9 @@ public static class NavigationRegistry
         if (page.GetValue(Xaml.Navigation.NavigationScopeProperty) is null)
             page.SetValue(Xaml.Navigation.NavigationScopeProperty, container);
 
-        var navService = container.Resolve<INavigationService>();
-        if (navService is IPageAware pa)
-            pa.Page = page;
+        container.Resolve<IPageAccessor>().Page = page;
 
-        page.SetValue(Xaml.Navigation.NavigationServiceProperty, navService);
+        page.SetValue(Xaml.Navigation.NavigationServiceProperty, container.Resolve<INavigationService>());
 
         var behaviorFactories = container.Resolve<IEnumerable<IPageBehaviorFactory>>();
         foreach (var factory in behaviorFactories)

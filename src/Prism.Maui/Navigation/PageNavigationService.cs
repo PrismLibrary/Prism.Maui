@@ -8,7 +8,7 @@ namespace Prism.Navigation;
 /// <summary>
 /// Provides page based navigation for ViewModels.
 /// </summary>
-public class PageNavigationService : INavigationService, IPageAware
+public class PageNavigationService : INavigationService
 {
     private static readonly SemaphoreSlim _semaphore = new (1, 1);
     internal const string RemovePageRelativePath = "../";
@@ -20,28 +20,21 @@ public class PageNavigationService : INavigationService, IPageAware
 
     private readonly IContainerProvider _container;
     protected readonly IApplication _application;
+    protected readonly IPageAccessor _pageAccessor;
     protected readonly IEventAggregator _eventAggregator;
-    protected Window Window;
 
-    protected Page _page;
-    Page IPageAware.Page
+    private Window _window;
+    protected Window Window
     {
         get
         {
-            if(Window is null)
+            if(_window is null && _pageAccessor.Page is not null)
             {
-                Element curPage = _page;
-                while (curPage?.Parent != null)
-                {
-                    if (curPage.Parent is Window window)
-                        Window = window;
-                    curPage = curPage.Parent;
-                }
+                _window = _pageAccessor.Page.GetParentWindow();
             }
 
-            return _page;
+            return _window;
         }
-        set => _page = value;
     }
 
     /// <summary>
@@ -50,11 +43,12 @@ public class PageNavigationService : INavigationService, IPageAware
     /// <param name="container">The <see cref="IContainerProvider"/> that will be used to resolve pages for navigation.</param>
     /// <param name="application">The <see cref="IApplication"/> that will let us ensure the Application.MainPage is set.</param>
     /// <param name="eventAggregator">The <see cref="IEventAggregator"/> that will raise <see cref="NavigationRequestEvent"/>.</param>
-    public PageNavigationService(IContainerProvider container, IApplication application, IEventAggregator eventAggregator)
+    public PageNavigationService(IContainerProvider container, IApplication application, IEventAggregator eventAggregator, IPageAccessor pageAccessor)
     {
         _container = container;
         _application = application;
         _eventAggregator = eventAggregator;
+        _pageAccessor = pageAccessor;
     }
 
     /// <summary>
@@ -684,8 +678,8 @@ public class PageNavigationService : INavigationService, IPageAware
     {
         try
         {
-            _container.CreateScope();
-            var page = (Page)NavigationRegistry.CreateView(_container, segmentName);
+            var scope = _container.CreateScope();
+            var page = (Page)NavigationRegistry.CreateView(scope, segmentName);
 
             if (page is null)
                 throw new NullReferenceException($"The resolved type for {segmentName} was null. You may be attempting to navigate to a Non-Page type");
@@ -698,9 +692,9 @@ public class PageNavigationService : INavigationService, IPageAware
                 throw;
 
             else if(ex is KeyNotFoundException)
-                throw new NavigationException(NavigationException.NoPageIsRegistered, _page, ex);
+                throw new NavigationException(NavigationException.NoPageIsRegistered, _pageAccessor.Page, ex);
 
-            throw new NavigationException(NavigationException.ErrorCreatingPage, _page, ex);
+            throw new NavigationException(NavigationException.ErrorCreatingPage, _pageAccessor.Page, ex);
         }
     }
 
@@ -711,7 +705,7 @@ public class PageNavigationService : INavigationService, IPageAware
         if (page is null)
         {
             var innerException = new NullReferenceException(string.Format("{0} could not be created. Please make sure you have registered {0} for navigation.", segmentName));
-            throw new NavigationException(NavigationException.NoPageIsRegistered, _page, innerException);
+            throw new NavigationException(NavigationException.NoPageIsRegistered, _pageAccessor.Page, innerException);
         }
 
         ConfigurePages(page, segment);
@@ -889,19 +883,16 @@ public class PageNavigationService : INavigationService, IPageAware
 
         if (currentPage is null)
         {
-            var pageWindow = _page?.GetParentWindow();
-            if (Window is null && pageWindow is not null)
-                Window = pageWindow;
-            else if (_application.Windows.OfType<PrismWindow>().Any(x => x.Name == PrismWindow.DefaultWindowName))
-                Window = _application.Windows.OfType<PrismWindow>().First(x => x.Name == PrismWindow.DefaultWindowName);
+            if (_application.Windows.OfType<PrismWindow>().Any(x => x.Name == PrismWindow.DefaultWindowName))
+                _window = _application.Windows.OfType<PrismWindow>().First(x => x.Name == PrismWindow.DefaultWindowName);
 
             if (Window is null)
             {
-                Window = new PrismWindow
+                _window = new PrismWindow
                 {
                     Page = page
                 };
-                ((List<Window>)_application.Windows).Add(Window as PrismWindow);
+                ((List<Window>)_application.Windows).Add(_window as PrismWindow);
             }
             else
             {
@@ -915,7 +906,7 @@ public class PageNavigationService : INavigationService, IPageAware
                 };
                 _application.OpenWindow(newWindow);
                 _application.CloseWindow(Window);
-                Window = null;
+                _window = null;
             }
 
             return Task.FromResult<object>(null);
@@ -959,7 +950,7 @@ public class PageNavigationService : INavigationService, IPageAware
 
     protected virtual Page GetCurrentPage()
     {
-        return _page != null ? _page : GetPageFromWindow();
+        return _pageAccessor.Page is not null ? _pageAccessor.Page : GetPageFromWindow();
     }
 
     internal static bool UseModalNavigation(Page currentPage, bool? useModalNavigationDefault)
