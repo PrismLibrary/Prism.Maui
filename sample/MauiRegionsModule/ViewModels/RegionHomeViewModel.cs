@@ -17,3 +17,18 @@ internal class RegionHomeViewModel
         _navigationService.NavigateAsync(uri);
     }
 }
+
+public class ContentRegionPageViewModel : IInitialize
+{
+    private IRegionManager _regionManager { get; }
+
+    public ContentRegionPageViewModel(IRegionManager regionManager)
+    {
+        _regionManager = regionManager;
+    }
+
+    public void Initialize(INavigationParameters parameters)
+    {
+        _regionManager.RequestNavigate("ContentRegion", "RegionViewA");
+    }
+}
