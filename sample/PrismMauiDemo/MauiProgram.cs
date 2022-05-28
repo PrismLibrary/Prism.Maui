@@ -1,5 +1,6 @@
 ﻿using MauiModule;
 using MauiModule.ViewModels;
+using PrismMauiDemo.ViewModels;
 using PrismMauiDemo.Views;
 
 namespace PrismMauiDemo;
@@ -20,6 +21,7 @@ public static class MauiProgram
                 containerRegistry.RegisterForNavigation<MainPage>();
                 containerRegistry.RegisterForNavigation<RootPage>();
                 containerRegistry.RegisterForNavigation<SamplePage>();
+                containerRegistry.RegisterForNavigation<SplashPage>();
             })
             .AddGlobalNavigationObserver(context => context.Subscribe(x =>
             {
@@ -32,10 +34,7 @@ public static class MauiProgram
                 Console.WriteLine($"Result: {status}");
             }))
             .OnAppStart(navigationService => navigationService.CreateBuilder()
-                .AddNavigationSegment("MainPage")
-                .AddNavigationPage()
-                .AddNavigationSegment<ViewAViewModel>()
-                .AddNavigationSegment("ViewB")
+                .AddNavigationSegment<SplashPageViewModel>()
                 .Navigate(HandleNavigationError))
             //.OnAppStart(async navigationService =>
             //{
