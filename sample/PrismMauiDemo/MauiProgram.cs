@@ -12,19 +12,6 @@ public static class MauiProgram
     {
         return MauiApp.CreateBuilder()
             .UsePrismApp<App>()
-            .ConfigureModuleCatalog(moduleCatalog =>
-            {
-                moduleCatalog.AddModule<MauiAppModule>();
-                moduleCatalog.AddModule<MauiTestRegionsModule>();
-            })
-            .RegisterTypes(containerRegistry =>
-            {
-                containerRegistry.RegisterGlobalNavigationObserver();
-                containerRegistry.RegisterForNavigation<MainPage>();
-                containerRegistry.RegisterForNavigation<RootPage>();
-                containerRegistry.RegisterForNavigation<SamplePage>();
-                containerRegistry.RegisterForNavigation<SplashPage>();
-            })
             .AddGlobalNavigationObserver(context => context.Subscribe(x =>
             {
                 if (x.Type == NavigationRequestType.Navigate)
@@ -35,28 +22,11 @@ public static class MauiProgram
                 var status = x.Cancelled ? "Cancelled" : x.Result.Success ? "Success" : "Failed";
                 Console.WriteLine($"Result: {status}");
             }))
-            .OnAppStart(navigationService => navigationService.CreateBuilder()
-                .AddNavigationSegment<SplashPageViewModel>()
-                .Navigate(HandleNavigationError))
-            //.OnAppStart(async navigationService =>
-            //{
-                
-            //    var result = await navigationService.NavigateAsync("MainPage/NavigationPage/ViewA/ViewB/ViewC/ViewD");
-            //    if (!result.Success)
-            //    {
-            //        System.Diagnostics.Debugger.Break();
-            //    }
-            //})
+            .ConfigureWithBootstrapper<Bootstrapper>()
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
             })
             .Build();
-    }
-
-    private static void HandleNavigationError(Exception ex)
-    {
-        Console.WriteLine(ex);
-        System.Diagnostics.Debugger.Break();
     }
 }

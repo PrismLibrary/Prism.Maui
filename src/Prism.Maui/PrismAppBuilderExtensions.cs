@@ -15,6 +15,21 @@ public static class PrismAppBuilderExtensions
         return new PrismAppBuilder<TApp>(containerExtension, builder);
     }
 
+    public static MauiAppBuilder ConfigureWithBootstrapper<T>(this PrismAppBuilder builder)
+        where T : IPrismAppBuilderBootstrapper, new()
+    {
+        var bootstrapper = new T();
+        builder.ConfigureServices(bootstrapper.ConfigureServices)
+            .ConfigureLogging(bootstrapper.ConfigureLogging)
+            .ConfigureDefaultViewModelFactory(bootstrapper.ConfigureDefaultViewModelFactory)
+            .RegisterTypes(bootstrapper.RegisterTypes)
+            .ConfigureModuleCatalog(bootstrapper.ConfigureModuleCatalog)
+            .OnInitialized(bootstrapper.OnInitialized)
+            .OnAppStart(bootstrapper.OnAppStart);
+
+        return builder.MauiBuilder;
+    }
+
     public static PrismAppBuilder OnInitialized(this PrismAppBuilder builder, Action action)
     {
         return builder.OnInitialized(_ => action());
