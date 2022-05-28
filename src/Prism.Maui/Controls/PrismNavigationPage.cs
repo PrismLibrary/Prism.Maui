@@ -25,6 +25,6 @@ public class PrismNavigationPage : NavigationPage
 
     private async void HandleBackButtonPressed(object sender, EventArgs args)
     {
-        await PageUtilities.HandleNavigationPageGoBack(this);
+        await MvvmHelpers.HandleNavigationPageGoBack(this);
     }
 }

@@ -54,6 +54,7 @@
     <ProjectReference Include="..\..\src\Prism.Maui.Rx\Prism.Maui.Rx.csproj" />
     <ProjectReference Include="..\..\src\Prism.Maui\Prism.Maui.csproj" />
     <ProjectReference Include="..\MauiModule\MauiModule.csproj" />
+    <ProjectReference Include="..\MauiRegionsModule\MauiRegionsModule.csproj" />
   </ItemGroup>
 
 </Project>

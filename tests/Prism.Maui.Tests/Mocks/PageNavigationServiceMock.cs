@@ -23,7 +23,7 @@ namespace Prism.Maui.Tests.Mocks
         {
             var page = base.CreatePage(name);
 
-            PageUtilities.InvokeViewAndViewModelAction<IPageNavigationEventRecordable>(
+            MvvmHelpers.InvokeViewAndViewModelAction<IPageNavigationEventRecordable>(
                 page,
                 x => x.PageNavigationEventRecorder = _recorder);
 

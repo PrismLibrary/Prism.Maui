@@ -1,4 +1,4 @@
-﻿using Prism.AppModel;
+using Prism.AppModel;
 using Prism.Behaviors;
 using Prism.Common;
 using Prism.Controls;
@@ -7,6 +7,8 @@ using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Mvvm;
 using Prism.Navigation;
+using Prism.Regions.Adapters;
+using Prism.Regions.Behaviors;
 using Prism.Services;
 
 namespace Prism;
@@ -27,6 +29,8 @@ public abstract class PrismAppBuilder
     private List<Action<IContainerProvider>> _initializations { get; }
     private IContainerProvider _container { get; }
     private Action<IContainerProvider, INavigationService> _onAppStarted;
+    private Action<RegionAdapterMappings> _configureAdapters;
+    private Action<IRegionBehaviorFactory> _configureBehaviors;
 
     protected PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
     {
@@ -152,6 +156,18 @@ public abstract class PrismAppBuilder
         _registrations.ForEach(action => action(container));
     }
 
+    public PrismAppBuilder ConfigureRegionAdapters(Action<RegionAdapterMappings> configureMappings)
+    {
+        _configureAdapters = configureMappings;
+        return this;
+    }
+
+    public PrismAppBuilder ConfigureRegionBehaviors(Action<IRegionBehaviorFactory> configureBehaviors)
+    {
+        _configureBehaviors = configureBehaviors;
+        return this;
+    }
+
     private void RegisterDefaultRequiredTypes(IContainerRegistry containerRegistry)
     {
         containerRegistry.RegisterSingleton<IEventAggregator, EventAggregator>();
@@ -167,5 +183,6 @@ public abstract class PrismAppBuilder
         containerRegistry.RegisterPageBehavior<TabbedPage, TabbedPageActiveAwareBehavior>();
         containerRegistry.RegisterPageBehavior<PageLifeCycleAwareBehavior>();
         containerRegistry.RegisterPageBehavior<PageScopeBehavior>();
+        containerRegistry.RegisterRegionServices(_configureAdapters, _configureBehaviors);
     }
 }

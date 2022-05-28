@@ -5,11 +5,14 @@
              Title="RootPage">
   <StackLayout HorizontalOptions="Center"
                VerticalOptions="Center">
-    <Button Text="Main Page"
+    <Button Text="Flyout Page"
             Command="{Binding NavigateCommand}"
             CommandParameter="/MainPage/NavigationPage/ViewA/ViewB/ViewC/ViewD" />
     <Button Text="Tabbed Page"
             Command="{Binding NavigateCommand}"
             CommandParameter="/TabbedPage?createTab=ViewA&amp;createTab=ViewB&amp;createTab=ViewC&amp;createTab=ViewD" />
+    <Button Text="Regions"
+            Command="{Binding NavigateCommand}"
+            CommandParameter="/RegionHome/NavigationPage/ContentRegionPage" />
   </StackLayout>
 </ContentPage>

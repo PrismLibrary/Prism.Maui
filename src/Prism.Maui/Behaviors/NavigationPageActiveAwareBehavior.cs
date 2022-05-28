@@ -24,7 +24,7 @@ public class NavigationPageActiveAwareBehavior : BehaviorBase<NavigationPage>
     {
         if (e.PropertyName == "CurrentPage")
         {
-            PageUtilities.InvokeViewAndViewModelAction<IActiveAware>(AssociatedObject.CurrentPage, (obj) => obj.IsActive = true);
+            MvvmHelpers.InvokeViewAndViewModelAction<IActiveAware>(AssociatedObject.CurrentPage, (obj) => obj.IsActive = true);
         }
     }
 
@@ -32,7 +32,7 @@ public class NavigationPageActiveAwareBehavior : BehaviorBase<NavigationPage>
     {
         if (e.PropertyName == "CurrentPage")
         {
-            PageUtilities.InvokeViewAndViewModelAction<IActiveAware>(AssociatedObject.CurrentPage, (obj) => obj.IsActive = false);
+            MvvmHelpers.InvokeViewAndViewModelAction<IActiveAware>(AssociatedObject.CurrentPage, (obj) => obj.IsActive = false);
         }
     }
 }

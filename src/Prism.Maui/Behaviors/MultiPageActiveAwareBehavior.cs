@@ -70,6 +70,6 @@ public class MultiPageActiveAwareBehavior<T> : BehaviorBase<MultiPage<T>> where 
     {
         var pageToSetIsActive = view is NavigationPage page ? page.CurrentPage : view;
 
-        PageUtilities.InvokeViewAndViewModelAction<IActiveAware>(pageToSetIsActive, activeAware => activeAware.IsActive = isActive);
+        MvvmHelpers.InvokeViewAndViewModelAction<IActiveAware>(pageToSetIsActive, activeAware => activeAware.IsActive = isActive);
     }
 }

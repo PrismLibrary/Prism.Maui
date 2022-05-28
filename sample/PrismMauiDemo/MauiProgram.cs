@@ -1,5 +1,6 @@
 ﻿using MauiModule;
 using MauiModule.ViewModels;
+using MauiRegionsModule;
 using PrismMauiDemo.ViewModels;
 using PrismMauiDemo.Views;
 
@@ -14,6 +15,7 @@ public static class MauiProgram
             .ConfigureModuleCatalog(moduleCatalog =>
             {
                 moduleCatalog.AddModule<MauiAppModule>();
+                moduleCatalog.AddModule<MauiTestRegionsModule>();
             })
             .RegisterTypes(containerRegistry =>
             {

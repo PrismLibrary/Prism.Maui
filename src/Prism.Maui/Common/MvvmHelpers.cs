@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using Prism.Navigation;
+using Prism.Regions.Navigation;
 using NavigationMode = Prism.Navigation.NavigationMode;
 
 namespace Prism.Common;
 
-// TODO: Refactor from Static class to interface
-public static class PageUtilities
+public static class MvvmHelpers
 {
     public static void InvokeViewAndViewModelAction<T>(object view, Action<T> action) where T : class
     {
@@ -86,33 +86,66 @@ public static class PageUtilities
         DestroyPage(page);
     }
 
+    public static T GetImplementerFromViewOrViewModel<T>(object view)
+            where T : class
+    {
+        if (view is T viewAsT)
+        {
+            return viewAsT;
+        }
+
+        if (view is VisualElement element && element.BindingContext is T vmAsT)
+        {
+            return vmAsT;
+        }
+
+        return null;
+    }
+
+    public static bool IsNavigationTarget(object view, INavigationContext navigationContext)
+    {
+        if (view is IRegionAware viewAsRegionAware)
+        {
+            return viewAsRegionAware.IsNavigationTarget(navigationContext);
+        }
+
+        if (view is BindableObject bindable && bindable.BindingContext is IRegionAware vmAsRegionAware)
+        {
+            return vmAsRegionAware.IsNavigationTarget(navigationContext);
+        }
+
+        var uri = navigationContext.Uri;
+        if (!uri.IsAbsoluteUri)
+            uri = new Uri(new Uri("app://prism.regions"), uri);
+        var path = uri.LocalPath.Substring(1);
+        var viewType = view.GetType();
+
+        return path == viewType.Name || path == viewType.FullName;
+    }
+
+    public static void OnNavigatedFrom(object view, INavigationContext navigationContext)
+    {
+        InvokeViewAndViewModelAction<IRegionAware>(view, x => x.OnNavigatedFrom(navigationContext));
+    }
+
+    public static void OnNavigatedTo(object view, INavigationContext navigationContext)
+    {
+        InvokeViewAndViewModelAction<IRegionAware>(view, x => x.OnNavigatedTo(navigationContext));
+    }
 
     public static Task<bool> CanNavigateAsync(object page, INavigationParameters parameters)
     {
-        if (page is IConfirmNavigationAsync confirmNavigationItem)
-            return confirmNavigationItem.CanNavigateAsync(parameters);
+        var implementer = GetImplementerFromViewOrViewModel<IConfirmNavigationAsync>(page);
+        if (implementer is null)
+            return Task.FromResult(CanNavigate(page, parameters));
 
-        if (page is BindableObject bindableObject)
-        {
-            if (bindableObject.BindingContext is IConfirmNavigationAsync confirmNavigationBindingContext)
-                return confirmNavigationBindingContext.CanNavigateAsync(parameters);
-        }
-
-        return Task.FromResult(CanNavigate(page, parameters));
+        return implementer.CanNavigateAsync(parameters);
     }
 
-    public static bool CanNavigate(object page, INavigationParameters parameters)
+    private static bool CanNavigate(object page, INavigationParameters parameters)
     {
-        if (page is IConfirmNavigation confirmNavigationItem)
-            return confirmNavigationItem.CanNavigate(parameters);
-
-        if (page is BindableObject bindableObject)
-        {
-            if (bindableObject.BindingContext is IConfirmNavigation confirmNavigationBindingContext)
-                return confirmNavigationBindingContext.CanNavigate(parameters);
-        }
-
-        return true;
+        var implementer = GetImplementerFromViewOrViewModel<IConfirmNavigation>(page);
+        return implementer?.CanNavigate(parameters) ?? true;
     }
 
     public static void OnNavigatedFrom(object page, INavigationParameters parameters)

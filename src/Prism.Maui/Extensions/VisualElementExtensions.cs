@@ -8,16 +8,22 @@ internal static class VisualElementExtensions
         return page != null;
     }
 
-    private static Page GetParentPage(Element visualElement)
+    public static Element GetRoot(this Element element)
     {
-        switch (visualElement.Parent)
+        return element.Parent switch
         {
-            case Page page:
-                return page;
-            case null:
-                return null;
-            default:
-                return GetParentPage(visualElement.Parent);
-        }
+            null => element,
+            _ => GetRoot(element.Parent),
+        };
+    }
+
+    internal static Page GetParentPage(this Element visualElement)
+    {
+        return visualElement.Parent switch
+        {
+            Page page => page,
+            null => null,
+            _ => GetParentPage(visualElement.Parent),
+        };
     }
 }

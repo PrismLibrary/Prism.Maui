@@ -9,6 +9,8 @@
     <Using Include="Prism.Modularity" />
     <Using Include="Prism.Mvvm" />
     <Using Include="Prism.Navigation" />
+    <Using Include="Prism.Regions" />
+    <Using Include="Prism.Regions.Navigation" />
     <Using Include="Prism.Services" />
   </ItemGroup>
 </Project>
