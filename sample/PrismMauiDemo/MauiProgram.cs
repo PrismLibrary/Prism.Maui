@@ -1,5 +1,6 @@
 ﻿using MauiModule;
 using MauiModule.ViewModels;
+using MauiRegionsModule;
 using PrismMauiDemo.ViewModels;
 using PrismMauiDemo.Views;
 
