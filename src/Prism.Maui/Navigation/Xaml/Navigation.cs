@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel;
-using Microsoft.Maui.Controls;
-using Prism.Common;
 using Prism.Ioc;
 
 namespace Prism.Navigation.Xaml;
@@ -18,9 +16,9 @@ public static class Navigation
 
     internal static readonly BindableProperty NavigationScopeProperty =
         BindableProperty.CreateAttached("NavigationScope",
-            typeof(IScopedProvider),
+            typeof(IContainerProvider),
             typeof(Navigation),
-            default(IScopedProvider),
+            default(IContainerProvider),
             propertyChanged: OnNavigationScopeChanged);
 
     private static void OnNavigationScopeChanged(BindableObject bindable, object oldValue, object newValue)
@@ -82,48 +80,10 @@ public static class Navigation
     {
         if (page == null) throw new ArgumentNullException(nameof(page));
 
-        var container = ContainerLocator.Container;
-        var navService = (INavigationService)page.GetValue(NavigationServiceProperty);
-        if (navService is null)
-        {
-            var currentScope = (IScopedProvider)page.GetValue(NavigationScopeProperty) ?? container.CurrentScope;
+        var container = page.GetValue(NavigationScopeProperty) as IContainerProvider;
+        var navigationService = container.Resolve<INavigationService>();
 
-            if (currentScope is null)
-                currentScope = container.CreateScope();
-
-            if (!currentScope.IsAttached)
-                page.SetValue(NavigationScopeProperty, currentScope);
-
-            navService = CreateNavigationService(currentScope, page);
-        }
-        else if (navService is IPageAware pa && pa.Page != page)
-        {
-            var scope = container.CreateScope();
-            page.SetValue(NavigationScopeProperty, scope);
-            page.SetValue(NavigationServiceProperty, null);
-            return GetNavigationService(page);
-        }
-
-        return navService;
-    }
-
-    private static INavigationService CreateNavigationService(IScopedProvider scope, Page page)
-    {
-        var navService = scope.Resolve<INavigationService>();
-        switch (navService)
-        {
-            case IPageAware pa when pa.Page is null:
-                pa.Page = page;
-                break;
-            case IPageAware pa1 when pa1.Page != page:
-                return CreateNavigationService(ContainerLocator.Container.CreateScope(), page);
-        }
-
-        page.SetValue(NavigationScopeProperty, scope);
-        scope.IsAttached = true;
-        page.SetValue(NavigationServiceProperty, navService);
-
-        return navService;
+        return navigationService;
     }
 
     internal static Action GetRaiseCanExecuteChangedInternal(BindableObject view) => (Action)view.GetValue(RaiseCanExecuteChangedInternalProperty);

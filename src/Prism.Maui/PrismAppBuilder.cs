@@ -1,5 +1,6 @@
 ﻿using Prism.AppModel;
 using Prism.Behaviors;
+using Prism.Common;
 using Prism.Controls;
 using Prism.Events;
 using Prism.Ioc;
@@ -155,9 +156,10 @@ public abstract class PrismAppBuilder
     {
         containerRegistry.RegisterSingleton<IEventAggregator, EventAggregator>();
         containerRegistry.RegisterSingleton<IKeyboardMapper, KeyboardMapper>();
-        containerRegistry.RegisterSingleton<IPageDialogService, PageDialogService>();
+        containerRegistry.RegisterScoped<IPageDialogService, PageDialogService>();
         //containerRegistry.RegisterSingleton<IDialogService, DialogService>();
         //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
+        containerRegistry.RegisterScoped<IPageAccessor, PageAccessor>();
         containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
 
         containerRegistry.RegisterPageBehavior<NavigationPage, NavigationPageSystemGoBackBehavior>();
