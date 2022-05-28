@@ -6,11 +6,13 @@ public abstract class RegionViewModelBase : BindableBase, IRegionAware
 {
     protected string Name => GetType().Name.Replace("ViewModel", string.Empty);
     protected INavigationService _navigationService { get; }
+    private IPageAccessor _pageAccessor { get; }
     protected IRegionNavigationService? _regionNavigation { get; private set; }
 
-    protected RegionViewModelBase(INavigationService navigationService)
+    protected RegionViewModelBase(INavigationService navigationService, IPageAccessor pageAccessor)
     {
         _navigationService = navigationService;
+        _pageAccessor = pageAccessor;
     }
 
     public bool IsNavigationTarget(INavigationContext navigationContext) =>
@@ -23,7 +25,7 @@ public abstract class RegionViewModelBase : BindableBase, IRegionAware
         set => SetProperty(ref _message, value);
     }
 
-    public string? PageName => ((IPageAware)_navigationService).Page?.GetType()?.Name;
+    public string? PageName => _pageAccessor.Page?.GetType()?.Name;
 
     public void OnNavigatedFrom(INavigationContext navigationContext)
     {
