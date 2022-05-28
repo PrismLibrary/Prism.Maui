@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Prism.Navigation.Builder;
+﻿using Prism.Navigation.Builder;
 
 namespace Prism.Navigation;
 
@@ -27,24 +26,19 @@ public static class NavigationBuilderExtensions
                 o.UseModalNavigation(useModalNavigation.Value);
         });
 
-    public static ICreateTabBuilder AddNavigationSegment<TViewModel>(this ICreateTabBuilder builder)
-        where TViewModel : class, INotifyPropertyChanged =>
+    public static ICreateTabBuilder AddNavigationSegment<TViewModel>(this ICreateTabBuilder builder)  =>
         builder.AddNavigationSegment<TViewModel>(b => { });
 
-    public static ICreateTabBuilder AddNavigationSegment<TViewModel>(this ICreateTabBuilder builder, Action<ISegmentBuilder> configureSegment)
-        where TViewModel : class, INotifyPropertyChanged =>
+    public static ICreateTabBuilder AddNavigationSegment<TViewModel>(this ICreateTabBuilder builder, Action<ISegmentBuilder> configureSegment) =>
         builder.AddNavigationSegment(GetNavigationKey<TViewModel>(), configureSegment);
 
-    public static INavigationBuilder AddNavigationSegment<TViewModel>(this INavigationBuilder builder)
-        where TViewModel : class, INotifyPropertyChanged =>
+    public static INavigationBuilder AddNavigationSegment<TViewModel>(this INavigationBuilder builder) =>
         builder.AddNavigationSegment<TViewModel>(b => { });
 
-    public static INavigationBuilder AddNavigationSegment<TViewModel>(this INavigationBuilder builder, Action<ISegmentBuilder> configureSegment)
-        where TViewModel : class, INotifyPropertyChanged =>
+    public static INavigationBuilder AddNavigationSegment<TViewModel>(this INavigationBuilder builder, Action<ISegmentBuilder> configureSegment) =>
         builder.AddNavigationSegment(GetNavigationKey<TViewModel>(), configureSegment);
 
-    public static INavigationBuilder AddNavigationSegment<TViewModel>(this INavigationBuilder builder, bool useModalNavigation)
-        where TViewModel : class, INotifyPropertyChanged =>
+    public static INavigationBuilder AddNavigationSegment<TViewModel>(this INavigationBuilder builder, bool useModalNavigation) =>
         builder.AddNavigationSegment<TViewModel>(b => b.UseModalNavigation(useModalNavigation));
 
     // Will check for the Navigation key of a registered NavigationPage
@@ -125,14 +119,12 @@ public static class NavigationBuilderExtensions
         builder.CreateTab(o => o.AddNavigationSegment(segmentNameOrUri));
 
     public static ITabbedSegmentBuilder CreateTab<TViewModel>(this ITabbedSegmentBuilder builder)
-        where TViewModel : class, INotifyPropertyChanged
     {
         var navigationKey = GetNavigationKey<TViewModel>();
         return builder.CreateTab(navigationKey);
     }
 
     public static ITabbedSegmentBuilder SelectTab<TViewModel>(this ITabbedSegmentBuilder builder)
-        where TViewModel : class, INotifyPropertyChanged
     {
         var navigationKey = GetNavigationKey<TViewModel>();
         return builder.SelectedTab(navigationKey);

@@ -1,4 +1,3 @@
-using Prism.Behaviors;
 using Prism.Common;
 using Prism.Events;
 using Prism.Ioc;
@@ -11,6 +10,7 @@ namespace Prism.Navigation;
 /// </summary>
 public class PageNavigationService : INavigationService, IPageAware
 {
+    private static readonly SemaphoreSlim _semaphore = new (1, 1);
     internal const string RemovePageRelativePath = "../";
     internal const string RemovePageInstruction = "__RemovePage/";
     internal const string RemovePageSegment = "__RemovePage";
@@ -64,6 +64,7 @@ public class PageNavigationService : INavigationService, IPageAware
     /// <returns>If <c>true</c> a go back operation was successful. If <c>false</c> the go back operation failed.</returns>
     public virtual async Task<INavigationResult> GoBackAsync(INavigationParameters parameters)
     {
+        await _semaphore.WaitAsync();
         Page page = null;
         try
         {
@@ -105,6 +106,7 @@ public class PageNavigationService : INavigationService, IPageAware
         finally
         {
             NavigationSource = PageNavigationSource.Device;
+            _semaphore.Release();
         }
 
         return Notify(NavigationRequestType.GoBack, parameters, GetGoBackException(page, GetPageFromWindow()));
@@ -158,6 +160,7 @@ public class PageNavigationService : INavigationService, IPageAware
     /// <remarks>Only works when called from a View within a NavigationPage</remarks>
     public virtual async Task<INavigationResult> GoBackToRootAsync(INavigationParameters parameters)
     {
+        await _semaphore.WaitAsync();
         try
         {
             if (parameters is null)
@@ -199,6 +202,7 @@ public class PageNavigationService : INavigationService, IPageAware
         finally
         {
             NavigationSource = PageNavigationSource.Device;
+            _semaphore.Release();
         }
     }
 
@@ -213,6 +217,7 @@ public class PageNavigationService : INavigationService, IPageAware
     /// </example>
     public virtual async Task<INavigationResult> NavigateAsync(Uri uri, INavigationParameters parameters)
     {
+        await _semaphore.WaitAsync();
         try
         {
             if (parameters is null)
@@ -240,6 +245,7 @@ public class PageNavigationService : INavigationService, IPageAware
         finally
         {
             NavigationSource = PageNavigationSource.Device;
+            _semaphore.Release();
         }
     }
 
