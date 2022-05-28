@@ -1,10 +1,11 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Globalization;
 using Prism.Behaviors;
 using Prism.Extensions;
+using Prism.Ioc;
 using Prism.Properties;
 using Prism.Regions.Adapters;
+using XamlNavigation = Prism.Navigation.Xaml.Navigation;
 
 namespace Prism.Regions.Behaviors;
 
@@ -25,9 +26,7 @@ public class DelayedRegionCreationBehavior
     private readonly RegionAdapterMappings _regionAdapterMappings;
     private readonly object _trackerLock = new object();
 
-    private WeakReference _trackingElement;
     private WeakReference _elementWeakReference;
-    private WeakReference _pageWeakReference;
     private bool _regionCreated = false;
 
     /// <summary>
@@ -60,17 +59,7 @@ public class DelayedRegionCreationBehavior
         set => _elementWeakReference = new WeakReference(value);
     }
 
-    private Page ParentPage
-    {
-        get => _pageWeakReference != null ? _pageWeakReference.Target as Page : null;
-        set => _pageWeakReference = new WeakReference(value);
-    }
-
-    private Element TrackingElement
-    {
-        get => _trackingElement != null ? _trackingElement.Target as Element : null;
-        set => _trackingElement = new WeakReference(value);
-    }
+    private Page ParentPage => TargetElement.GetParentPage();
 
     /// <summary>
     /// Start monitoring the <see cref="RegionManager"/> and the <see cref="TargetElement"/> to detect when the <see cref="TargetElement"/> becomes
@@ -79,8 +68,7 @@ public class DelayedRegionCreationBehavior
     public void Attach()
     {
         RegionManagerAccessor.UpdatingRegions += OnUpdatingRegions;
-        TrackingElement = TargetElement;
-        WireUpTargetElement();
+        TargetElement.Behaviors.Add(new DelayedRegionCreationCallbackBehavior(TryCreateRegion));
     }
 
     /// <summary>
@@ -89,7 +77,7 @@ public class DelayedRegionCreationBehavior
     public void Detach()
     {
         RegionManagerAccessor.UpdatingRegions -= OnUpdatingRegions;
-        UnWireTargetElement();
+        Untrack();
     }
 
     /// <summary>
@@ -118,14 +106,9 @@ public class DelayedRegionCreationBehavior
             {
                 string regionName = RegionManagerAccessor.GetRegionName(TargetElement);
                 CreateRegion(TargetElement, regionName);
+                Track();
                 _regionCreated = true;
             }
-        }
-        else
-        {
-            TrackingElement.PropertyChanged -= TargetElement_ParentChanged;
-            TrackingElement = TargetElement.GetRoot();
-            TrackingElement.PropertyChanged += TargetElement_ParentChanged;
         }
     }
 
@@ -146,46 +129,19 @@ public class DelayedRegionCreationBehavior
                 throw new Exception("The Target Element has not yet been parented and we cannot get the parent page.");
 
             // Build the region
+            var container = page.GetValue(XamlNavigation.NavigationScopeProperty) as IContainerProvider;
+            targetElement.SetValue(XamlNavigation.NavigationScopeProperty, container);
             var regionAdapter = _regionAdapterMappings.GetMapping(targetElement.GetType());
             var region = regionAdapter.Initialize(targetElement, regionName);
             var cleanupBehavior = new RegionCleanupBehavior(region);
 
             page.Behaviors.Add(cleanupBehavior);
-            if (region is INavigationServiceAware nsa)
-            {
-                nsa.NavigationService = Prism.Navigation.Xaml.Navigation.GetNavigationService(page);
-            }
 
             return region;
         }
         catch (Exception ex)
         {
             throw new RegionCreationException(string.Format(CultureInfo.CurrentCulture, Resources.RegionCreationException, regionName, ex), ex);
-        }
-    }
-
-    private void WireUpTargetElement()
-    {
-        TrackingElement.PropertyChanged += TargetElement_ParentChanged;
-        Track();
-
-        //if the element is a dependency object, and not a FrameworkElement, nothing is holding onto the reference after the DelayedRegionCreationBehavior
-        //is instantiated inside RegionManager.CreateRegion(VisualElement element). If the GC runs before RegionManager.UpdateRegions is called, the region will
-        //never get registered because it is gone from the updatingRegionsListeners list inside RegionManager. So we need to hold on to it. This should be rare.
-    }
-
-    private void UnWireTargetElement()
-    {
-        TrackingElement.PropertyChanged -= TargetElement_ParentChanged;
-        Untrack();
-    }
-
-    private void TargetElement_ParentChanged(object sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(VisualElement.Parent) && TargetElement?.Parent != null)
-        {
-            UnWireTargetElement();
-            TryCreateRegion();
         }
     }
 

@@ -17,7 +17,7 @@ internal static class VisualElementExtensions
         };
     }
 
-    private static Page GetParentPage(Element visualElement)
+    internal static Page GetParentPage(this Element visualElement)
     {
         return visualElement.Parent switch
         {

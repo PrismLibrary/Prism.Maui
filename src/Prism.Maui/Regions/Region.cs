@@ -2,7 +2,6 @@
 using System.Globalization;
 using Prism.Ioc;
 using Prism.Mvvm;
-using Prism.Navigation;
 using Prism.Properties;
 using Prism.Regions.Behaviors;
 using Prism.Regions.Navigation;
@@ -12,12 +11,12 @@ namespace Prism.Regions;
 /// <summary>
 /// Implementation of <see cref="IRegion"/> that allows multiple active views.
 /// </summary>
-public class Region : BindableBase, IRegion, INavigationServiceAware
+public class Region : BindableBase, IRegion
 {
     private ObservableCollection<ItemMetadata> _itemMetadataCollection;
     private IRegionManager _regionManager;
-    private IRegionNavigationService _regionNavigationService;
-    private IContainerProvider _container { get; }
+    private readonly IRegionNavigationService _regionNavigationService;
+    private readonly IContainerProvider _container;
 
     private Comparison<VisualElement> _sort;
 
@@ -31,13 +30,6 @@ public class Region : BindableBase, IRegion, INavigationServiceAware
         _regionNavigationService = _container.Resolve<IRegionNavigationService>();
         _regionNavigationService.Region = this;
         _sort = DefaultSortComparison;
-    }
-
-    private WeakReference<INavigationService> _weakNavigationService;
-    INavigationService INavigationServiceAware.NavigationService
-    {
-        get => _weakNavigationService.TryGetTarget(out var target) ? target : null;
-        set => _weakNavigationService = new WeakReference<INavigationService>(value);
     }
 
     private ViewsCollection _views;
@@ -171,20 +163,6 @@ public class Region : BindableBase, IRegion, INavigationServiceAware
     /// </summary>
     /// <value>The navigation service.</value>
     public IRegionNavigationService NavigationService => _regionNavigationService;
-    //{
-    //    get
-    //    {
-    //        if (_regionNavigationService == null)
-    //        {
-    //            _regionNavigationService = ContainerLocator.Container.Resolve<IRegionNavigationService>();
-    //            _regionNavigationService.Region = this;
-    //        }
-
-    //        return _regionNavigationService;
-    //    }
-
-    //    set => _regionNavigationService = value;
-    //}
 
     /// <summary>
     /// Gets the collection with all the views along with their metadata.
