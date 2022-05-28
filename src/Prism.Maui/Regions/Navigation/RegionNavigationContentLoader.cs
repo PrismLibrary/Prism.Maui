@@ -59,10 +59,7 @@ public class RegionNavigationContentLoader : IRegionNavigationContentLoader
             return view;
         }
 
-        var activeRegion = _container.Resolve<IActiveRegionHelper>();
-        activeRegion.ActiveRegion = region;
         view = CreateNewRegionItem(candidateTargetContract) as VisualElement;
-        activeRegion.ActiveRegion = null;
         region.Add(view);
 
         return view;
@@ -127,7 +124,12 @@ public class RegionNavigationContentLoader : IRegionNavigationContentLoader
 
         if (!contractCandidates.Any())
         {
-            var matchingType = _container.GetRegistrationType(candidateNavigationContract);
+            var matchingType = RegionNavigationRegistry.GetViewType(candidateNavigationContract);
+            if(matchingType is null)
+            {
+                matchingType = _container.GetRegistrationType(candidateNavigationContract);
+            }
+
             if (matchingType is null)
             {
                 return Array.Empty<VisualElement>();

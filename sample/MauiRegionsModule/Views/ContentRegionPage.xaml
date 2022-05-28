@@ -5,7 +5,20 @@
              x:Class="MauiRegionsModule.Views.ContentRegionPage"
              Title="Content Region"
              Padding="20">
-  <StackLayout>
+  <Grid RowDefinitions="*,Auto,Auto,Auto">
     <ContentView prism:RegionManager.RegionName="ContentRegion" />
-  </StackLayout>
+
+    <Button Text="View A"
+            Command="{Binding NavigateCommand}"
+            CommandParameter="RegionViewA"
+            Grid.Row="1" />
+    <Button Text="View B"
+            Command="{Binding NavigateCommand}"
+            CommandParameter="RegionViewB"
+            Grid.Row="2" />
+    <Button Text="View C"
+            Command="{Binding NavigateCommand}"
+            CommandParameter="RegionViewC"
+            Grid.Row="3" />
+  </Grid>
 </ContentPage>

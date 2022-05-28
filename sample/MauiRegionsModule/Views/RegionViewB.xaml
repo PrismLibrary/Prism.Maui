@@ -6,6 +6,7 @@
     <Label Text="Region View B"
            FontAttributes="Bold" />
     <Label Text="{Binding PageName, StringFormat='Navigation Service Page: {0}'}" />
+    <Label Text="{Binding ViewCount, StringFormat='Region Views: {0} view(s)'}" />
     <Label Text="{Binding Message, StringFormat='Message: {0}'}" />
   </StackLayout>
 </ContentView>

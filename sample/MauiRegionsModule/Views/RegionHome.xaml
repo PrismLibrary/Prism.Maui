@@ -6,6 +6,9 @@
   <FlyoutPage.Flyout>
     <ContentPage Title="Menu">
       <StackLayout>
+        <Button Text="Content Region"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="NavigationPage/ContentRegionPage" />
         <Button Text="Root Page"
                 Command="{Binding NavigateCommand}"
                 CommandParameter="/RootPage" />

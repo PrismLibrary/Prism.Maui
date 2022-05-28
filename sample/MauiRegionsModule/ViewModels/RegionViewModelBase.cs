@@ -25,6 +25,13 @@ public abstract class RegionViewModelBase : BindableBase, IRegionAware
         set => SetProperty(ref _message, value);
     }
 
+    private int _viewCount;
+    public int ViewCount
+    {
+        get => _viewCount;
+        set => SetProperty(ref _viewCount, value);
+    }
+
     public string? PageName => _pageAccessor.Page?.GetType()?.Name;
 
     public void OnNavigatedFrom(INavigationContext navigationContext)
@@ -38,5 +45,6 @@ public abstract class RegionViewModelBase : BindableBase, IRegionAware
             Message = navigationContext.Parameters.GetValue<string>(nameof(Message));
 
         _regionNavigation = navigationContext.NavigationService;
+        ViewCount = navigationContext.NavigationService.Region.Views.Count();
     }
 }
