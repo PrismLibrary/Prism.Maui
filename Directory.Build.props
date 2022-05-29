@@ -5,6 +5,7 @@
     <Authors>Dan Siegel</Authors>
     <PackageProjectUrl>https://github.com/dansiegel/Prism.Maui</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>ReadMe.md</PackageReadmeFile>
     <PackageIcon>prism-logo.png</PackageIcon>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageOutputPath>$(MSBuildThisFileDirectory)Artifacts</PackageOutputPath>
@@ -27,6 +28,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)$(PackageReadmeFile)"
+          Visible="False"
+          Pack="True"
+          PackagePath="" />
     <None Include="$(PrismPackageIcon)"
           Visible="False"
           Pack="True"
