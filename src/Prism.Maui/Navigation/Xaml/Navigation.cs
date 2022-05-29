@@ -8,12 +8,6 @@ namespace Prism.Navigation.Xaml;
 /// </summary>
 public static class Navigation
 {
-    //internal static readonly BindableProperty NavigationServiceProperty =
-    //    BindableProperty.CreateAttached("NavigationService",
-    //        typeof(INavigationService),
-    //        typeof(Navigation),
-    //        default(INavigationService));
-
     private static readonly BindableProperty NavigationScopeProperty =
         BindableProperty.CreateAttached("NavigationScope",
             typeof(IContainerProvider),
@@ -80,10 +74,8 @@ public static class Navigation
     {
         if (page == null) throw new ArgumentNullException(nameof(page));
 
-        var container = page.GetValue(NavigationScopeProperty) as IContainerProvider;
-        var navigationService = container.Resolve<INavigationService>();
-
-        return navigationService;
+        var container = page.GetContainerProvider();
+        return container.Resolve<INavigationService>();
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]

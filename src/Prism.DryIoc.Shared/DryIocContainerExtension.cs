@@ -399,7 +399,7 @@ namespace Prism.DryIoc
             public IResolverContext Resolver { get; private set; }
             public IScopedProvider CurrentScope => this;
 
-            public IScopedProvider CreateScope() => this;
+            public IScopedProvider CreateScope() => new DryIocScopedProvider(Resolver.OpenScope());
 
             public void Dispose()
             {

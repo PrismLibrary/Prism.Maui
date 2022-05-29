@@ -34,6 +34,9 @@ public static class MauiProgram
 
                 var status = x.Cancelled ? "Cancelled" : x.Result.Success ? "Success" : "Failed";
                 Console.WriteLine($"Result: {status}");
+
+                if (status == "Failed" && !string.IsNullOrEmpty(x.Result?.Exception?.Message))
+                    Console.Error.WriteLine(x.Result.Exception.Message);
             }))
             .OnAppStart(navigationService => navigationService.CreateBuilder()
                 .AddNavigationSegment<SplashPageViewModel>()

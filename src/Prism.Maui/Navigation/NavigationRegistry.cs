@@ -39,11 +39,15 @@ internal class NavigationRegistry : ViewRegistryBase, INavigationRegistry
 
         var accessor = container.Resolve<IPageAccessor>();
         if (accessor.Page is not null && accessor.Page != page)
-            throw new InvalidOperationException($"Invalid Scope provided. The current scope Page Accessor contains '{accessor.Page.GetType().FullName}', expected '{page.GetType().FullName}'.");
+        {
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+                System.Diagnostics.Debugger.Break();
+#endif
+            throw new NavigationException($"Invalid Scope provided. The current scope Page Accessor contains '{accessor.Page.GetType().FullName}', expected '{page.GetType().FullName}'.", page);
+        }
         else if (accessor.Page is null)
             accessor.Page = page;
-
-        //page.SetValue(Xaml.Navigation.NavigationServiceProperty, container.Resolve<INavigationService>());
 
         var behaviorFactories = container.Resolve<IEnumerable<IPageBehaviorFactory>>();
         foreach (var factory in behaviorFactories)
