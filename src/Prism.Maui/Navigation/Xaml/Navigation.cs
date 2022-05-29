@@ -8,13 +8,13 @@ namespace Prism.Navigation.Xaml;
 /// </summary>
 public static class Navigation
 {
-    internal static readonly BindableProperty NavigationServiceProperty =
-        BindableProperty.CreateAttached("NavigationService",
-            typeof(INavigationService),
-            typeof(Navigation),
-            default(INavigationService));
+    //internal static readonly BindableProperty NavigationServiceProperty =
+    //    BindableProperty.CreateAttached("NavigationService",
+    //        typeof(INavigationService),
+    //        typeof(Navigation),
+    //        default(INavigationService));
 
-    internal static readonly BindableProperty NavigationScopeProperty =
+    private static readonly BindableProperty NavigationScopeProperty =
         BindableProperty.CreateAttached("NavigationScope",
             typeof(IContainerProvider),
             typeof(Navigation),
@@ -85,6 +85,17 @@ public static class Navigation
 
         return navigationService;
     }
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static void SetContainerProvider(this BindableObject bindable, IContainerProvider container)
+    {
+        bindable.SetValue(NavigationScopeProperty, container);
+    }
+
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static IContainerProvider GetContainerProvider(this BindableObject bindable) =>
+        bindable.GetValue(NavigationScopeProperty) as IContainerProvider;
+
 
     internal static Action GetRaiseCanExecuteChangedInternal(BindableObject view) => (Action)view.GetValue(RaiseCanExecuteChangedInternalProperty);
 

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Prism.Extensions;
+using Prism.Navigation.Xaml;
 
 namespace Prism.Behaviors;
 
@@ -43,7 +44,7 @@ internal class DelayedRegionCreationCallbackBehavior : Behavior<VisualElement>
         if (sender is not Page page)
             return;
 
-        var container = page.GetValue(Navigation.Xaml.Navigation.NavigationScopeProperty);
+        var container = page.GetContainerProvider();
 
         if(container is not null)
         {

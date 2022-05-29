@@ -1,4 +1,5 @@
-﻿using Prism.Navigation.Builder;
+﻿using Prism.Common;
+using Prism.Navigation.Builder;
 
 namespace Prism.Navigation;
 
@@ -7,13 +8,16 @@ public static class NavigationBuilderExtensions
     public static INavigationBuilder CreateBuilder(this INavigationService navigationService) =>
            new NavigationBuilder(navigationService);
 
-    internal static string GetNavigationKey<TViewModel>()
+    internal static string GetNavigationKey<TViewModel>(object builder)
     {
         var vmType = typeof(TViewModel);
         if (vmType.IsAssignableFrom(typeof(VisualElement)))
             throw new NavigationException(NavigationException.MvvmPatternBreak, typeof(TViewModel).Name);
 
-        return NavigationRegistry.GetViewModelNavigationKey(vmType);
+        if (builder is not IRegistryAware registryAware)
+            throw new Exception("The builder does not implement IRegistryAware");
+
+        return registryAware.Registry.GetViewModelNavigationKey(vmType);
     }
 
     public static INavigationBuilder UseAbsoluteNavigation(this INavigationBuilder builder) =>
@@ -30,13 +34,13 @@ public static class NavigationBuilderExtensions
         builder.AddNavigationSegment<TViewModel>(b => { });
 
     public static ICreateTabBuilder AddNavigationSegment<TViewModel>(this ICreateTabBuilder builder, Action<ISegmentBuilder> configureSegment) =>
-        builder.AddNavigationSegment(GetNavigationKey<TViewModel>(), configureSegment);
+        builder.AddNavigationSegment(GetNavigationKey<TViewModel>(builder), configureSegment);
 
     public static INavigationBuilder AddNavigationSegment<TViewModel>(this INavigationBuilder builder) =>
         builder.AddNavigationSegment<TViewModel>(b => { });
 
     public static INavigationBuilder AddNavigationSegment<TViewModel>(this INavigationBuilder builder, Action<ISegmentBuilder> configureSegment) =>
-        builder.AddNavigationSegment(GetNavigationKey<TViewModel>(), configureSegment);
+        builder.AddNavigationSegment(GetNavigationKey<TViewModel>(builder), configureSegment);
 
     public static INavigationBuilder AddNavigationSegment<TViewModel>(this INavigationBuilder builder, bool useModalNavigation) =>
         builder.AddNavigationSegment<TViewModel>(b => b.UseModalNavigation(useModalNavigation));
@@ -47,12 +51,15 @@ public static class NavigationBuilderExtensions
 
     public static INavigationBuilder AddNavigationPage(this INavigationBuilder builder, Action<ISegmentBuilder> configureSegment)
     {
-        var registrationInfo = NavigationRegistry.Registrations
-            .FirstOrDefault(x => x.View.IsAssignableTo(typeof(NavigationPage)));
-        if (registrationInfo is null)
+        if (builder is not IRegistryAware registryAware)
+            throw new Exception("The builder does not implement IRegistryAware");
+
+        var registrations = registryAware.Registry.ViewsOfType(typeof(NavigationPage));
+        if (!registrations.Any())
             throw new NavigationException(NavigationException.NoPageIsRegistered, nameof(NavigationPage));
 
-        return builder.AddNavigationSegment(registrationInfo.Name, configureSegment);
+        var registration = registrations.Last();
+        return builder.AddNavigationSegment(registration.Name, configureSegment);
     }
 
     public static ICreateTabBuilder AddNavigationPage(this ICreateTabBuilder builder) =>
@@ -60,12 +67,15 @@ public static class NavigationBuilderExtensions
 
     public static ICreateTabBuilder AddNavigationPage(this ICreateTabBuilder builder, Action<ISegmentBuilder> configureSegment)
     {
-        var registrationInfo = NavigationRegistry.Registrations
-            .FirstOrDefault(x => x.View.IsAssignableTo(typeof(NavigationPage)));
-        if (registrationInfo is null)
+        if (builder is not IRegistryAware registryAware)
+            throw new Exception("The builder does not implement IRegistryAware");
+
+        var registrations = registryAware.Registry.ViewsOfType(typeof(NavigationPage));
+        if (!registrations.Any())
             throw new NavigationException(NavigationException.NoPageIsRegistered, nameof(NavigationPage));
 
-        return builder.AddNavigationSegment(registrationInfo.Name, configureSegment);
+        var registration = registrations.Last();
+        return builder.AddNavigationSegment(registration.Name, configureSegment);
     }
 
     public static INavigationBuilder AddNavigationPage(this INavigationBuilder builder, bool useModalNavigation) =>
@@ -120,13 +130,13 @@ public static class NavigationBuilderExtensions
 
     public static ITabbedSegmentBuilder CreateTab<TViewModel>(this ITabbedSegmentBuilder builder)
     {
-        var navigationKey = GetNavigationKey<TViewModel>();
+        var navigationKey = GetNavigationKey<TViewModel>(builder);
         return builder.CreateTab(navigationKey);
     }
 
     public static ITabbedSegmentBuilder SelectTab<TViewModel>(this ITabbedSegmentBuilder builder)
     {
-        var navigationKey = GetNavigationKey<TViewModel>();
+        var navigationKey = GetNavigationKey<TViewModel>(builder);
         return builder.SelectedTab(navigationKey);
     }
 

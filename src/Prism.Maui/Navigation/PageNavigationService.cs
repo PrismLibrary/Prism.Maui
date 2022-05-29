@@ -1,6 +1,7 @@
 using Prism.Common;
 using Prism.Events;
 using Prism.Ioc;
+using Prism.Mvvm;
 using Application = Microsoft.Maui.Controls.Application;
 
 namespace Prism.Navigation;
@@ -8,7 +9,7 @@ namespace Prism.Navigation;
 /// <summary>
 /// Provides page based navigation for ViewModels.
 /// </summary>
-public class PageNavigationService : INavigationService
+public class PageNavigationService : INavigationService, IRegistryAware
 {
     private static readonly SemaphoreSlim _semaphore = new (1, 1);
     internal const string RemovePageRelativePath = "../";
@@ -37,18 +38,26 @@ public class PageNavigationService : INavigationService
         }
     }
 
+    private readonly IViewRegistry _registry;
+    IViewRegistry IRegistryAware.Registry => _registry;
+
     /// <summary>
     /// Constructs a new instance of the <see cref="PageNavigationService"/>.
     /// </summary>
     /// <param name="container">The <see cref="IContainerProvider"/> that will be used to resolve pages for navigation.</param>
     /// <param name="application">The <see cref="IApplication"/> that will let us ensure the Application.MainPage is set.</param>
     /// <param name="eventAggregator">The <see cref="IEventAggregator"/> that will raise <see cref="NavigationRequestEvent"/>.</param>
-    public PageNavigationService(IContainerProvider container, IApplication application, IEventAggregator eventAggregator, IPageAccessor pageAccessor)
+    public PageNavigationService(IContainerProvider container,
+        IApplication application,
+        IEventAggregator eventAggregator,
+        IPageAccessor pageAccessor,
+        INavigationRegistry navigationRegistry)
     {
         _container = container;
         _application = application;
         _eventAggregator = eventAggregator;
         _pageAccessor = pageAccessor;
+        _registry = navigationRegistry;
     }
 
     /// <summary>
@@ -395,7 +404,7 @@ public class PageNavigationService : INavigationService
 
     protected virtual async Task ProcessNavigationForContentPage(Page currentPage, string nextSegment, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
     {
-        var nextPageType = NavigationRegistry.GetPageType(UriParsingHelper.GetSegmentName(nextSegment));
+        var nextPageType = _registry.GetViewType(UriParsingHelper.GetSegmentName(nextSegment));
         bool useReverse = UseReverseNavigation(currentPage, nextPageType) && !(useModalNavigation.HasValue && useModalNavigation.Value);
         if (!useReverse)
         {
@@ -439,7 +448,7 @@ public class PageNavigationService : INavigationService
         }
 
         var topPage = currentPage.Navigation.NavigationStack.LastOrDefault();
-        var nextPageType = NavigationRegistry.GetPageType(UriParsingHelper.GetSegmentName(nextSegment));
+        var nextPageType = _registry.GetViewType(UriParsingHelper.GetSegmentName(nextSegment));
         if (topPage?.GetType() == nextPageType)
         {
             if (clearNavigationStack)
@@ -512,7 +521,7 @@ public class PageNavigationService : INavigationService
             return;
         }
 
-        var nextSegmentType = NavigationRegistry.GetPageType(UriParsingHelper.GetSegmentName(nextSegment));
+        var nextSegmentType = _registry.GetViewType(UriParsingHelper.GetSegmentName(nextSegment));
 
         //we must recreate the NavigationPage everytime or the transitions on iOS will not work properly, unless we meet the two scenarios below
         bool detailIsNavPage = false;
@@ -531,7 +540,7 @@ public class PageNavigationService : INavigationService
                 {
                     //if we weren't forced to reuse the NavPage, then let's check the NavPage.CurrentPage against the next segment type as we don't want to recreate the entire nav stack
                     //just in case the user is trying to navigate to the same page which may be nested in a NavPage
-                    var nextPageType = NavigationRegistry.GetPageType(UriParsingHelper.GetSegmentName(segments.Peek()));
+                    var nextPageType = _registry.GetViewType(UriParsingHelper.GetSegmentName(segments.Peek()));
                     var currentPageType = navPage.CurrentPage.GetType();
                     if (nextPageType == currentPageType)
                     {
@@ -679,7 +688,7 @@ public class PageNavigationService : INavigationService
         try
         {
             var scope = _container.CreateScope();
-            var page = (Page)NavigationRegistry.CreateView(scope, segmentName);
+            var page = (Page)_registry.CreateView(scope, segmentName);
 
             if (page is null)
                 throw new NullReferenceException($"The resolved type for {segmentName} was null. You may be attempting to navigate to a Non-Page type");
@@ -692,9 +701,9 @@ public class PageNavigationService : INavigationService
                 throw;
 
             else if(ex is KeyNotFoundException)
-                throw new NavigationException(NavigationException.NoPageIsRegistered, _pageAccessor.Page, ex);
+                throw new NavigationException(NavigationException.NoPageIsRegistered, segmentName, ex);
 
-            throw new NavigationException(NavigationException.ErrorCreatingPage, _pageAccessor.Page, ex);
+            throw new NavigationException(NavigationException.ErrorCreatingPage, segmentName, ex);
         }
     }
 
@@ -763,7 +772,7 @@ public class PageNavigationService : INavigationService
         TabbedPageSelectTab(tabbedPage, parameters);
     }
 
-    private static void SelectPageTab(Page page, INavigationParameters parameters)
+    private void SelectPageTab(Page page, INavigationParameters parameters)
     {
         if (page is TabbedPage tabbedPage)
         {
@@ -771,12 +780,12 @@ public class PageNavigationService : INavigationService
         }
     }
 
-    private static void TabbedPageSelectTab(TabbedPage tabbedPage, INavigationParameters parameters)
+    private void TabbedPageSelectTab(TabbedPage tabbedPage, INavigationParameters parameters)
     {
         var selectedTab = parameters?.GetValue<string>(KnownNavigationParameters.SelectedTab);
         if (!string.IsNullOrWhiteSpace(selectedTab))
         {
-            var selectedTabType = NavigationRegistry.GetPageType(UriParsingHelper.GetSegmentName(selectedTab));
+            var selectedTabType = _registry.GetViewType(UriParsingHelper.GetSegmentName(selectedTab));
 
             var childFound = false;
             foreach (var child in tabbedPage.Children)
@@ -834,7 +843,7 @@ public class PageNavigationService : INavigationService
             }
             else
             {
-                var pageType = NavigationRegistry.GetPageType(UriParsingHelper.GetSegmentName(item));
+                var pageType = _registry.GetViewType(UriParsingHelper.GetSegmentName(item));
                 if (MvvmHelpers.IsSameOrSubclassOf<FlyoutPage>(pageType))
                 {
                     illegalSegments.Enqueue(item);

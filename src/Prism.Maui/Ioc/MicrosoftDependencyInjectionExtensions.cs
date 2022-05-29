@@ -1,4 +1,4 @@
-﻿using Prism.Navigation;
+﻿using Prism.Common;
 
 namespace Prism.Ioc;
 
@@ -36,8 +36,14 @@ public static class MicrosoftDependencyInjectionExtensions
         if (string.IsNullOrEmpty(name))
             name = view.Name;
 
-        NavigationRegistry.Register(view, viewModel, name);
-        services.AddTransient(view);
+        services.AddSingleton(new ViewRegistration
+            {
+                Type = ViewType.Page,
+                Name = name,
+                View = view,
+                ViewModel = viewModel
+            })
+            .AddTransient(view);
 
         if (viewModel != null)
             services.AddTransient(viewModel);

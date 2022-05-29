@@ -3,6 +3,7 @@ using System.Globalization;
 using Prism.Behaviors;
 using Prism.Extensions;
 using Prism.Ioc;
+using Prism.Navigation.Xaml;
 using Prism.Properties;
 using Prism.Regions.Adapters;
 using XamlNavigation = Prism.Navigation.Xaml.Navigation;
@@ -129,8 +130,8 @@ public class DelayedRegionCreationBehavior
                 throw new Exception("The Target Element has not yet been parented and we cannot get the parent page.");
 
             // Build the region
-            var container = page.GetValue(XamlNavigation.NavigationScopeProperty) as IContainerProvider;
-            targetElement.SetValue(XamlNavigation.NavigationScopeProperty, container);
+            var container = page.GetContainerProvider();
+            targetElement.SetContainerProvider(container);
             var regionAdapter = _regionAdapterMappings.GetMapping(targetElement.GetType());
             var region = regionAdapter.Initialize(targetElement, regionName);
             var cleanupBehavior = new RegionCleanupBehavior(region);

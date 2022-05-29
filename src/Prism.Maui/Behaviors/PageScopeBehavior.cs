@@ -1,4 +1,6 @@
-﻿namespace Prism.Behaviors;
+﻿using Prism.Navigation.Xaml;
+
+namespace Prism.Behaviors;
 
 /// <summary>
 /// Controls the Page container Scope
@@ -16,6 +18,6 @@ public sealed class PageScopeBehavior : BehaviorBase<Page>
     {
         base.OnDetachingFrom(page);
         // This forces the Attached Property to get cleaned up.
-        page.SetValue(Navigation.Xaml.Navigation.NavigationScopeProperty, null);
+        page.SetContainerProvider(null);
     }
 }

@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Data;
+using Prism.Common;
 using Prism.Ioc;
 using Prism.Mvvm;
-using Prism.Navigation;
+using Prism.Navigation.Xaml;
 using Prism.Properties;
 
 namespace Prism.Regions;
@@ -40,8 +41,8 @@ public static class RegionNavigationRegistry
 
             var view = container.Resolve(registration.View) as BindableObject;
 
-            view.SetValue(Prism.Navigation.Xaml.Navigation.NavigationScopeProperty, container);
-            view.SetValue(Prism.Navigation.Xaml.Navigation.NavigationServiceProperty, container.Resolve<INavigationService>());
+            view.SetContainerProvider(container);
+            //view.SetValue(Prism.Navigation.Xaml.Navigation.NavigationServiceProperty, container.Resolve<INavigationService>());
 
             if (view.BindingContext is not null)
                 return view;
