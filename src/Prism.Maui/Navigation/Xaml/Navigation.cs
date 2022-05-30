@@ -107,8 +107,13 @@ public static class Navigation
             return null;
 
         var container = bindable.GetValue(NavigationScopeProperty) as IContainerProvider;
-        if (container is not null || bindable is Page)
+        if (container is not null)
             return container;
+        else if(bindable is Page page)
+        {
+            if (page.Parent is FlyoutPage flyout && flyout.Flyout == page)
+                return flyout.GetContainerProvider();
+        }
         else if (bindable is Element element && element.Parent is not null)
             return GetContainerProvider(element.Parent);
 

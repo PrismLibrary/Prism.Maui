@@ -4,11 +4,11 @@ using Prism.Navigation.Xaml;
 
 namespace Prism.Behaviors;
 
-internal class DelayedRegionCreationCallbackBehavior : Behavior<VisualElement>
+internal class ElementParentedCallbackBehavior : Behavior<VisualElement>
 {
     private Action _callback { get; }
 
-    public DelayedRegionCreationCallbackBehavior(Action callback)
+    public ElementParentedCallbackBehavior(Action callback)
     {
         _callback = callback;
     }
@@ -27,12 +27,18 @@ internal class DelayedRegionCreationCallbackBehavior : Behavior<VisualElement>
 
     private void OnParentChanged(object sender, EventArgs e)
     {
-        var parent = (sender as VisualElement).Parent;
-        Console.WriteLine($"Parent: {parent.GetType().Name}");
         if (sender is not VisualElement view || view.Parent is null)
             return;
         else if (view.TryGetParentPage(out var page))
+        {
+            if(page.GetContainerProvider() is null)
+            {
+                view.ParentChanged -= OnParentChanged;
+                _callback();
+                return;
+            }
             page.PropertyChanged += PagePropertyChanged;
+        }
         else
             view.Parent.ParentChanged += OnParentChanged;
 
