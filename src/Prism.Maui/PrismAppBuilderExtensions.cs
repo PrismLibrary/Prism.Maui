@@ -42,6 +42,9 @@ public static class PrismAppBuilderExtensions
         });
     }
 
+    public static MauiAppBuilder OnAppStart(this PrismAppBuilder builder, string uri) =>
+        builder.OnAppStart(navigation => navigation.NavigateAsync(uri));
+
     public static MauiAppBuilder OnAppStart(this PrismAppBuilder builder, Action<INavigationService> onAppStarted) =>
         builder.OnAppStart((_, n) => onAppStarted(n));
 
