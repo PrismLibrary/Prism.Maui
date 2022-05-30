@@ -1,16 +1,21 @@
-﻿using Microsoft.Maui.Controls;
-using Prism.Maui.Tests.Navigation.Mocks.ViewModels;
+﻿using Prism.Maui.Tests.Navigation.Mocks.ViewModels;
+using Microsoft.Maui.Controls;
 
 namespace Prism.Maui.Tests.Navigation.Mocks.Views;
 
-public class NavigationPathPageMock : ContentPage
+public class NavigationPathTabbedPageMock : TabbedPage
 {
     public NavigationPathPageMockViewModel ViewModel { get; }
-    public NavigationPathPageMock()
+
+    public NavigationPathTabbedPageMock()
     {
         //var navService = new PageNavigationServiceMock(null, new ApplicationMock(), null);
         //((IPageAware)navService).Page = this;
 
         //BindingContext = ViewModel = new NavigationPathPageMockViewModel(navService);
+
+        Children.Add(new NavigationPathPageMock());
+        Children.Add(new NavigationPathPageMock2());
+        Children.Add(new NavigationPathPageMock3());
     }
 }

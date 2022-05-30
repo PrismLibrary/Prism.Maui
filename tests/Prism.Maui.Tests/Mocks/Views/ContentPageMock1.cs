@@ -1,6 +1,5 @@
-﻿namespace Prism.Maui.Tests.Mocks.Views
+﻿namespace Prism.Maui.Tests.Mocks.Views;
+
+public class ContentPageMock1 : ContentPageMock
 {
-    public class ContentPageMock1 : ContentPageMock
-    {
-    }
 }

@@ -2,6 +2,7 @@
 using Microsoft.Maui.Controls;
 using Prism.Behaviors;
 using Prism.Common;
+using Prism.Events;
 using Prism.Ioc;
 using Prism.Navigation;
 
@@ -9,13 +10,17 @@ namespace Prism.Maui.Tests.Mocks
 {
     public class PageNavigationServiceMock : PageNavigationService
     {
-        IContainerExtension _containerMock;
+        IContainerProvider _containerMock;
         PageNavigationEventRecorder _recorder;
 
-        public PageNavigationServiceMock(IContainerExtension containerMock, IApplication applicationProviderMock, PageNavigationEventRecorder recorder = null)
-            : base(containerMock, applicationProviderMock)
+        public PageNavigationServiceMock(IContainerProvider container, 
+            IApplication application, 
+            IEventAggregator eventAggregator, 
+            IPageAccessor pageAccessor,
+            PageNavigationEventRecorder recorder = null) 
+            : base(container, application, eventAggregator, pageAccessor)
         {
-            _containerMock = containerMock;
+            _containerMock = container;
             _recorder = recorder;
         }
 

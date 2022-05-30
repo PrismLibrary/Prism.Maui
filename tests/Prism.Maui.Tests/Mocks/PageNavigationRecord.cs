@@ -1,19 +1,18 @@
-﻿namespace Prism.Maui.Tests.Mocks
+﻿namespace Prism.Maui.Tests.Mocks;
+
+public class PageNavigationRecord
 {
-    public class PageNavigationRecord
+    public object Sender { get; }
+    public PageNavigationEvent Event { get; }
+
+    public PageNavigationRecord(object sender, PageNavigationEvent @event)
     {
-        public object Sender { get; }
-        public PageNavigationEvent Event { get; }
+        Sender = sender;
+        Event = @event;
+    }
 
-        public PageNavigationRecord(object sender, PageNavigationEvent @event)
-        {
-            Sender = sender;
-            Event = @event;
-        }
-
-        public override string ToString()
-        {
-            return $"{Sender} - {Event}";
-        }
+    public override string ToString()
+    {
+        return $"{Sender} - {Event}";
     }
 }

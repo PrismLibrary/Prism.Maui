@@ -3,18 +3,20 @@ using Microsoft.Maui.Controls;
 
 namespace Prism.Maui.Tests.Mocks.Views;
 
-public class PageMock : Page, IInitialize, INavigationAware, IConfirmNavigationAsync, IDestructible, IPageNavigationEventRecordable
+public class NavigationPageEmptyMock : NavigationPage, INavigationAware, IConfirmNavigationAsync, IDestructible, IPageNavigationEventRecordable
 {
     public PageNavigationEventRecorder PageNavigationEventRecorder { get; set; }
-
-    public PageMock() : this(null)
+    public NavigationPageEmptyMock() : base()
     {
 
     }
 
-    public PageMock(PageNavigationEventRecorder recorder)
+    public NavigationPageEmptyMock(PageNavigationEventRecorder recorder)
     {
+        //ViewModelLocator.SetAutowireViewModel(this, true);
+
         PageNavigationEventRecorder = recorder;
+        ((IPageNavigationEventRecordable)BindingContext).PageNavigationEventRecorder = recorder;
     }
 
     public void OnNavigatedFrom(INavigationParameters parameters)
@@ -27,7 +29,7 @@ public class PageMock : Page, IInitialize, INavigationAware, IConfirmNavigationA
         PageNavigationEventRecorder?.Record(this, PageNavigationEvent.OnNavigatedTo);
     }
 
-    public void Initialize(INavigationParameters parameters)
+    public void OnNavigatingTo(INavigationParameters parameters)
     {
         PageNavigationEventRecorder?.Record(this, PageNavigationEvent.OnInitialized);
     }

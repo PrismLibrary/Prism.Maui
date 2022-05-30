@@ -7,6 +7,27 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="Xunit.Abstractions" />
+    <Using Include="Prism" />
+    <Using Include="Prism.AppModel" />
+    <Using Include="Prism.Commands" />
+    <Using Include="Prism.Events" />
+    <Using Include="Prism.Ioc" />
+    <Using Include="Prism.Modularity" />
+    <Using Include="Prism.Mvvm" />
+    <Using Include="Prism.Navigation" />
+    <Using Include="Prism.Regions" />
+    <Using Include="Prism.Regions.Navigation" />
+    <Using Include="Prism.Services" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Fixtures\PageNavigationServiceFixture.cs" />
+    <None Include="Fixtures\PageNavigationServiceFixture.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.2.0" />
     <PackageReference Include="Moq" Version="4.18.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
@@ -22,6 +43,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Prism.Maui\Prism.Maui.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Fixtures\Mvvm\" />
   </ItemGroup>
 
 </Project>

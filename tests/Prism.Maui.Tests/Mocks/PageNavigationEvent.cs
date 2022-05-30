@@ -1,11 +1,10 @@
-﻿namespace Prism.Maui.Tests.Mocks
+﻿namespace Prism.Maui.Tests.Mocks;
+
+public enum PageNavigationEvent
 {
-    public enum PageNavigationEvent
-    {
-        OnInitialized,
-        OnInitializedAsync,
-        OnNavigatedFrom,
-        OnNavigatedTo,
-        Destroy
-    }
+    OnInitialized,
+    OnInitializedAsync,
+    OnNavigatedFrom,
+    OnNavigatedTo,
+    Destroy
 }

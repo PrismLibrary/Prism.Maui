@@ -1,7 +1,6 @@
-﻿namespace Prism.Maui.Tests.Mocks
+﻿namespace Prism.Maui.Tests.Mocks;
+
+public interface IPageNavigationEventRecordable
 {
-    public interface IPageNavigationEventRecordable
-    {
-        PageNavigationEventRecorder PageNavigationEventRecorder { get; set; }
-    }
+    PageNavigationEventRecorder PageNavigationEventRecorder { get; set; }
 }

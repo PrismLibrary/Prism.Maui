@@ -16,7 +16,6 @@ public class PageNavigationService : INavigationService, IRegistryAware
     internal const string RemovePageInstruction = "__RemovePage/";
     internal const string RemovePageSegment = "__RemovePage";
 
-    // TODO: Move this out of the PageNavigationService
     internal static PageNavigationSource NavigationSource { get; set; } = PageNavigationSource.Device;
 
     private readonly IContainerProvider _container;
@@ -38,8 +37,8 @@ public class PageNavigationService : INavigationService, IRegistryAware
         }
     }
 
-    private readonly IViewRegistry _registry;
-    IViewRegistry IRegistryAware.Registry => _registry;
+    // This should be resolved by the container when accessed as a Module could register views after the NavigationService was resolved
+    public IViewRegistry Registry => _container.Resolve<INavigationRegistry>();
 
     /// <summary>
     /// Constructs a new instance of the <see cref="PageNavigationService"/>.
@@ -50,14 +49,12 @@ public class PageNavigationService : INavigationService, IRegistryAware
     public PageNavigationService(IContainerProvider container,
         IApplication application,
         IEventAggregator eventAggregator,
-        IPageAccessor pageAccessor,
-        INavigationRegistry navigationRegistry)
+        IPageAccessor pageAccessor)
     {
         _container = container;
         _application = application;
         _eventAggregator = eventAggregator;
         _pageAccessor = pageAccessor;
-        _registry = navigationRegistry;
     }
 
     /// <summary>
@@ -404,7 +401,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
     protected virtual async Task ProcessNavigationForContentPage(Page currentPage, string nextSegment, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
     {
-        var nextPageType = _registry.GetViewType(UriParsingHelper.GetSegmentName(nextSegment));
+        var nextPageType = Registry.GetViewType(UriParsingHelper.GetSegmentName(nextSegment));
         bool useReverse = UseReverseNavigation(currentPage, nextPageType) && !(useModalNavigation.HasValue && useModalNavigation.Value);
         if (!useReverse)
         {
@@ -448,7 +445,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
         }
 
         var topPage = currentPage.Navigation.NavigationStack.LastOrDefault();
-        var nextPageType = _registry.GetViewType(UriParsingHelper.GetSegmentName(nextSegment));
+        var nextPageType = Registry.GetViewType(UriParsingHelper.GetSegmentName(nextSegment));
         if (topPage?.GetType() == nextPageType)
         {
             if (clearNavigationStack)
@@ -521,7 +518,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
             return;
         }
 
-        var nextSegmentType = _registry.GetViewType(UriParsingHelper.GetSegmentName(nextSegment));
+        var nextSegmentType = Registry.GetViewType(UriParsingHelper.GetSegmentName(nextSegment));
 
         //we must recreate the NavigationPage everytime or the transitions on iOS will not work properly, unless we meet the two scenarios below
         bool detailIsNavPage = false;
@@ -540,7 +537,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
                 {
                     //if we weren't forced to reuse the NavPage, then let's check the NavPage.CurrentPage against the next segment type as we don't want to recreate the entire nav stack
                     //just in case the user is trying to navigate to the same page which may be nested in a NavPage
-                    var nextPageType = _registry.GetViewType(UriParsingHelper.GetSegmentName(segments.Peek()));
+                    var nextPageType = Registry.GetViewType(UriParsingHelper.GetSegmentName(segments.Peek()));
                     var currentPageType = navPage.CurrentPage.GetType();
                     if (nextPageType == currentPageType)
                     {
@@ -688,7 +685,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
         try
         {
             var scope = _container.CreateScope();
-            var page = (Page)_registry.CreateView(scope, segmentName);
+            var page = (Page)Registry.CreateView(scope, segmentName);
 
             if (page is null)
                 throw new NullReferenceException($"The resolved type for {segmentName} was null. You may be attempting to navigate to a Non-Page type");
@@ -785,7 +782,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
         var selectedTab = parameters?.GetValue<string>(KnownNavigationParameters.SelectedTab);
         if (!string.IsNullOrWhiteSpace(selectedTab))
         {
-            var selectedTabType = _registry.GetViewType(UriParsingHelper.GetSegmentName(selectedTab));
+            var selectedTabType = Registry.GetViewType(UriParsingHelper.GetSegmentName(selectedTab));
 
             var childFound = false;
             foreach (var child in tabbedPage.Children)
@@ -843,7 +840,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
             }
             else
             {
-                var pageType = _registry.GetViewType(UriParsingHelper.GetSegmentName(item));
+                var pageType = Registry.GetViewType(UriParsingHelper.GetSegmentName(item));
                 if (MvvmHelpers.IsSameOrSubclassOf<FlyoutPage>(pageType))
                 {
                     illegalSegments.Enqueue(item);
