@@ -11,7 +11,7 @@ namespace Prism.Regions;
 /// <summary>
 /// Implementation of <see cref="IRegion"/> that allows multiple active views.
 /// </summary>
-public class Region : BindableBase, IRegion
+public class Region : BindableBase, IRegion, IContainerAwareRegion
 {
     private ObservableCollection<ItemMetadata> _itemMetadataCollection;
     private IRegionManager _regionManager;
@@ -31,6 +31,8 @@ public class Region : BindableBase, IRegion
         _regionNavigationService.Region = this;
         _sort = DefaultSortComparison;
     }
+
+    IContainerProvider IContainerAwareRegion.Container => _container;
 
     private ViewsCollection _views;
     /// <summary>
@@ -211,7 +213,8 @@ public class Region : BindableBase, IRegion
 
     public IRegionManager Add(string viewName)
     {
-        var view = RegionNavigationRegistry.CreateView(_container, viewName) as VisualElement;
+        var registry = _container.Resolve<IRegionNavigationRegistry>();
+        var view = registry.CreateView(_container, viewName) as VisualElement;
         return Add(view, viewName);
     }
 

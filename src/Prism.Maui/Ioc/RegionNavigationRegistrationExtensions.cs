@@ -1,4 +1,5 @@
 ﻿using Microsoft.Maui.Controls.Compatibility;
+using Prism.Common;
 using Prism.Regions;
 using Prism.Regions.Adapters;
 using Prism.Regions.Behaviors;
@@ -38,9 +39,14 @@ public static class RegionNavigationRegistrationExtensions
         if (viewModelType is not null)
             containerRegistry.Register(viewModelType);
         
-        containerRegistry.Register(viewType);
-
-        RegionNavigationRegistry.Register(viewType, viewModelType, name);
+        containerRegistry.Register(viewType)
+            .RegisterInstance(new ViewRegistration
+            {
+                Name = name,
+                Type = ViewType.Region,
+                View = viewType,
+                ViewModel = viewModelType
+            });
 
         return containerRegistry;
     }
@@ -75,15 +81,21 @@ public static class RegionNavigationRegistrationExtensions
         if (viewModelType is not null)
             services.AddTransient(viewModelType);
 
-        services.AddTransient(viewType);
-
-        RegionNavigationRegistry.Register(viewType, viewModelType, name);
+        services.AddTransient(viewType)
+            .AddSingleton(new ViewRegistration
+            {
+                Name = name,
+                Type = ViewType.Region,
+                View = viewType,
+                ViewModel = viewModelType
+            });
 
         return services;
     }
 
     internal static IContainerRegistry RegisterRegionServices(this IContainerRegistry containerRegistry, Action<RegionAdapterMappings> configureAdapters = null, Action<IRegionBehaviorFactory> configureBehaviors = null)
     {
+        containerRegistry.Register<IRegionNavigationRegistry, RegionNavigationRegistry>();
         containerRegistry.RegisterSingleton<RegionAdapterMappings>(p =>
         {
             var regionAdapterMappings = new RegionAdapterMappings();

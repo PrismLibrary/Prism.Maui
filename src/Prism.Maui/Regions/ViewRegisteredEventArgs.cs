@@ -1,4 +1,6 @@
-﻿namespace Prism.Regions;
+﻿using Prism.Ioc;
+
+namespace Prism.Regions;
 
 /// <summary>
 /// Argument class used by the <see cref="IRegionViewRegistry.ContentRegistered"/> event when a new content is registered.
@@ -10,7 +12,7 @@ public class ViewRegisteredEventArgs : EventArgs
     /// </summary>
     /// <param name="regionName">The region name to which the content was registered.</param>
     /// <param name="getViewDelegate">The content which was registered.</param>
-    public ViewRegisteredEventArgs(string regionName, Func<object> getViewDelegate)
+    public ViewRegisteredEventArgs(string regionName, Func<IContainerProvider, object> getViewDelegate)
     {
         GetView = getViewDelegate;
         RegionName = regionName;
@@ -24,5 +26,5 @@ public class ViewRegisteredEventArgs : EventArgs
     /// <summary>
     /// Gets the content which was registered.
     /// </summary>
-    public Func<object> GetView { get; private set; }
+    public Func<IContainerProvider, object> GetView { get; private set; }
 }

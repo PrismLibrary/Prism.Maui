@@ -56,7 +56,7 @@ public class AutoPopulateRegionBehavior : RegionBehavior
     /// <returns></returns>
     protected virtual IEnumerable<object> CreateViewsToAutoPopulate()
     {
-        return regionViewRegistry.GetContents(Region.Name);
+        return regionViewRegistry.GetContents(Region.Name, Region.Container());
     }
 
     /// <summary>
@@ -90,7 +90,7 @@ public class AutoPopulateRegionBehavior : RegionBehavior
 
         if (e.RegionName == Region.Name)
         {
-            AddViewIntoRegion((VisualElement)e.GetView());
+            AddViewIntoRegion((VisualElement)e.GetView(Region.Container()));
         }
     }
 }

@@ -8,8 +8,8 @@ namespace Prism.Navigation;
 
 internal class NavigationRegistry : ViewRegistryBase, INavigationRegistry
 {
-    public NavigationRegistry(IContainerExtension container, IEnumerable<ViewRegistration> registrations) 
-        : base(ViewType.Page, container, registrations)
+    public NavigationRegistry(IEnumerable<ViewRegistration> registrations) 
+        : base(ViewType.Page, registrations)
     {
     }
 

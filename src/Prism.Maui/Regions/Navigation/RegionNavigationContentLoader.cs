@@ -12,17 +12,6 @@ namespace Prism.Regions.Navigation;
 /// </summary>
 public class RegionNavigationContentLoader : IRegionNavigationContentLoader
 {
-    private readonly IContainerExtension _container;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="RegionNavigationContentLoader"/> class with a service locator.
-    /// </summary>
-    /// <param name="container">The <see cref="IContainerExtension" />.</param>
-    public RegionNavigationContentLoader(IContainerExtension container)
-    {
-        _container = container;
-    }
-
     /// <summary>
     /// Gets the view to which the navigation request represented by <paramref name="navigationContext"/> applies.
     /// </summary>
@@ -59,7 +48,7 @@ public class RegionNavigationContentLoader : IRegionNavigationContentLoader
             return view;
         }
 
-        view = CreateNewRegionItem(candidateTargetContract) as VisualElement;
+        view = CreateNewRegionItem(candidateTargetContract, region) as VisualElement;
         region.Add(view);
 
         return view;
@@ -70,11 +59,16 @@ public class RegionNavigationContentLoader : IRegionNavigationContentLoader
     /// </summary>
     /// <param name="candidateTargetContract">The target contract to build.</param>
     /// <returns>An instance of an item to put into the <see cref="IRegion"/>.</returns>
-    protected virtual object CreateNewRegionItem(string candidateTargetContract)
+    protected virtual object CreateNewRegionItem(string candidateTargetContract, IRegion region)
     {
         try
         {
-            return RegionNavigationRegistry.CreateView(_container, candidateTargetContract);
+            var registry = region.Container().Resolve<IRegionNavigationRegistry>();
+            return registry.CreateView(region.Container(), candidateTargetContract);
+        }
+        catch (KeyNotFoundException)
+        {
+            throw;
         }
         catch (ContainerResolutionException)
         {
@@ -124,18 +118,14 @@ public class RegionNavigationContentLoader : IRegionNavigationContentLoader
 
         if (!contractCandidates.Any())
         {
-            var matchingType = RegionNavigationRegistry.GetViewType(candidateNavigationContract);
-            if(matchingType is null)
+            var registry = region.Container().Resolve<IRegionNavigationRegistry>();
+            var registration = registry.Registrations.FirstOrDefault(x => x.Type == ViewType.Region && (x.Name == candidateNavigationContract || x.View.Name == candidateNavigationContract || x.View.FullName == candidateNavigationContract));
+            if(registration is null)
             {
-                matchingType = _container.GetRegistrationType(candidateNavigationContract);
+                GetCandidatesFromRegionViews(region, registration.View.FullName);
             }
 
-            if (matchingType is null)
-            {
-                return Array.Empty<VisualElement>();
-            }
-
-            return GetCandidatesFromRegionViews(region, matchingType.FullName);
+            return Array.Empty<VisualElement>();
         }
 
         return contractCandidates;
