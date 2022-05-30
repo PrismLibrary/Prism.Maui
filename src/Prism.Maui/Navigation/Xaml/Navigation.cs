@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Prism.Common;
 using Prism.Ioc;
 
 namespace Prism.Navigation.Xaml;
@@ -8,8 +9,10 @@ namespace Prism.Navigation.Xaml;
 /// </summary>
 public static class Navigation
 {
+    internal const string PrismContainerProvider = nameof(PrismContainerProvider);
+
     private static readonly BindableProperty NavigationScopeProperty =
-        BindableProperty.CreateAttached("NavigationScope",
+        BindableProperty.CreateAttached(PrismContainerProvider,
             typeof(IContainerProvider),
             typeof(Navigation),
             default(IContainerProvider),
@@ -24,7 +27,7 @@ public static class Navigation
 
     private static void OnNavigationScopeChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        if (oldValue == newValue)
+        if (bindable is not Page page || oldValue == newValue)
         {
             return;
         }
@@ -37,6 +40,12 @@ public static class Navigation
 
         if (newValue != null && newValue is IScopedProvider scopedProvider)
         {
+            var accessor = scopedProvider.Resolve<IPageAccessor>();
+            if (accessor.Page is null)
+                accessor.Page = page;
+            else if (accessor.Page != page)
+                throw new InvalidOperationException($"The Scoped Provider has already been assigned to another page. Expected: '{page.GetType().FullName}' - Found: '{accessor.Page.GetType().FullName}'.");
+
             scopedProvider.IsAttached = true;
         }
     }
@@ -92,8 +101,19 @@ public static class Navigation
     }
 
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public static IContainerProvider GetContainerProvider(this BindableObject bindable) =>
-        bindable.GetValue(NavigationScopeProperty) as IContainerProvider;
+    public static IContainerProvider GetContainerProvider(this BindableObject bindable)
+    {
+        if (bindable is null)
+            return null;
+
+        var container = bindable.GetValue(NavigationScopeProperty) as IContainerProvider;
+        if (container is not null || bindable is Page)
+            return container;
+        else if (bindable is Element element && element.Parent is not null)
+            return GetContainerProvider(element.Parent);
+
+        return null;
+    }
 
     internal static IEnumerable<VisualElement> GetChildViews(this Page page)
     {

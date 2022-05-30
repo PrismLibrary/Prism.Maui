@@ -1,5 +1,5 @@
-﻿using Prism.Ioc;
-using Prism.Properties;
+﻿using Prism.Properties;
+using Prism.Regions.Navigation;
 
 namespace Prism.Regions;
 
@@ -8,8 +8,8 @@ namespace Prism.Regions;
 /// </summary>
 public class AllActiveRegion : Region
 {
-    public AllActiveRegion(IContainerProvider container)
-        : base(container)
+    public AllActiveRegion(IRegionNavigationService regionNavigationService) 
+        : base(regionNavigationService)
     {
     }
 

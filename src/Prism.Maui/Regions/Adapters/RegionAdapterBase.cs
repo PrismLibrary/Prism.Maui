@@ -40,6 +40,9 @@ public abstract class RegionAdapterBase<T> : IRegionAdapter where T : VisualElem
         var container = regionTarget.GetContainerProvider();
         IRegion region = CreateRegion(container);
         region.Name = regionName ?? throw new ArgumentNullException(nameof(regionName));
+        if (region is ITargetAwareRegion taRegion)
+            taRegion.TargetElement = regionTarget;
+
         page.SetBinding(XamlNavigation.ChildViewsProperty, new Binding(nameof(IRegion.ActiveViews), BindingMode.OneWay, source: region));
 
         SetObservableRegionOnHostingControl(region, regionTarget);

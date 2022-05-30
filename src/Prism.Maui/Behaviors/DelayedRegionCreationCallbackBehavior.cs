@@ -41,7 +41,7 @@ internal class DelayedRegionCreationCallbackBehavior : Behavior<VisualElement>
 
     private void PagePropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        if (sender is not Page page)
+        if (sender is not Page page || e.PropertyName != Navigation.Xaml.Navigation.PrismContainerProvider)
             return;
 
         var container = page.GetContainerProvider();
