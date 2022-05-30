@@ -1,20 +1,30 @@
-﻿namespace Prism.Navigation.Builder;
+﻿using Prism.Common;
+using Prism.Mvvm;
 
-internal class TabbedSegmentBuilder : ITabbedSegmentBuilder, IConfigurableSegmentName, IUriSegment
+namespace Prism.Navigation.Builder;
+
+internal class TabbedSegmentBuilder : ITabbedSegmentBuilder, IConfigurableSegmentName, IUriSegment, IRegistryAware
 {
     private INavigationParameters _parameters { get; }
+    private INavigationBuilder _builder { get; }
 
-    public TabbedSegmentBuilder()
+    public TabbedSegmentBuilder(INavigationBuilder builder)
     {
+        _builder = builder;
         _parameters = new NavigationParameters();
 
-        var registrationInfo = NavigationRegistry.Registrations
-            .FirstOrDefault(x => x.View.IsAssignableFrom(typeof(TabbedPage)));
-        if (registrationInfo is null)
-            throw new NavigationException(NavigationException.NoPageIsRegistered);
+        if (builder is not IRegistryAware registryAware)
+            throw new Exception("The builder does not implement IRegistryAware");
 
-        SegmentName = registrationInfo.Name;
+        var registrations = registryAware.Registry.ViewsOfType(typeof(TabbedPage));
+        if (!registrations.Any())
+            throw new NavigationException(NavigationException.NoPageIsRegistered, nameof(TabbedPage));
+
+        var registration = registrations.Last();
+        SegmentName = registration.Name;
     }
+
+    IViewRegistry IRegistryAware.Registry => ((IRegistryAware)_builder).Registry;
 
     public string SegmentName { get; set; }
 

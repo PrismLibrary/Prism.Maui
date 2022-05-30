@@ -7,6 +7,8 @@ using Prism.Ioc;
 using Prism.Modularity;
 using Prism.Mvvm;
 using Prism.Navigation;
+using Prism.Navigation.Xaml;
+using Prism.Regions;
 using Prism.Regions.Adapters;
 using Prism.Regions.Behaviors;
 using Prism.Services;
@@ -73,18 +75,9 @@ public abstract class PrismAppBuilder
         if (view is not BindableObject bindable)
             return null;
 
-        var container = bindable.GetValue(Navigation.Xaml.Navigation.NavigationScopeProperty) as IContainerProvider;
+        var container = bindable.GetContainerProvider();
 
-        var overrides = new List<(Type Type, object Instance)>();
-        if (container.IsRegistered<IResolverOverridesHelper>())
-        {
-            var resolver = container.Resolve<IResolverOverridesHelper>();
-            var resolverOverrides = resolver.GetOverrides();
-            if (resolverOverrides.Any())
-                overrides.AddRange(resolverOverrides);
-        }
-
-        return container.Resolve(viewModelType, overrides.ToArray());
+        return container.Resolve(viewModelType);
     }
 
     public PrismAppBuilder RegisterTypes(Action<IContainerRegistry> registerTypes)
@@ -110,13 +103,21 @@ public abstract class PrismAppBuilder
         }
 
         var app = _container.Resolve<IApplication>();
-        if (!NavigationRegistry.IsRegistered(nameof(NavigationPage)))
+        var navRegistry = _container.Resolve<INavigationRegistry>();
+        if (!navRegistry.IsRegistered(nameof(NavigationPage)))
         {
-            NavigationRegistry.Register(typeof(PrismNavigationPage), null, nameof(NavigationPage));
-            ((IContainerRegistry)_container).Register(typeof(PrismNavigationPage), () => new PrismNavigationPage());
+            var registry = _container as IContainerRegistry;
+            registry
+                .Register<PrismNavigationPage>(() => new PrismNavigationPage())
+                .RegisterInstance(new ViewRegistration
+                {
+                    Name = nameof(NavigationPage),
+                    View = typeof(PrismNavigationPage),
+                    Type = ViewType.Page
+                });
         }
 
-        if (!NavigationRegistry.IsRegistered(nameof(TabbedPage)))
+        if (!navRegistry.IsRegistered(nameof(TabbedPage)))
             ((IContainerRegistry)_container).RegisterForNavigation<TabbedPage>();
 
         if (app is ILegacyPrismApplication prismApp)
@@ -142,7 +143,7 @@ public abstract class PrismAppBuilder
             if (view is not BindableObject bindable)
                 return null;
 
-            var container = bindable.GetValue(Navigation.Xaml.Navigation.NavigationScopeProperty) as IContainerProvider;
+            var container = bindable.GetContainerProvider();
             return viewModelFactory(container, view, type);
         });
 
@@ -177,6 +178,7 @@ public abstract class PrismAppBuilder
         //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
         containerRegistry.RegisterScoped<IPageAccessor, PageAccessor>();
         containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
+        containerRegistry.Register<INavigationRegistry, NavigationRegistry>();
 
         containerRegistry.RegisterPageBehavior<NavigationPage, NavigationPageSystemGoBackBehavior>();
         containerRegistry.RegisterPageBehavior<NavigationPage, NavigationPageActiveAwareBehavior>();

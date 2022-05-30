@@ -32,7 +32,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiModule", "sample\MauiMo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Prism.Maui.Rx", "src\Prism.Maui.Rx\Prism.Maui.Rx.csproj", "{D364B3F0-2D41-4EF8-BE1D-D83825322F61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiRegionsModule", "sample\MauiRegionsModule\MauiRegionsModule.csproj", "{90FD1190-DE0D-413E-9E30-B899BB67A82D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiRegionsModule", "sample\MauiRegionsModule\MauiRegionsModule.csproj", "{90FD1190-DE0D-413E-9E30-B899BB67A82D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Prism.DryIoc.Maui.Tests", "tests\Prism.DryIoc.Maui.Tests\Prism.DryIoc.Maui.Tests.csproj", "{4AC48AAE-8730-4B45-93D8-9AD463820285}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -159,6 +161,22 @@ Global
 		{90FD1190-DE0D-413E-9E30-B899BB67A82D}.Release|x64.Build.0 = Release|Any CPU
 		{90FD1190-DE0D-413E-9E30-B899BB67A82D}.Release|x86.ActiveCfg = Release|Any CPU
 		{90FD1190-DE0D-413E-9E30-B899BB67A82D}.Release|x86.Build.0 = Release|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Debug|arm64.ActiveCfg = Debug|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Debug|arm64.Build.0 = Debug|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Debug|x64.Build.0 = Debug|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Debug|x86.Build.0 = Debug|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Release|arm64.ActiveCfg = Release|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Release|arm64.Build.0 = Release|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Release|x64.ActiveCfg = Release|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Release|x64.Build.0 = Release|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Release|x86.ActiveCfg = Release|Any CPU
+		{4AC48AAE-8730-4B45-93D8-9AD463820285}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -172,6 +190,7 @@ Global
 		{EB8CD219-0CA7-4AE3-A7B7-6D883400CCE0} = {06F06128-578F-449D-B3D6-D04A531B1018}
 		{D364B3F0-2D41-4EF8-BE1D-D83825322F61} = {6CAB3327-8C0A-4D0B-BF18-CEFD15B84BA7}
 		{90FD1190-DE0D-413E-9E30-B899BB67A82D} = {06F06128-578F-449D-B3D6-D04A531B1018}
+		{4AC48AAE-8730-4B45-93D8-9AD463820285} = {7CB47440-CCBC-4E16-B2B9-9FD472154117}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7E696A15-8B47-4BC2-8997-071E61157406}

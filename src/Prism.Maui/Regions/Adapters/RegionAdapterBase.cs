@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
+using Prism.Extensions;
 using Prism.Ioc;
+using Prism.Navigation.Xaml;
 using Prism.Properties;
 using Prism.Regions.Behaviors;
 using XamlNavigation = Prism.Navigation.Xaml.Navigation;
@@ -34,9 +36,14 @@ public abstract class RegionAdapterBase<T> : IRegionAdapter where T : VisualElem
     /// <returns>The new instance of <see cref="IRegion"/> that the <paramref name="regionTarget"/> is bound to.</returns>
     public IRegion Initialize(T regionTarget, string regionName)
     {
-        var container = regionTarget.GetValue(XamlNavigation.NavigationScopeProperty) as IContainerProvider;
+        var page = regionTarget.GetParentPage();
+        var container = regionTarget.GetContainerProvider();
         IRegion region = CreateRegion(container);
         region.Name = regionName ?? throw new ArgumentNullException(nameof(regionName));
+        if (region is ITargetAwareRegion taRegion)
+            taRegion.TargetElement = regionTarget;
+
+        page.SetBinding(XamlNavigation.ChildViewsProperty, new Binding(nameof(IRegion.ActiveViews), BindingMode.OneWay, source: region));
 
         SetObservableRegionOnHostingControl(region, regionTarget);
 

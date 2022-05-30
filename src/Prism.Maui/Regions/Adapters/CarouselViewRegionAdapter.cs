@@ -2,6 +2,7 @@
 using Prism.Behaviors;
 using Prism.Common;
 using Prism.Ioc;
+using Prism.Mvvm;
 using Prism.Properties;
 using Prism.Regions.Behaviors;
 using Prism.Regions.Navigation;
@@ -112,8 +113,21 @@ public class CarouselViewRegionAdapter : RegionAdapterBase<CarouselView>
                     _region.Activate(newActiveView);
                 }
 
-                var info = RegionNavigationRegistry.GetViewNavigationInfo(newActiveView.GetType());
-                var context = new NavigationContext(_region.NavigationService, new Uri(info.Name, UriKind.RelativeOrAbsolute));
+                var name = newActiveView.GetValue(ViewModelLocator.NavigationNameProperty) as string;
+                if(string.IsNullOrEmpty(name))
+                {
+                    var viewType = newActiveView.GetType();
+                    var registry = _region.Container().Resolve<IRegionNavigationRegistry>();
+                    var candidate = registry.ViewsOfType(viewType)
+                        .Where(x => x.Type == ViewType.Region)
+                        .FirstOrDefault(x => x.View == viewType);
+                    if (candidate is null)
+                        name = viewType.FullName;
+                    else
+                        name = candidate.Name;
+                }
+
+                var context = new NavigationContext(_region.NavigationService, new Uri(name, UriKind.RelativeOrAbsolute));
 
                 MvvmHelpers.OnNavigatedFrom(previousView, context);
                 MvvmHelpers.OnNavigatedTo(newActiveView, context);

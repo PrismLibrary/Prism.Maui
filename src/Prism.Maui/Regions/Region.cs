@@ -2,6 +2,7 @@
 using System.Globalization;
 using Prism.Ioc;
 using Prism.Mvvm;
+using Prism.Navigation.Xaml;
 using Prism.Properties;
 using Prism.Regions.Behaviors;
 using Prism.Regions.Navigation;
@@ -11,26 +12,25 @@ namespace Prism.Regions;
 /// <summary>
 /// Implementation of <see cref="IRegion"/> that allows multiple active views.
 /// </summary>
-public class Region : BindableBase, IRegion
+public class Region : BindableBase, IRegion, ITargetAwareRegion
 {
     private ObservableCollection<ItemMetadata> _itemMetadataCollection;
     private IRegionManager _regionManager;
     private readonly IRegionNavigationService _regionNavigationService;
-    private readonly IContainerProvider _container;
-
     private Comparison<VisualElement> _sort;
 
     /// <summary>
     /// Initializes a new instance of <see cref="Region"/>.
     /// </summary>
-    public Region(IContainerProvider container)
+    public Region(IRegionNavigationService regionNavigationService)
     {
-        _container = container;
         Behaviors = new RegionBehaviorCollection(this);
-        _regionNavigationService = _container.Resolve<IRegionNavigationService>();
+        _regionNavigationService = regionNavigationService;
         _regionNavigationService.Region = this;
         _sort = DefaultSortComparison;
     }
+
+    public VisualElement TargetElement { get; set; }
 
     private ViewsCollection _views;
     /// <summary>
@@ -211,7 +211,9 @@ public class Region : BindableBase, IRegion
 
     public IRegionManager Add(string viewName)
     {
-        var view = RegionNavigationRegistry.CreateView(_container, viewName) as VisualElement;
+        var container = TargetElement.GetContainerProvider();
+        var registry = container.Resolve<IRegionNavigationRegistry>();
+        var view = registry.CreateView(container, viewName) as VisualElement;
         return Add(view, viewName);
     }
 

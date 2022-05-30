@@ -2,7 +2,7 @@
 
 namespace MauiRegionsModule.ViewModels;
 
-public abstract class RegionViewModelBase : BindableBase, IRegionAware
+public abstract class RegionViewModelBase : BindableBase, IRegionAware, IPageLifecycleAware
 {
     protected string Name => GetType().Name.Replace("ViewModel", string.Empty);
     protected INavigationService _navigationService { get; }
@@ -46,5 +46,14 @@ public abstract class RegionViewModelBase : BindableBase, IRegionAware
 
         _regionNavigation = navigationContext.NavigationService;
         ViewCount = navigationContext.NavigationService.Region.Views.Count();
+    }
+
+    public void OnAppearing()
+    {
+        RaisePropertyChanged(nameof(PageName));
+    }
+
+    public void OnDisappearing()
+    {
     }
 }

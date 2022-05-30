@@ -13,7 +13,7 @@ public class ContentRegionPageViewModel : IInitialize
 
     public void Initialize(INavigationParameters parameters)
     {
-        _regionManager.RequestNavigate("ContentRegion", "RegionViewA");
+        //_regionManager.RequestNavigate("ContentRegion", "RegionViewA");
     }
 
     public DelegateCommand<string> NavigateCommand { get; }

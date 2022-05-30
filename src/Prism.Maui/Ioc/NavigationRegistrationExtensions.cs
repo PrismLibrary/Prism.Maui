@@ -1,4 +1,4 @@
-﻿using Prism.Navigation;
+﻿using Prism.Common;
 
 namespace Prism.Ioc;
 
@@ -20,8 +20,14 @@ public static class NavigationRegistrationExtensions
         if (string.IsNullOrEmpty(name))
             name = view.Name;
 
-        NavigationRegistry.Register(view, viewModel, name);
-        container.Register(view);
+        container.RegisterInstance(new ViewRegistration
+            {
+                Type = ViewType.Page,
+                Name = name,
+                View = view,
+                ViewModel = viewModel
+            })
+            .Register(view);
 
         if (viewModel != null)
             container.Register(viewModel);

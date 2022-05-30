@@ -1,6 +1,9 @@
-﻿namespace Prism.Navigation.Builder;
+﻿using Prism.Common;
+using Prism.Mvvm;
 
-internal class NavigationBuilder : INavigationBuilder
+namespace Prism.Navigation.Builder;
+
+internal class NavigationBuilder : INavigationBuilder, IRegistryAware
 {
     internal static readonly Uri RootUri = new Uri("app://prismapp.maui", UriKind.Absolute);
 
@@ -16,6 +19,10 @@ internal class NavigationBuilder : INavigationBuilder
         _uriSegments = new List<IUriSegment>();
     }
 
+    IViewRegistry IRegistryAware.Registry => ((IRegistryAware)_navigationService).Registry;
+
+    public IViewRegistry Registry { get; }
+
     public INavigationBuilder AddNavigationSegment(string segmentName, Action<ISegmentBuilder> configureSegment)
     {
         var builder = new SegmentBuilder(segmentName);
@@ -26,7 +33,7 @@ internal class NavigationBuilder : INavigationBuilder
 
     public INavigationBuilder AddTabbedSegment(Action<ITabbedSegmentBuilder> configureSegment)
     {
-        var builder = new TabbedSegmentBuilder();
+        var builder = new TabbedSegmentBuilder(this);
         configureSegment?.Invoke(builder);
         _uriSegments.Add(builder);
         return this;

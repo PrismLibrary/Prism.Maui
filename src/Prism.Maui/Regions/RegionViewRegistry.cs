@@ -12,18 +12,8 @@ namespace Prism.Regions;
 /// </summary>
 public class RegionViewRegistry : IRegionViewRegistry
 {
-    private readonly IContainerProvider _container;
-    private readonly ListDictionary<string, Func<object>> _registeredContent = new ListDictionary<string, Func<object>>();
-    private readonly WeakDelegatesManager _contentRegisteredListeners = new WeakDelegatesManager();
-
-    /// <summary>
-    /// Creates a new instance of the <see cref="RegionViewRegistry"/> class.
-    /// </summary>
-    /// <param name="container"><see cref="IContainerExtension"/> used to create the instance of the views from its <see cref="Type"/>.</param>
-    public RegionViewRegistry(IContainerExtension container)
-    {
-        _container = container;
-    }
+    private readonly ListDictionary<string, Func<IContainerProvider, object>> _registeredContent = new ();
+    private readonly WeakDelegatesManager _contentRegisteredListeners = new ();
 
     /// <summary>
     /// Occurs whenever a new view is registered.
@@ -39,12 +29,12 @@ public class RegionViewRegistry : IRegionViewRegistry
     /// </summary>
     /// <param name="regionName">Name of the region which content is being requested.</param>
     /// <returns>Collection of contents registered for the region.</returns>
-    public IEnumerable<object> GetContents(string regionName)
+    public IEnumerable<object> GetContents(string regionName, IContainerProvider container)
     {
         var items = new List<object>();
-        foreach (Func<object> getContentDelegate in _registeredContent[regionName])
+        foreach (var getContentDelegate in _registeredContent[regionName])
         {
-            items.Add(getContentDelegate());
+            items.Add(getContentDelegate(container));
         }
 
         return items;
@@ -57,7 +47,29 @@ public class RegionViewRegistry : IRegionViewRegistry
     /// <param name="viewType">Content type to be registered for the <paramref name="regionName"/>.</param>
     public void RegisterViewWithRegion(string regionName, Type viewType)
     {
-        RegisterViewWithRegion(regionName, () => CreateInstance(viewType));
+        RegisterViewWithRegion(regionName, c =>
+        {
+            var registry = c.Resolve<IRegionNavigationRegistry>();
+            var registration = registry.Registrations.FirstOrDefault(x => x.Type == ViewType.Region && x.View == viewType);
+            if (registration is null)
+                throw new KeyNotFoundException($"No registration found for the Region View '{viewType.FullName}'.");
+
+            return registry.CreateView(c, registration.Name);
+        });
+    }
+
+    /// <summary>
+    /// Registers a content type with a region name.
+    /// </summary>
+    /// <param name="regionName">Region name to which the <paramref name="targetName"/> will be registered.</param>
+    /// <param name="targetName">Content type to be registered for the <paramref name="regionName"/>.</param>
+    public void RegisterViewWithRegion(string regionName, string targetName)
+    {
+        RegisterViewWithRegion(regionName, c =>
+        {
+            var registry = c.Resolve<IRegionNavigationRegistry>();
+            return registry.CreateView(c, targetName);
+        });
     }
 
     /// <summary>
@@ -65,24 +77,10 @@ public class RegionViewRegistry : IRegionViewRegistry
     /// </summary>
     /// <param name="regionName">Region name to which the <paramref name="getContentDelegate"/> will be registered.</param>
     /// <param name="getContentDelegate">Delegate used to retrieve the content associated with the <paramref name="regionName"/>.</param>
-    public void RegisterViewWithRegion(string regionName, Func<object> getContentDelegate)
+    public void RegisterViewWithRegion(string regionName, Func<IContainerProvider, object> getContentDelegate)
     {
         _registeredContent.Add(regionName, getContentDelegate);
         OnContentRegistered(new ViewRegisteredEventArgs(regionName, getContentDelegate));
-    }
-
-    /// <summary>
-    /// Creates an instance of a registered view <see cref="Type"/>.
-    /// </summary>
-    /// <param name="type">Type of the registered view.</param>
-    /// <returns>Instance of the registered view.</returns>
-    protected virtual object CreateInstance(Type type)
-    {
-        var registration = RegionNavigationRegistry.GetViewNavigationInfo(type);
-        if (registration is null)
-            throw new ViewRegistrationException($"The specified view type '{type.FullName}' has not been registered for Region Navigation");
-
-        return RegionNavigationRegistry.CreateView(_container, registration.Name);
     }
 
     private void OnContentRegistered(ViewRegisteredEventArgs e)
