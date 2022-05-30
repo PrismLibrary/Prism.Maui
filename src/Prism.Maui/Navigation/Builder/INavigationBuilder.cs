@@ -2,6 +2,7 @@
 
 public interface INavigationBuilder
 {
+    Uri Uri { get; }
     INavigationBuilder AddNavigationSegment(string segmentName, Action<ISegmentBuilder> configureSegment);
     INavigationBuilder AddTabbedSegment(Action<ITabbedSegmentBuilder> configuration);
     INavigationBuilder WithParameters(INavigationParameters parameters);

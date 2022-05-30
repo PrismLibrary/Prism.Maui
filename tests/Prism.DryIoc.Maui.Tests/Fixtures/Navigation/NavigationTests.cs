@@ -34,6 +34,14 @@ public class NavigationTests
 
     private void TestPage(Page page)
     {
+        Assert.NotNull(page.BindingContext);
+        if(page.Parent is not null)
+        {
+            Assert.False(page.BindingContext == page);
+            Assert.False(page.BindingContext == page.Parent);
+            Assert.False(page.BindingContext == page.Parent.BindingContext);
+        }
+
         if (page is NavigationPage)
         {
             Assert.IsType<PrismNavigationPage>(page);

@@ -21,7 +21,7 @@ internal class NavigationBuilder : INavigationBuilder, IRegistryAware
 
     IViewRegistry IRegistryAware.Registry => ((IRegistryAware)_navigationService).Registry;
 
-    public IViewRegistry Registry { get; }
+    public Uri Uri => BuildUri();
 
     public INavigationBuilder AddNavigationSegment(string segmentName, Action<ISegmentBuilder> configureSegment)
     {
