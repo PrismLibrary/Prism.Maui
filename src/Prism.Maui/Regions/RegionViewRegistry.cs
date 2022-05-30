@@ -59,6 +59,20 @@ public class RegionViewRegistry : IRegionViewRegistry
     }
 
     /// <summary>
+    /// Registers a content type with a region name.
+    /// </summary>
+    /// <param name="regionName">Region name to which the <paramref name="targetName"/> will be registered.</param>
+    /// <param name="targetName">Content type to be registered for the <paramref name="regionName"/>.</param>
+    public void RegisterViewWithRegion(string regionName, string targetName)
+    {
+        RegisterViewWithRegion(regionName, c =>
+        {
+            var registry = c.Resolve<IRegionNavigationRegistry>();
+            return registry.CreateView(c, targetName);
+        });
+    }
+
+    /// <summary>
     /// Registers a delegate that can be used to retrieve the content associated with a region name. 
     /// </summary>
     /// <param name="regionName">Region name to which the <paramref name="getContentDelegate"/> will be registered.</param>

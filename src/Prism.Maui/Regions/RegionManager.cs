@@ -61,9 +61,7 @@ public partial class RegionManager : IRegionManager
     public IRegionManager RegisterViewWithRegion(string regionName, Type viewType)
     {
         var regionViewRegistry = ContainerLocator.Container.Resolve<IRegionViewRegistry>();
-
         regionViewRegistry.RegisterViewWithRegion(regionName, viewType);
-
         return this;
     }
 
@@ -77,9 +75,9 @@ public partial class RegionManager : IRegionManager
     /// <returns>The <see cref="IRegionManager"/>, for adding several views easily</returns>
     public IRegionManager RegisterViewWithRegion(string regionName, string targetName)
     {
-        var viewType = ContainerLocator.Current.GetRegistrationType(targetName);
-
-        return RegisterViewWithRegion(regionName, viewType);
+        var regionViewRegistry = ContainerLocator.Container.Resolve<IRegionViewRegistry>();
+        regionViewRegistry.RegisterViewWithRegion(regionName, targetName);
+        return this;
     }
 
     /// <summary>
