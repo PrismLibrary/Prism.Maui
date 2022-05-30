@@ -1,5 +1,6 @@
 using Prism.Controls;
-using Prism.DryIoc.Maui.Tests.Mocks;
+using Prism.DryIoc.Maui.Tests.Mocks.ViewModels;
+using Prism.DryIoc.Maui.Tests.Mocks.Views;
 
 namespace Prism.DryIoc.Maui.Tests.Fixtures.Navigation;
 

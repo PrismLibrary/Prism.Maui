@@ -17,7 +17,14 @@ internal class ElementParentedCallbackBehavior : Behavior<VisualElement>
     {
         if (view.TryGetParentPage(out var page))
         {
-            _callback();
+            var container = page.GetContainerProvider();
+            if (container is null)
+                page.PropertyChanged += PagePropertyChanged;
+            else
+            {
+                view.SetContainerProvider(container);
+                _callback();
+            }
         }
         else
         {
@@ -31,7 +38,7 @@ internal class ElementParentedCallbackBehavior : Behavior<VisualElement>
             return;
         else if (view.TryGetParentPage(out var page))
         {
-            if(page.GetContainerProvider() is null)
+            if(page.GetContainerProvider() is not null)
             {
                 view.ParentChanged -= OnParentChanged;
                 _callback();

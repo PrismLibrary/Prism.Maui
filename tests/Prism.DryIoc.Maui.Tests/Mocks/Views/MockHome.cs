@@ -1,4 +1,4 @@
-﻿namespace Prism.DryIoc.Maui.Tests.Mocks;
+﻿namespace Prism.DryIoc.Maui.Tests.Mocks.Views;
 
 public class MockHome : FlyoutPage
 {
