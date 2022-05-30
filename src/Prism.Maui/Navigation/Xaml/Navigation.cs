@@ -15,6 +15,13 @@ public static class Navigation
             default(IContainerProvider),
             propertyChanged: OnNavigationScopeChanged);
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static readonly BindableProperty ChildViewsProperty =
+        BindableProperty.CreateAttached("ChildViews",
+            typeof(IEnumerable<VisualElement>),
+            typeof(Navigation),
+            null);
+
     private static void OnNavigationScopeChanged(BindableObject bindable, object oldValue, object newValue)
     {
         if (oldValue == newValue)
@@ -87,6 +94,15 @@ public static class Navigation
     [EditorBrowsable(EditorBrowsableState.Never)]
     public static IContainerProvider GetContainerProvider(this BindableObject bindable) =>
         bindable.GetValue(NavigationScopeProperty) as IContainerProvider;
+
+    internal static IEnumerable<VisualElement> GetChildViews(this Page page)
+    {
+        var children = page.GetValue(ChildViewsProperty) as IEnumerable<VisualElement>;
+        if (children is not null)
+            return children;
+
+        return Array.Empty<VisualElement>();
+    }
 
 
     internal static Action GetRaiseCanExecuteChangedInternal(BindableObject view) => (Action)view.GetValue(RaiseCanExecuteChangedInternalProperty);

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 using Prism.Navigation;
+using Prism.Navigation.Xaml;
 using Prism.Regions.Navigation;
 using NavigationMode = Prism.Navigation.NavigationMode;
 
@@ -19,6 +20,13 @@ public static class MvvmHelpers
         {
             action(viewModelAsT);
         }
+
+        if(view is Page page)
+        {
+            var children = page.GetChildViews();
+            foreach (var child in children)
+                InvokeViewAndViewModelAction<T>(child, action);
+        }
     }
 
     public static async Task InvokeViewAndViewModelActionAsync<T>(object view, Func<T, Task> action) where T : class
@@ -31,6 +39,13 @@ public static class MvvmHelpers
         if (view is BindableObject element && element.BindingContext is T viewModelAsT)
         {
             await action(viewModelAsT);
+        }
+
+        if (view is Page page)
+        {
+            var children = page.GetChildViews();
+            foreach (var child in children)
+                await InvokeViewAndViewModelActionAsync<T>(child, action);
         }
     }
 
@@ -104,15 +119,9 @@ public static class MvvmHelpers
 
     public static bool IsNavigationTarget(object view, INavigationContext navigationContext)
     {
-        if (view is IRegionAware viewAsRegionAware)
-        {
-            return viewAsRegionAware.IsNavigationTarget(navigationContext);
-        }
-
-        if (view is BindableObject bindable && bindable.BindingContext is IRegionAware vmAsRegionAware)
-        {
-            return vmAsRegionAware.IsNavigationTarget(navigationContext);
-        }
+        var implementor = GetImplementerFromViewOrViewModel<IRegionAware>(view);
+        if (implementor is not null)
+            return implementor.IsNavigationTarget(navigationContext);
 
         var uri = navigationContext.Uri;
         if (!uri.IsAbsoluteUri)
