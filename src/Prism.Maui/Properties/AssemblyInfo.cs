@@ -9,4 +9,4 @@
 [assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Navigation.Xaml")]
 [assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Regions.Xaml")]
 //[assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Services.Dialogs.Xaml")]
-//[assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Xaml")]
+[assembly: XmlnsDefinition("http://prismlibrary.com", "Prism.Xaml")]

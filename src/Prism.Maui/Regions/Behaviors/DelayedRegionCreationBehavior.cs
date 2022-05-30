@@ -69,7 +69,7 @@ public class DelayedRegionCreationBehavior
     public void Attach()
     {
         RegionManagerAccessor.UpdatingRegions += OnUpdatingRegions;
-        TargetElement.Behaviors.Add(new DelayedRegionCreationCallbackBehavior(TryCreateRegion));
+        TargetElement.Behaviors.Add(new ElementParentedCallbackBehavior(TryCreateRegion));
     }
 
     /// <summary>
