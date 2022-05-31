@@ -72,9 +72,15 @@ jobs:
     if: ${{ github.event_name != 'pull_request' }}
     with:
       name: Deploy Internal
-    secrets: 
+    secrets:
       feedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
       apiKey: ${{ secrets.IN_HOUSE_API_KEY }}
+      CodeSignTimestampUrl: ${{ secrets.CodeSignTimestampUrl }}
+      CodeSignKeyVault: ${{ secrets.CodeSignKeyVault }}
+      CodeSignClientId: ${{ secrets.CodeSignClientId }}
+      CodeSignTenantId: ${{ secrets.CodeSignTenantId }}
+      CodeSignClientSecret: ${{ secrets.CodeSignClientSecret }}
+      CodeSignCertificate: ${{ secrets.CodeSignCertificate }}
 
   deploy-sponsors:
     uses: ./.github/workflows/deploy.yml
@@ -85,3 +91,9 @@ jobs:
     secrets:
       feedUrl: ${{ secrets.SPONSOR_CONNECT_NUGET_FEED }}
       apiKey: ${{ secrets.SPONSOR_CONNECT_TOKEN }}
+      CodeSignTimestampUrl: ${{ secrets.CodeSignTimestampUrl }}
+      CodeSignKeyVault: ${{ secrets.CodeSignKeyVault }}
+      CodeSignClientId: ${{ secrets.CodeSignClientId }}
+      CodeSignTenantId: ${{ secrets.CodeSignTenantId }}
+      CodeSignClientSecret: ${{ secrets.CodeSignClientSecret }}
+      CodeSignCertificate: ${{ secrets.CodeSignCertificate }}
