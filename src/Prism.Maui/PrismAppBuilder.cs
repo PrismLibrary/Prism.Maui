@@ -126,10 +126,10 @@ public abstract class PrismAppBuilder
             _onAppStarted(_container, _container.Resolve<INavigationService>());
     }
 
-    public MauiAppBuilder OnAppStart(Action<IContainerProvider, INavigationService> onAppStarted)
+    public PrismAppBuilder OnAppStart(Action<IContainerProvider, INavigationService> onAppStarted)
     {
         _onAppStarted = onAppStarted;
-        return MauiBuilder;
+        return this;
     }
 
     /// <summary>
