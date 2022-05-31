@@ -3,6 +3,23 @@ name: Build Prism.Maui
 on:
   push:
     branches: [ master ]
+    paths-ignore:
+      - '.vscode/**'
+      - '.github/*'
+      - '.git*'
+      - '.editorconfig'
+      - 'LICENSE'
+      - 'README.md'
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '.vscode/**'
+      - '.github/*'
+      - '.git*'
+      - '.editorconfig'
+      - 'LICENSE'
+      - 'README.md'
+  workflow_dispatch:
 
 jobs:
   build:
@@ -13,15 +30,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
             fetch-depth: 0
 
       - name: Setup .NET Core 6.0
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '6.0.300-preview.22204.3'
-          include-prerelease: true
+          dotnet-version: '6.0.x'
 
       - name: Install .NET MAUI Workload
         run: |
@@ -33,6 +49,9 @@ jobs:
       - name: Build Packages
         run: dotnet build build.slnf -c Release
 
+      - name: Run Tests
+        run: dotnet test build.slnf -c Release --no-build --logger "trx;LogFileName=test-results.trx"
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -43,6 +62,7 @@ jobs:
     name: Deploy Internal
     runs-on: windows-latest
     needs: build
+    if: ${{ github.event_name != 'pull_request' }}
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
@@ -64,6 +84,7 @@ jobs:
     name: Deploy Sponsor Connect
     runs-on: windows-latest
     needs: build
+    if: ${{ github.event_name != 'pull_request' }}
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
 
