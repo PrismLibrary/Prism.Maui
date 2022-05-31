@@ -9,10 +9,12 @@ public static class PrismAppBuilderExtensions
 {
     private static bool s_didRegisterModules = false;
 
-    public static PrismAppBuilder UsePrismApp<TApp>(this MauiAppBuilder builder, IContainerExtension containerExtension)
+    public static MauiAppBuilder UsePrismApp<TApp>(this MauiAppBuilder builder, IContainerExtension containerExtension, Action<PrismAppBuilder> configurePrism)
         where TApp : Application
     {
-        return new PrismAppBuilder<TApp>(containerExtension, builder);
+        var prismBuilder = new PrismAppBuilder<TApp>(containerExtension, builder);
+        configurePrism(prismBuilder);
+        return builder;
     }
 
     public static PrismAppBuilder OnInitialized(this PrismAppBuilder builder, Action action)
@@ -42,16 +44,16 @@ public static class PrismAppBuilderExtensions
         });
     }
 
-    public static MauiAppBuilder OnAppStart(this PrismAppBuilder builder, string uri) =>
+    public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, string uri) =>
         builder.OnAppStart(navigation => navigation.NavigateAsync(uri));
 
-    public static MauiAppBuilder OnAppStart(this PrismAppBuilder builder, Action<INavigationService> onAppStarted) =>
+    public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, Action<INavigationService> onAppStarted) =>
         builder.OnAppStart((_, n) => onAppStarted(n));
 
-    public static MauiAppBuilder OnAppStart(this PrismAppBuilder builder, Func<IContainerProvider, INavigationService, Task> onAppStarted) =>
+    public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, Func<IContainerProvider, INavigationService, Task> onAppStarted) =>
         builder.OnAppStart(async (c, n) => await onAppStarted(c, n));
 
-    public static MauiAppBuilder OnAppStart(this PrismAppBuilder builder, Func<INavigationService, Task> onAppStarted) =>
+    public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, Func<INavigationService, Task> onAppStarted) =>
         builder.OnAppStart(async (_, n) => await onAppStarted(n));
 
     public static PrismAppBuilder ConfigureServices(this PrismAppBuilder builder, Action<IServiceCollection> configureServices)

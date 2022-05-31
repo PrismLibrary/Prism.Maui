@@ -10,13 +10,13 @@ public class RegionFixture
     public void ContentRegion_CreatedBy_RequestNavigate()
     {
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>()
-            .RegisterTypes(container =>
-            {
-                container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
-                container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
-            })
-            .OnAppStart("MockContentRegionPage")
+            .UsePrismApp<Application>(prism =>
+                prism.RegisterTypes(container =>
+                {
+                    container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
+                    container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
+                })
+                .OnAppStart("MockContentRegionPage"))
             .Build();
 
         var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
@@ -36,18 +36,18 @@ public class RegionFixture
     public void FrameRegion_CreatedBy_RegisterViewWithRegion()
     {
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>()
-            .RegisterTypes(container =>
-            {
-                container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
-                container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
-            })
-            .OnInitialized(container =>
-            {
-                var regionManager = container.Resolve<IRegionManager>();
-                regionManager.RegisterViewWithRegion("FrameRegion", "MockRegionViewA");
-            })
-            .OnAppStart("MockContentRegionPage")
+            .UsePrismApp<Application>(prism =>
+                prism.RegisterTypes(container =>
+                {
+                    container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
+                    container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
+                })
+                .OnInitialized(container =>
+                {
+                    var regionManager = container.Resolve<IRegionManager>();
+                    regionManager.RegisterViewWithRegion("FrameRegion", "MockRegionViewA");
+                })
+                .OnAppStart("MockContentRegionPage"))
             .Build();
 
         var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
@@ -67,18 +67,18 @@ public class RegionFixture
     public void RegionsShareContainer_WithPage()
     {
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>()
-            .RegisterTypes(container =>
-            {
-                container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
-                container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
-            })
-            .OnInitialized(container =>
-            {
-                var regionManager = container.Resolve<IRegionManager>();
-                regionManager.RegisterViewWithRegion("FrameRegion", "MockRegionViewA");
-            })
-            .OnAppStart("MockContentRegionPage")
+            .UsePrismApp<Application>(prism =>
+                prism.RegisterTypes(container =>
+                {
+                    container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
+                    container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
+                })
+                .OnInitialized(container =>
+                {
+                    var regionManager = container.Resolve<IRegionManager>();
+                    regionManager.RegisterViewWithRegion("FrameRegion", "MockRegionViewA");
+                })
+                .OnAppStart("MockContentRegionPage"))
             .Build();
 
         var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
@@ -104,13 +104,13 @@ public class RegionFixture
     {
         // This validates that the NavigationService is using the correct Page to navigate from
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>()
-            .RegisterTypes(container =>
-            {
-                container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
-                container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
-            })
-            .OnAppStart("MockContentRegionPage")
+            .UsePrismApp<Application>(prism =>
+                prism.RegisterTypes(container =>
+                {
+                    container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
+                    container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
+                })
+                .OnAppStart("MockContentRegionPage"))
             .Build();
 
         var regionManager = mauiApp.Services.GetRequiredService<IRegionManager>();
@@ -128,12 +128,12 @@ public class RegionFixture
     public void RegionManager_HasTwoRegions()
     {
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>()
-            .RegisterTypes(container =>
-            {
-                container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
-            })
-            .OnAppStart("MockContentRegionPage")
+            .UsePrismApp<Application>(prism => 
+                prism.RegisterTypes(container =>
+                {
+                    container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
+                })
+                .OnAppStart("MockContentRegionPage"))
             .Build();
 
         var regionManager = mauiApp.Services.GetRequiredService<IRegionManager>();
