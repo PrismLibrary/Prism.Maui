@@ -5,12 +5,11 @@ on:
         required: false
         type: string
         default: Deploy
+    secrets:
       feedUrl:
         required: true
-        type: string
       apiKey:
         required: true
-        type: string
 
 jobs:
   deploy:
@@ -30,5 +29,5 @@ jobs:
         uses: dansiegel/publish-nuget@v1.01
         with:
             filename: 'Artifacts/*.nupkg'
-            feedUrl: ${{ inputs.feedUrl }}
-            apiKey: ${{ inputs.apiKey }}
+            feedUrl: ${{ secrets.feedUrl }}
+            apiKey: ${{ secrets.apiKey }}
