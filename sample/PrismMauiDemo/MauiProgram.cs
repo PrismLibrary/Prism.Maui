@@ -41,18 +41,10 @@ public static class MauiProgram
             .OnAppStart(navigationService => navigationService.CreateBuilder()
                 .AddNavigationSegment<SplashPageViewModel>()
                 .Navigate(HandleNavigationError))
-            //.OnAppStart(async navigationService =>
-            //{
-                
-            //    var result = await navigationService.NavigateAsync("MainPage/NavigationPage/ViewA/ViewB/ViewC/ViewD");
-            //    if (!result.Success)
-            //    {
-            //        System.Diagnostics.Debugger.Break();
-            //    }
-            //})
             .ConfigureFonts(fonts =>
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             })
             .Build();
     }

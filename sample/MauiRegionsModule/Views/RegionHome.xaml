@@ -5,7 +5,7 @@
              Title="RegionHome">
   <FlyoutPage.Flyout>
     <ContentPage Title="Menu">
-      <StackLayout>
+      <StackLayout Spacing="15">
         <Button Text="Content Region"
                 Command="{Binding NavigateCommand}"
                 CommandParameter="NavigationPage/ContentRegionPage" />

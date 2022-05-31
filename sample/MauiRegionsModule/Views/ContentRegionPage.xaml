@@ -5,6 +5,13 @@
              x:Class="MauiRegionsModule.Views.ContentRegionPage"
              Title="Content Region"
              Padding="20">
+  <ContentPage.Resources>
+    <ResourceDictionary>
+      <Style TargetType="Button">
+        <Setter Property="Margin" Value="0,10" />
+      </Style>
+    </ResourceDictionary>
+  </ContentPage.Resources>
   <Grid RowDefinitions="*,Auto,Auto,Auto">
     <ContentView prism:RegionManager.RegionName="ContentRegion" />
 

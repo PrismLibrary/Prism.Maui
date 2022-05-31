@@ -7,27 +7,10 @@
              windows:Application.ImageDirectory="Assets">
   <prism:PrismApplication.Resources>
     <ResourceDictionary>
-
-      <Color x:Key="PrimaryColor">#7e7d81</Color>
-      <Color x:Key="SecondaryColor">#00a5f2</Color>
-
-      <Style TargetType="Label">
-        <Setter Property="TextColor" Value="{DynamicResource PrimaryColor}" />
-        <Setter Property="FontFamily" Value="OpenSansRegular" />
-      </Style>
-
-      <Style TargetType="Button">
-        <Setter Property="TextColor" Value="White" />
-        <Setter Property="FontFamily" Value="OpenSansRegular" />
-        <Setter Property="BackgroundColor" Value="{DynamicResource PrimaryColor}" />
-        <Setter Property="Padding" Value="14,10" />
-        <Setter Property="Margin" Value="0,5" />
-      </Style>
-
-      <Style TargetType="NavigationPage">
-        <Setter Property="BarTextColor" Value="White" />
-      </Style>
-
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+        <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+      </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </prism:PrismApplication.Resources>
 </prism:PrismApplication>
