@@ -28,6 +28,7 @@ jobs:
       # Known issue https://github.com/novotnyllc/NuGetKeyVaultSignTool/issues/95
       - name: Sign NuGet Packages
         run: |
+          dotnet tool install --global NuGetKeyVaultSignTool
           NuGetKeyVaultSignTool sign ./Artifacts/*.nupkg `
             --file-digest sha256 `
             --timestamp-rfc3161 ${{ secrets.CodeSignTimestampUrl }} `
