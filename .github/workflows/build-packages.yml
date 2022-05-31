@@ -50,10 +50,17 @@ jobs:
         run: dotnet build build.slnf -c Release
 
       - name: Run Tests
-        run: dotnet test build.slnf -c Release --no-build --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test build.slnf -c Release --no-build
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: Test Results
+          path: TestResults/
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
         with:
           name: NuGet
           path: Artifacts/

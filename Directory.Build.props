@@ -27,6 +27,11 @@
     <DisableEmbeddedXbf>false</DisableEmbeddedXbf>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <VSTestLogger>trx%3bLogFileName=$(MSBuildProjectName).trx</VSTestLogger>
+    <VSTestResultsDirectory>$(MSBuildThisFileDirectory)TestResults</VSTestResultsDirectory>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)$(PackageReadmeFile)"
           Visible="False"
