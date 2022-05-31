@@ -10,6 +10,18 @@ on:
         required: true
       apiKey:
         required: true
+      CodeSignTimestampUrl:
+        required: true
+      CodeSignKeyVault:
+        required: true
+      CodeSignClientId:
+        required: true
+      CodeSignTenantId:
+        required: true
+      CodeSignClientSecret:
+        required: true
+      CodeSignCertificate:
+        required: true
 
 jobs:
   deploy:
@@ -27,26 +39,27 @@ jobs:
 
       # Known issue https://github.com/novotnyllc/NuGetKeyVaultSignTool/issues/95
       - name: Sign NuGet Packages
+        working-directory: Artifacts/
         run: |
           dotnet tool install --global NuGetKeyVaultSignTool
-          NuGetKeyVaultSignTool sign ./Artifacts/*.nupkg `
+          NuGetKeyVaultSignTool sign *.nupkg `
             --file-digest sha256 `
-            --timestamp-rfc3161 ${{ secrets.CodeSignTimestampUrl }} `
+            --timestamp-rfc3161 '${{ secrets.CodeSignTimestampUrl }}' `
             --timestamp-digest sha256 `
-            --azure-key-vault-url ${{ secrets.CodeSignKeyVault }} `
-            --azure-key-vault-client-id ${{ secrets.CodeSignClientId }} `
-            --azure-key-vault-tenant-id ${{ secrets.CodeSignTenantId }} `
-            --azure-key-vault-client-secret ${{ secrets.CodeSignClientSecret }} `
-            --azure-key-vault-certificate ${{ secrets.CodeSignCertificate }}
-          NuGetKeyVaultSignTool sign ./Artifacts/*.snupkg `
+            --azure-key-vault-url '${{ secrets.CodeSignKeyVault }}' `
+            --azure-key-vault-client-id '${{ secrets.CodeSignClientId }}' `
+            --azure-key-vault-tenant-id '${{ secrets.CodeSignTenantId }}' `
+            --azure-key-vault-client-secret '${{ secrets.CodeSignClientSecret }}' `
+            --azure-key-vault-certificate '${{ secrets.CodeSignCertificate }}'
+          NuGetKeyVaultSignTool sign *.snupkg `
             --file-digest sha256 `
-            --timestamp-rfc3161 ${{ secrets.CodeSignTimestampUrl }} `
+            --timestamp-rfc3161 '${{ secrets.CodeSignTimestampUrl }}' `
             --timestamp-digest sha256 `
-            --azure-key-vault-url ${{ secrets.CodeSignKeyVault }} `
-            --azure-key-vault-client-id ${{ secrets.CodeSignClientId }} `
-            --azure-key-vault-tenant-id ${{ secrets.CodeSignTenantId }} `
-            --azure-key-vault-client-secret ${{ secrets.CodeSignClientSecret }} `
-            --azure-key-vault-certificate ${{ secrets.CodeSignCertificate }}
+            --azure-key-vault-url '${{ secrets.CodeSignKeyVault }}' `
+            --azure-key-vault-client-id '${{ secrets.CodeSignClientId }}' `
+            --azure-key-vault-tenant-id '${{ secrets.CodeSignTenantId }}' `
+            --azure-key-vault-client-secret '${{ secrets.CodeSignClientSecret }}' `
+            --azure-key-vault-certificate '${{ secrets.CodeSignCertificate }}'
 
       - name: ${{ inputs.name }}
         uses: dansiegel/publish-nuget@v1.01
