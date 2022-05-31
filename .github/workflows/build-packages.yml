@@ -52,12 +52,13 @@ jobs:
       - name: Run Tests
         run: dotnet test build.slnf -c Release --no-build
 
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+      - name: Report Test Results
+        uses: dorny/test-reporter@v1
         if: ${{ always() }}
         with:
-          name: Test Results
-          path: TestResults/
+          name: Prism.Maui Tests
+          path: ./TestResults/*.trx
+          reporter: dotnet-trx
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
