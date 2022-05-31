@@ -8,7 +8,6 @@ using Prism.Modularity;
 using Prism.Mvvm;
 using Prism.Navigation;
 using Prism.Navigation.Xaml;
-using Prism.Regions;
 using Prism.Regions.Adapters;
 using Prism.Regions.Behaviors;
 using Prism.Services;
@@ -18,7 +17,7 @@ namespace Prism;
 public sealed class PrismAppBuilder<TApp> : PrismAppBuilder
     where TApp : Application
 {
-    public PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
+    internal PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
         : base(containerExtension, builder)
     {
         builder.UseMauiApp<TApp>();
@@ -34,7 +33,7 @@ public abstract class PrismAppBuilder
     private Action<RegionAdapterMappings> _configureAdapters;
     private Action<IRegionBehaviorFactory> _configureBehaviors;
 
-    protected PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
+    internal PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
     {
         if (containerExtension is null)
             throw new ArgumentNullException(nameof(containerExtension));
