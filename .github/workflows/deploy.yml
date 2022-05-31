@@ -5,14 +5,6 @@ on:
         required: false
         type: string
         default: Deploy
-      artifactName:
-        required: false
-        type: string
-        default: NuGet
-      artifactPath:
-        required: false
-        type: string
-        default: Artifacts/
       feedUrl:
         required: true
         type: string
@@ -31,12 +23,12 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.artifactName }}
-          path: ${{ inputs.artifactPath }}
+          name: NuGet
+          path: Artifacts/
 
-      - name: NuGet Publish (In-House)
+      - name: ${{ inputs.name }}
         uses: dansiegel/publish-nuget@v1.01
         with:
-            filename: '${{ inputs.artifactPath }}*.nupkg'
+            filename: 'Artifacts/*.nupkg'
             feedUrl: ${{ inputs.feedUrl }}
             apiKey: ${{ inputs.apiKey }}

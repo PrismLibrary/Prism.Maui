@@ -74,6 +74,7 @@ jobs:
       name: Deploy Internal
       feedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
       apiKey: ${{ secrets.IN_HOUSE_API_KEY }}
+    secrets: inherit
 
   deploy-sponsors:
     uses: ./.github/workflows/deploy.yml
@@ -83,3 +84,4 @@ jobs:
       name: Deploy Sponsor Connect
       feedUrl: ${{ secrets.SPONSOR_CONNECT_NUGET_FEED }}
       apiKey: ${{ secrets.SPONSOR_CONNECT_TOKEN }}
+    secrets: inherit
