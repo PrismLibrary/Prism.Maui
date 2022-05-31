@@ -95,7 +95,7 @@ public static class RegionManager
     {
         if (view is null) throw new ArgumentNullException(nameof(view));
 
-        if (!(view.GetValue(ObservableRegionProperty) is ObservableObject<IRegion> regionWrapper))
+        if (view.GetValue(ObservableRegionProperty) is not ObservableObject<IRegion> regionWrapper)
         {
             regionWrapper = new ObservableObject<IRegion>();
             view.SetValue(ObservableRegionProperty, regionWrapper);
@@ -104,7 +104,7 @@ public static class RegionManager
         return regionWrapper;
     }
 
-    private static async void OnSetRegionNameCallback(BindableObject bindable, object oldValue, object newValue)
+    private static void OnSetRegionNameCallback(BindableObject bindable, object oldValue, object newValue)
     {
         if (DesignMode.IsDesignModeEnabled || newValue is null || bindable is not VisualElement view)
             return;
