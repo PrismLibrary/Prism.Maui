@@ -5,7 +5,9 @@
       "src\\Prism.Maui\\Prism.Maui.csproj",
       "src\\Prism.DryIoc.Maui\\Prism.DryIoc.Maui.csproj",
       "src\\Prism.DryIoc.Shared\\Prism.DryIoc.Shared.shproj",
-      "src\\Prism.Maui.Rx\\Prism.Maui.Rx.csproj"
+      "src\\Prism.Maui.Rx\\Prism.Maui.Rx.csproj",
+      "tests\\Prism.Maui.Tests\\Prism.Maui.Tests.csproj",
+      "tests\\Prism.DryIoc.Maui.Tests\\Prism.DryIoc.Maui.Tests.csproj",
     ]
   }
 }
