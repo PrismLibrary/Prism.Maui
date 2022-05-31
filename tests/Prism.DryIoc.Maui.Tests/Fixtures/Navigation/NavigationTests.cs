@@ -11,8 +11,7 @@ public class NavigationTests
     [InlineData("MockHome/NavigationPage/MockViewA")]
     public void PagesInjectScopedInstanceOfIPageAccessor(string uri)
     {
-        var mauiApp = CreateBuilder()
-            .OnAppStart(navigation => navigation.NavigateAsync(uri))
+        var mauiApp = CreateBuilder(prism => prism.OnAppStart(navigation => navigation.NavigateAsync(uri)))
             .Build();
         var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
         var window = app!.Windows.First();
@@ -54,14 +53,17 @@ public class NavigationTests
         Assert.Same(page, viewModel!.Page);
     }
 
-    private PrismAppBuilder CreateBuilder() =>
+    private MauiAppBuilder CreateBuilder(Action<PrismAppBuilder> configurePrism) =>
         MauiApp.CreateBuilder()
-            .UsePrismApp<Application>()
-            .RegisterTypes(container =>
+            .UsePrismApp<Application>(prism =>
             {
-                container.RegisterForNavigation<MockHome, MockHomeViewModel>()
-                    .RegisterForNavigation<MockViewA, MockViewAViewModel>()
-                    .RegisterForNavigation<MockViewB, MockViewBViewModel>()
-                    .RegisterForNavigation<MockViewC, MockViewCViewModel>();
+                prism.RegisterTypes(container =>
+                {
+                    container.RegisterForNavigation<MockHome, MockHomeViewModel>()
+                        .RegisterForNavigation<MockViewA, MockViewAViewModel>()
+                        .RegisterForNavigation<MockViewB, MockViewBViewModel>()
+                        .RegisterForNavigation<MockViewC, MockViewCViewModel>();
+                });
+                configurePrism(prism);
             });
 }
