@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Prism.Common;
 using Prism.Ioc;
+using Prism.Navigation.Internals;
 
 namespace Prism.Navigation.Xaml;
 
@@ -18,10 +19,9 @@ public static class Navigation
             default(IContainerProvider),
             propertyChanged: OnNavigationScopeChanged);
 
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public static readonly BindableProperty ChildViewsProperty =
-        BindableProperty.CreateAttached("ChildViews",
-            typeof(IEnumerable<VisualElement>),
+    private static readonly BindableProperty ChildMvvmViewsProperty =
+        BindableProperty.CreateAttached("ChildRegions",
+            typeof(ChildRegionCollection),
             typeof(Navigation),
             null);
 
@@ -79,6 +79,29 @@ public static class Navigation
     /// <param name="value">The Can Navigate value</param>
     public static void SetCanNavigate(BindableObject view, bool value) => view.SetValue(CanNavigateProperty, value);
 
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public static ChildRegionCollection GetChildRegions(this Page page, bool setIfNull = false)
+    {
+        var value = page.GetValue(ChildMvvmViewsProperty) as ChildRegionCollection;
+        if (value is null && setIfNull)
+        {
+            value = new ChildRegionCollection();
+            page.SetValue(ChildMvvmViewsProperty, value);
+        }
+
+        return value;
+    }
+
+    internal static void ClearChildRegions(this Page page)
+    {
+        var children = page.GetChildRegions();
+        if(children is not null)
+        {
+            children.Dispose();
+            page.SetValue(ChildMvvmViewsProperty, null);
+        }
+    }
+
     /// <summary>
     /// Gets the instance of <see cref="INavigationService"/> for the given <see cref="Page"/>
     /// </summary>
@@ -119,16 +142,6 @@ public static class Navigation
 
         return null;
     }
-
-    internal static IEnumerable<VisualElement> GetChildViews(this Page page)
-    {
-        var children = page.GetValue(ChildViewsProperty) as IEnumerable<VisualElement>;
-        if (children is not null)
-            return children;
-
-        return Array.Empty<VisualElement>();
-    }
-
 
     internal static Action GetRaiseCanExecuteChangedInternal(BindableObject view) => (Action)view.GetValue(RaiseCanExecuteChangedInternalProperty);
 

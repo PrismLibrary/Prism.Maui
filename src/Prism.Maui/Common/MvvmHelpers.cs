@@ -23,9 +23,10 @@ public static class MvvmHelpers
 
         if(view is Page page)
         {
-            var children = page.GetChildViews();
-            foreach (var child in children)
-                InvokeViewAndViewModelAction<T>(child, action);
+            var children = page.GetChildRegions();
+            if(children is not null)
+                foreach (var child in children)
+                    InvokeViewAndViewModelAction<T>(child, action);
         }
     }
 
@@ -43,9 +44,10 @@ public static class MvvmHelpers
 
         if (view is Page page)
         {
-            var children = page.GetChildViews();
-            foreach (var child in children)
-                await InvokeViewAndViewModelActionAsync<T>(child, action);
+            var children = page.GetChildRegions();
+            if(children is not null)
+                foreach (var child in children)
+                    await InvokeViewAndViewModelActionAsync<T>(child, action);
         }
     }
 

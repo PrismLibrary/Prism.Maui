@@ -139,4 +139,37 @@ public class RegionFixture
         var regionManager = mauiApp.Services.GetRequiredService<IRegionManager>();
         Assert.Equal(2, regionManager.Regions.Count());
     }
+
+    [Fact]
+    public void PageHas_2_ChildViews()
+    {
+        var mauiApp = MauiApp.CreateBuilder()
+            .UsePrismApp<Application>(prism =>
+                prism.RegisterTypes(container =>
+                {
+                    container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
+                    container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
+                })
+                .OnInitialized(container =>
+                {
+                    var regionManager = container.Resolve<IRegionManager>();
+                    regionManager.RegisterViewWithRegion("FrameRegion", "MockRegionViewA");
+                })
+                .OnAppStart("MockContentRegionPage"))
+            .Build();
+
+        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
+
+        Assert.Single(app!.Windows);
+        var window = app.Windows.First();
+        Assert.NotNull(window.Page);
+
+        Assert.IsType<MockContentRegionPage>(window.Page);
+        var page = window.Page as MockContentRegionPage;
+
+        var children = page.GetChildRegions();
+        Assert.NotNull(children);
+
+        Assert.Equal(2, children.Count());
+    }
 }
