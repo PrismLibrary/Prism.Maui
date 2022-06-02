@@ -134,9 +134,6 @@ public class DelayedRegionCreationBehavior
             targetElement.SetContainerProvider(container);
             var regionAdapter = _regionAdapterMappings.GetMapping(targetElement.GetType());
             var region = regionAdapter.Initialize(targetElement, regionName);
-            var cleanupBehavior = new RegionCleanupBehavior(region);
-
-            page.Behaviors.Add(cleanupBehavior);
 
             return region;
         }

@@ -167,7 +167,7 @@ public class RegionFixture
         Assert.IsType<MockContentRegionPage>(window.Page);
         var page = window.Page as MockContentRegionPage;
 
-        var children = page.GetValue(Prism.Navigation.Xaml.Navigation.ChildViewsProperty) as IEnumerable<VisualElement>;
+        var children = page.GetChildRegions();
         Assert.NotNull(children);
 
         Assert.Equal(2, children.Count());

@@ -184,6 +184,7 @@ public abstract class PrismAppBuilder
         containerRegistry.RegisterPageBehavior<TabbedPage, TabbedPageActiveAwareBehavior>();
         containerRegistry.RegisterPageBehavior<PageLifeCycleAwareBehavior>();
         containerRegistry.RegisterPageBehavior<PageScopeBehavior>();
+        containerRegistry.RegisterPageBehavior<RegionCleanupBehavior>();
         containerRegistry.RegisterRegionServices(_configureAdapters, _configureBehaviors);
     }
 }
