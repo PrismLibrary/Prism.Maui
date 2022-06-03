@@ -1,0 +1,57 @@
+name: Build Prism.Maui
+
+on:
+  push:
+    branches: [ master ]
+    paths-include:
+      - "sample/**"
+      - "src/**"
+      - "test/**"
+      - "version.json"
+      - "build.slnf"
+      - ".github/workflows/build-packages.yml"
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/sign.yml"
+  pull_request:
+    branches: [ master ]
+    paths-include:
+      - "sample/**"
+      - "src/**"
+      - "test/**"
+      - "version.json"
+      - "build.slnf"
+      - ".github/workflows/build-packages.yml"
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/sign.yml"
+  workflow_dispatch:
+
+jobs:
+  build-packages:
+    uses: ./.github/workflows/build-packages.yml
+    secrets: inherit
+
+  sign-packages:
+    uses: ./.github/workflows/sign.yml
+    needs: build-packages
+    if: ${{ github.event_name != 'pull_request' }}
+    secrets: inherit
+
+  deploy-internal:
+    uses: ./.github/workflows/deploy.yml
+    needs: sign-packages
+    if: ${{ github.event_name != 'pull_request' }}
+    with:
+      name: Deploy Internal
+    secrets:
+      feedUrl: ${{ secrets.IN_HOUSE_NUGET_FEED }}
+      apiKey: ${{ secrets.IN_HOUSE_API_KEY }}
+
+  deploy-sponsors:
+    uses: ./.github/workflows/deploy.yml
+    needs: sign-packages
+    if: ${{ github.event_name != 'pull_request' }}
+    with:
+      name: Deploy Sponsor Connect
+    secrets:
+      feedUrl: ${{ secrets.SPONSOR_CONNECT_NUGET_FEED }}
+      apiKey: ${{ secrets.SPONSOR_CONNECT_TOKEN }}
