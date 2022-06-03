@@ -1,0 +1,26 @@
+name: Publish Prism.Maui Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-release:
+    name: NuGet Publish
+    runs-on: windows-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+    steps:
+      - uses: robinraju/release-downloader@v1.3
+        with:
+          latest: true
+          fileName: "*"
+          out-file-path: "Artifacts/"
+
+      - name: Publish to NuGet.org
+        uses: dansiegel/publish-nuget@v1.01
+        with:
+          filename: 'Artifacts/*.nupkg'
+          feedUrl: https://api.nuget.org/v3/index.json
+          apiKey: ${{ secrets.NUGET_API_KEY }}

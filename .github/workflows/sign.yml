@@ -1,0 +1,46 @@
+on:
+  workflow_call:
+
+jobs:
+  sign-packages:
+    name: Sign NuGet Packages
+    runs-on: windows-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: NuGet
+          path: Artifacts/
+
+      # Known issue https://github.com/novotnyllc/NuGetKeyVaultSignTool/issues/95
+      - name: Sign NuGet Packages
+        working-directory: Artifacts/
+        run: |
+          dotnet tool install --global NuGetKeyVaultSignTool
+          NuGetKeyVaultSignTool sign *.nupkg `
+            --file-digest sha256 `
+            --timestamp-rfc3161 '${{ secrets.CodeSignTimestampUrl }}' `
+            --timestamp-digest sha256 `
+            --azure-key-vault-url '${{ secrets.CodeSignKeyVault }}' `
+            --azure-key-vault-client-id '${{ secrets.CodeSignClientId }}' `
+            --azure-key-vault-tenant-id '${{ secrets.CodeSignTenantId }}' `
+            --azure-key-vault-client-secret '${{ secrets.CodeSignClientSecret }}' `
+            --azure-key-vault-certificate '${{ secrets.CodeSignCertificate }}'
+          NuGetKeyVaultSignTool sign *.snupkg `
+            --file-digest sha256 `
+            --timestamp-rfc3161 '${{ secrets.CodeSignTimestampUrl }}' `
+            --timestamp-digest sha256 `
+            --azure-key-vault-url '${{ secrets.CodeSignKeyVault }}' `
+            --azure-key-vault-client-id '${{ secrets.CodeSignClientId }}' `
+            --azure-key-vault-tenant-id '${{ secrets.CodeSignTenantId }}' `
+            --azure-key-vault-client-secret '${{ secrets.CodeSignClientSecret }}' `
+            --azure-key-vault-certificate '${{ secrets.CodeSignCertificate }}'
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Signed
+          path: Artifacts/
