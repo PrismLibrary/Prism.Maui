@@ -105,4 +105,21 @@ public class ViewRegistryFixture
         Assert.Single(page.Behaviors);
         Assert.IsType<PageLifeCycleAwareBehavior>(page.Behaviors.First());
     }
+
+    [Fact]
+    public void CreateView_WithViewModelLocator_Disabled()
+    {
+        var container = new TestContainer();
+        container.RegisterInstance(new PageAccessor());
+        container.RegisterForNavigation<VMLDisabledPageMock>();
+
+        var registry = container.Resolve<NavigationRegistry>();
+        VMLDisabledPageMock page = null;
+
+        var ex = Record.Exception(() => page = registry.CreateView(container, "VMLDisabledPageMock") as VMLDisabledPageMock);
+
+        Assert.Null(ex);
+        Assert.NotNull(page);
+        Assert.IsNotType<VMLDisabledPageMockViewModel>(page.BindingContext);
+    }
 }

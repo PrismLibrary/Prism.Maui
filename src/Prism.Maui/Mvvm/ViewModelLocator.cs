@@ -9,7 +9,7 @@ public static class ViewModelLocator
     /// Instructs Prism whether or not to automatically create an instance of a ViewModel using a convention, and assign the associated View's <see cref="BindableObject.BindingContext"/> to that instance.
     /// </summary>
     public static readonly BindableProperty AutowireViewModelProperty =
-        BindableProperty.CreateAttached("AutowireViewModel", typeof(ViewModelLocatorBehavior), typeof(ViewModelLocator), ViewModelLocatorBehavior.Automatic, propertyChanged: OnAutowireViewModelChanged);
+        BindableProperty.CreateAttached("AutowireViewModel", typeof(ViewModelLocatorBehavior), typeof(ViewModelLocator), ViewModelLocatorBehavior.Automatic);
 
     internal static readonly BindableProperty ViewModelProperty =
         BindableProperty.CreateAttached("ViewModelType",
@@ -39,15 +39,6 @@ public static class ViewModelLocator
     public static void SetAutowireViewModel(BindableObject bindable, ViewModelLocatorBehavior value)
     {
         bindable.SetValue(AutowireViewModelProperty, value);
-    }
-
-    private static void OnAutowireViewModelChanged(BindableObject bindable, object oldValue, object newValue)
-    {
-        bool? bNewValue = (bool?)newValue;
-        if (bNewValue.HasValue && bNewValue.Value)
-        {
-            ViewModelLocationProvider2.AutoWireViewModelChanged(bindable, Bind);
-        }
     }
 
     private static void OnViewModelPropertyChanged(BindableObject bindable, object oldValue, object newValue)
