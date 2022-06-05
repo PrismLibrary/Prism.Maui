@@ -4,46 +4,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-packages:
-    uses: ./.github/workflows/build-packages.yml
-    secrets: inherit
-
-  sign-packages:
-    uses: ./.github/workflows/sign.yml
-    needs: build-packages
-    secrets: inherit
+  build:
+    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@master
+    permissions:
+      statuses: write
+      checks: write
+    with:
+      name: Prism.Maui
+      solution-path: build.slnf
+      install-workload: maui
+      code-sign: true
+    secrets:
+      codeSignKeyVault: ${{ secrets.CodeSignKeyVault }}
+      codeSignClientId: ${{ secrets.CodeSignClientId }}
+      codeSignTenantId: ${{ secrets.CodeSignTenantId }}
+      codeSignClientSecret: ${{ secrets.CodeSignClientSecret }}
+      codeSignCertificate: ${{ secrets.CodeSignCertificate }}
 
   release:
-    runs-on: ubuntu-latest
-    needs: [sign-packages]
-    name: Release
+    uses: avantipoint/workflow-templates/.github/workflows/generate-release.yml@master
+    needs: [build]
     permissions:
       contents: write
-    outputs:
-      version-name: ${{ steps.process-version.outputs.version-name }}
-      release-display-name: ${{ steps.process-version.outputs.release-display-name }}
-      is-preview: ${{ steps.process-version.outputs.is-preview }}
-    steps:
-    - uses: actions/checkout@v2
-
-    - uses: actions/download-artifact@v2
-      with:
-        name: Signed
-        path: Artifacts/
-
-    - run: perl ../build/process-version.pl Prism.Maui
-      shell: bash
-      id: process-version
-      name: Process Version
-      working-directory: Artifacts/
-
-    - uses: ncipollo/release-action@main
-      name: Create Release
-      with:
-        artifacts: "Artifacts/*.nupkg,Artifacts/*.snupkg"
-        artifactErrorsFailBuild: true
-        draft: true
-        generateReleaseNotes: true
-        name: ${{ steps.process-version.outputs.release-display-name }}
-        prerelease: ${{ steps.process-version.outputs.is-preview }}
-        tag: ${{ steps.process-version.outputs.version-name }}
+    with:
+      package-name: Prism.Maui
