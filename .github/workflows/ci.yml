@@ -3,7 +3,7 @@ name: Prism.Maui CI
 on:
   push:
     branches: [ master ]
-    paths-include:
+    paths:
       - "sample/**"
       - "src/**"
       - "test/**"

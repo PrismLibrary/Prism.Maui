@@ -3,7 +3,7 @@ name: Prism.Maui PR Validation
 on:
   pull_request:
     branches: [ master ]
-    paths-include:
+    paths:
       - "sample/**"
       - "src/**"
       - "test/**"
