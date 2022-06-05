@@ -1,4 +1,4 @@
-name: Build Prism.Maui
+name: Prism.Maui CI
 
 on:
   push:
@@ -9,37 +9,30 @@ on:
       - "test/**"
       - "version.json"
       - "build.slnf"
-      - ".github/workflows/build-packages.yml"
       - ".github/workflows/ci.yml"
-      - ".github/workflows/sign.yml"
-  pull_request:
-    branches: [ master ]
-    paths-include:
-      - "sample/**"
-      - "src/**"
-      - "test/**"
-      - "version.json"
-      - "build.slnf"
-      - ".github/workflows/build-packages.yml"
-      - ".github/workflows/ci.yml"
-      - ".github/workflows/sign.yml"
   workflow_dispatch:
 
 jobs:
-  build-packages:
-    uses: ./.github/workflows/build-packages.yml
-    secrets: inherit
-
-  sign-packages:
-    uses: ./.github/workflows/sign.yml
-    needs: build-packages
-    if: ${{ github.event_name != 'pull_request' }}
-    secrets: inherit
+  build:
+    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@master
+    permissions:
+      statuses: write
+      checks: write
+    with:
+      name: Prism.Maui
+      solution-path: build.slnf
+      install-workload: maui
+      code-sign: true
+    secrets:
+      codeSignKeyVault: ${{ secrets.CodeSignKeyVault }}
+      codeSignClientId: ${{ secrets.CodeSignClientId }}
+      codeSignTenantId: ${{ secrets.CodeSignTenantId }}
+      codeSignClientSecret: ${{ secrets.CodeSignClientSecret }}
+      codeSignCertificate: ${{ secrets.CodeSignCertificate }}
 
   deploy-internal:
-    uses: ./.github/workflows/deploy.yml
-    needs: sign-packages
-    if: ${{ github.event_name != 'pull_request' }}
+    uses: avantipoint/workflow-templates/.github/workflows/deploy-nuget.yml
+    needs: build
     with:
       name: Deploy Internal
     secrets:
@@ -47,9 +40,8 @@ jobs:
       apiKey: ${{ secrets.IN_HOUSE_API_KEY }}
 
   deploy-sponsors:
-    uses: ./.github/workflows/deploy.yml
-    needs: sign-packages
-    if: ${{ github.event_name != 'pull_request' }}
+    uses: avantipoint/workflow-templates/.github/workflows/deploy-nuget.yml
+    needs: build
     with:
       name: Deploy Sponsor Connect
     secrets:
