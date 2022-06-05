@@ -19,50 +19,55 @@ MauiApp.CreateBuilder()
 
 // Prism.Maui
 MauiApp.CreateBuilder()
-    .UsePrismApp<App>();
+    .UsePrismApp<App>(prism => {
+        // Register Services and setup initial Navigation
+    });
 ```
 
 Some of the methods available on the `PrismAppBuilder` are going to seem a bit familiar for developers coming from Prism for Xamarin.Forms such as:
 
 ```cs
 MauiApp.CreateBuilder()
-    .UsePrismApp<App>()
-    .RegisterServices(container => {
-        container.Register<ISomeService, SomeImplementation>();
-        container.RegisterForNavigation<ViewA, ViewAViewModel>();
-    })
-    .ConfigureModuleCatalog(catalog => {
-        catalog.AddModule<ModuleA>();
-    });
-    .OnInitialized(() => {
-        // Do some initializations here
-    });
+    .UsePrismApp<App>(prism =>
+        prism.RegisterServices(container => {
+            container.Register<ISomeService, SomeImplementation>();
+            container.RegisterForNavigation<ViewA, ViewAViewModel>();
+        })
+        .ConfigureModuleCatalog(catalog => {
+            catalog.AddModule<ModuleA>();
+        });
+        .OnInitialized(() => {
+            // Do some initializations here
+        })
+    );
 ```
 
 You will find that this includes useful extensions that consider that you are wiring up these initializations as part of the App Builder. A common case would be where you may have used the container in PrismApplication in the past, you now have an overload that provides the use of the Container.
 
 ```cs
 MauiApp.CreateBuilder()
-    .UsePrismApp<App>()
-    .OnInitialized(container => {
-        var foo = container.Resolve<IFoo>();
-        // Do some initializations here
-    });
+    .UsePrismApp<App>(prism =>
+        prism.OnInitialized(container => {
+            var foo = container.Resolve<IFoo>();
+            // Do some initializations here
+        })
+    );
 ```
 
 The `PrismAppBuilder` additionally provides some new things to make your life easier.
 
 ```cs
 MauiApp.CreateBuilder()
-    .UsePrismApp<App>()
-    .OnAppStart(async navigationService =>
-    {
-        var result = await navigationService.NavigateAsync("MainPage/NavigationPage/ViewA");
-        if (!result.Success)
+    .UsePrismApp<App>(prism =>
+        prism.OnAppStart(async navigationService =>
         {
-            System.Diagnostics.Debugger.Break();
-        }
-    });
+            var result = await navigationService.NavigateAsync("MainPage/NavigationPage/ViewA");
+            if (!result.Success)
+            {
+                System.Diagnostics.Debugger.Break();
+            }
+        })
+    );
 ```
 
 ### Microsoft Extensions Support
@@ -71,11 +76,12 @@ To help make it even easier we have added some special extensions to the `PrismA
 
 ```cs
 MauiApp.CreateBuilder()
-    .UsePrismApp<App>()
-    .ConfigureServices(services => {
-        services.AddSingleton<IFoo, Foo>();
-        services.RegisterForNavigation<ViewA, ViewAViewModel>();
-    });
+    .UsePrismApp<App>(prism =>
+        prism.ConfigureServices(services => {
+            services.AddSingleton<IFoo, Foo>();
+            services.RegisterForNavigation<ViewA, ViewAViewModel>();
+        })
+    );
 ```
 
 ## Upgrading from Prism.Forms
