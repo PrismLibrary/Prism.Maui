@@ -31,7 +31,7 @@ jobs:
       codeSignCertificate: ${{ secrets.CodeSignCertificate }}
 
   deploy-internal:
-    uses: avantipoint/workflow-templates/.github/workflows/deploy-nuget.yml
+    uses: avantipoint/workflow-templates/.github/workflows/deploy-nuget.yml@master
     needs: build
     with:
       name: Deploy Internal
@@ -40,7 +40,7 @@ jobs:
       apiKey: ${{ secrets.IN_HOUSE_API_KEY }}
 
   deploy-sponsors:
-    uses: avantipoint/workflow-templates/.github/workflows/deploy-nuget.yml
+    uses: avantipoint/workflow-templates/.github/workflows/deploy-nuget.yml@master
     needs: build
     with:
       name: Deploy Sponsor Connect
