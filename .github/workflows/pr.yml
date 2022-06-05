@@ -1,0 +1,22 @@
+name: Prism.Maui PR Validation
+
+on:
+  pull_request:
+    branches: [ master ]
+    paths-include:
+      - "sample/**"
+      - "src/**"
+      - "test/**"
+      - "version.json"
+      - "build.slnf"
+      - ".github/workflows/pr.yml"
+
+jobs:
+  build:
+    uses: avantipoint/workflow-templates/.github/workflows/dotnet-build.yml@master
+    permissions:
+      statuses: write
+      checks: write
+    with:
+      name: Prism.Maui
+      solution-path: build.slnf
