@@ -20,3 +20,4 @@ jobs:
     with:
       name: Prism.Maui
       solution-path: build.slnf
+      install-workload: maui
