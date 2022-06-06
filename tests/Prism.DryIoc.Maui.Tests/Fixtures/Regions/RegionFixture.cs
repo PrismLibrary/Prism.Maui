@@ -172,4 +172,32 @@ public class RegionFixture
 
         Assert.Equal(2, children.Count());
     }
+
+    [Fact]
+    public void RegionWithDefaultView_IsAutoPopulated()
+    {
+        var mauiApp = MauiApp.CreateBuilder()
+            .UsePrismApp<Application>(prism =>
+                prism.RegisterTypes(container =>
+                {
+                    container.RegisterForNavigation<MockPageWithRegionAndDefaultView>("MainPage");
+                    container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
+                })
+                .OnAppStart("MainPage", ex => Assert.Null(ex)))
+            .Build();
+
+        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
+
+        Assert.Single(app!.Windows);
+        var window = app.Windows.First();
+        Assert.NotNull(window.Page);
+
+        Assert.IsType<MockPageWithRegionAndDefaultView>(window.Page);
+        var page = window.Page as MockPageWithRegionAndDefaultView;
+
+        var region = page.Content as ContentView;
+
+        Assert.NotNull(region.Content);
+        Assert.IsType<MockRegionViewA>(region.Content);
+    }
 }

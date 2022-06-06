@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Prism.Ioc;
 
 namespace Prism.Regions.Behaviors;
 
@@ -44,6 +45,26 @@ public class AutoPopulateRegionBehavior : RegionBehavior
         foreach (VisualElement view in CreateViewsToAutoPopulate())
         {
             AddViewIntoRegion(view);
+        }
+
+        if (Region is ITargetAwareRegion targetAware && targetAware.TargetElement.GetValue(Xaml.RegionManager.DefaultViewProperty) != null)
+        {
+            var defaultView = targetAware.TargetElement.GetValue(Xaml.RegionManager.DefaultViewProperty);
+            if (defaultView is string targetName)
+                Region.Add(targetName);
+            else if (defaultView is VisualElement element)
+                Region.Add(element);
+            else if(defaultView is Type type)
+            {
+                var container = targetAware.Container;
+                var registry = container.Resolve<IRegionNavigationRegistry>();
+                var registration = registry.Registrations.FirstOrDefault(x => x.View == type);
+                if(registration is not null)
+                {
+                    var view = registry.CreateView(container, registration.Name) as VisualElement;
+                    Region.Add(view);
+                }
+            }
         }
 
         regionViewRegistry.ContentRegistered += OnViewRegistered;

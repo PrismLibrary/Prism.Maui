@@ -54,6 +54,15 @@ public static class RegionManager
     public static readonly BindableProperty RegionContextProperty =
         BindableProperty.CreateAttached("RegionContext", typeof(object), typeof(RegionManager), null, propertyChanged: OnRegionContextChanged);
 
+    public static readonly BindableProperty DefaultViewProperty =
+        BindableProperty.CreateAttached("DefaultView", typeof(object), typeof(RegionManager), null);
+
+    public static void SetDefaultView(VisualElement regionTarget, object viewNameTypeOrInstance) => 
+        regionTarget.SetValue(DefaultViewProperty, viewNameTypeOrInstance);
+
+    public static object GetDefaultView(VisualElement regionTarget) =>
+        regionTarget.GetValue(DefaultViewProperty);
+
     /// <summary>
     /// Sets the <see cref="RegionNameProperty"/> attached property.
     /// </summary>
