@@ -47,6 +47,14 @@ public static class PrismAppBuilderExtensions
     public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, string uri) =>
         builder.OnAppStart(navigation => navigation.NavigateAsync(uri));
 
+    public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, string uri, Action<Exception> onError) =>
+        builder.OnAppStart(async navigation =>
+        {
+            var result = await navigation.NavigateAsync(uri);
+            if (result.Exception is not null)
+                onError(result.Exception);
+        });
+
     public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, Action<INavigationService> onAppStarted) =>
         builder.OnAppStart((_, n) => onAppStarted(n));
 
