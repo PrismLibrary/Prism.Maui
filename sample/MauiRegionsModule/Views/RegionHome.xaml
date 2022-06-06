@@ -9,6 +9,15 @@
         <Button Text="Content Region"
                 Command="{Binding NavigateCommand}"
                 CommandParameter="NavigationPage/ContentRegionPage" />
+        <Button Text="Default View by Name"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="NavigationPage/DefaultViewNamedPage?Message=Initialized%20by%20NavigationParameters" />
+        <Button Text="Default View by Type"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="NavigationPage/DefaultViewTypePage" />
+        <Button Text="Default View by Instance"
+                Command="{Binding NavigateCommand}"
+                CommandParameter="NavigationPage/DefaultViewInstancePage" />
         <Button Text="Root Page"
                 Command="{Binding NavigateCommand}"
                 CommandParameter="/RootPage" />

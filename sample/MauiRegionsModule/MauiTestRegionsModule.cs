@@ -16,6 +16,9 @@ public class MauiTestRegionsModule : IModule
         containerRegistry
             .RegisterForNavigation<ContentRegionPage>()
             .RegisterForNavigation<RegionHome, RegionHomeViewModel>()
+            .RegisterForNavigation<DefaultViewNamedPage>()
+            .RegisterForNavigation<DefaultViewInstancePage>()
+            .RegisterForNavigation<DefaultViewTypePage>()
             .RegisterForRegionNavigation<RegionViewA, RegionViewAViewModel>()
             .RegisterForRegionNavigation<RegionViewB, RegionViewBViewModel>()
             .RegisterForRegionNavigation<RegionViewC, RegionViewCViewModel>();
