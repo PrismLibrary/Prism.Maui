@@ -16,6 +16,6 @@
     </ResourceDictionary>
   </ContentPage.Resources>
 
-  <ContentView prism:RegionManager.RegionName="DefaultViewNamed"
+  <ContentView prism:RegionManager.RegionName="DefaultViewInstance"
                prism:RegionManager.DefaultView="{StaticResource InstanceView}" />
 </ContentPage>

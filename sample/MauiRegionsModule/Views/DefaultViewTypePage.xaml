@@ -5,6 +5,6 @@
              xmlns:local="clr-namespace:MauiRegionsModule.Views"
              x:Class="MauiRegionsModule.Views.DefaultViewTypePage"
              Title="DefaultViewTypePage">
-  <ContentView prism:RegionManager.RegionName="DefaultViewNamed"
+  <ContentView prism:RegionManager.RegionName="DefaultViewType"
                prism:RegionManager.DefaultView="{x:Type local:RegionViewA}"/>
 </ContentPage>
