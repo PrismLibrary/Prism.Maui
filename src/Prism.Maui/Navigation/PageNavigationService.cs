@@ -905,6 +905,9 @@ public class PageNavigationService : INavigationService, IRegistryAware
 #if !ANDROID
                 // BUG: https://github.com/dotnet/maui/issues/7275
                 Window.Page = page;
+#if WINDOWS
+                page.ForceLayout();
+#endif
 #else
 
                 // HACK: This is the only way CURRENTLY to ensure that the UI resets for Absolute Navigation
