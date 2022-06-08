@@ -5,7 +5,7 @@
              x:Class="MauiModule.Views.ViewD"
              Title="{Binding Title}"
              BackgroundColor="White">
-  <Grid RowDefinitions="*,Auto"
+  <Grid RowDefinitions="*,Auto,Auto"
         ColumnDefinitions="*,*">
     <CollectionView ItemsSource="{Binding Messages}"
                     Grid.ColumnSpan="2">
@@ -35,10 +35,14 @@
             Command="{prism:GoBack}"
             Margin="10"
             Grid.Row="1" />
+    <Button Text="Go Back To Root"
+            Command="{prism:GoBack GoBackType=ToRoot}"
+            Margin="10"
+            Grid.Row="2"/>
     <Button Text="Show Alert Dialog"
             Command="{Binding ShowPageDialog}"
             Margin="10"
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="1"/>
   </Grid>
 </ContentPage>

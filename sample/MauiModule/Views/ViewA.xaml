@@ -34,7 +34,11 @@
     <Button Text="ViewB" 
             Command="{prism:NavigateTo 'ViewB'}"
             Margin="10"
-            Grid.Row="1" />
+            Grid.Row="1">
+      <Button.CommandParameter>
+        <prism:Parameter Key="Message" Value="Hi from View A!"/>
+      </Button.CommandParameter>
+    </Button>
     <Button Text="Show Alert Dialog" 
             Command="{Binding ShowPageDialog}"
             Margin="10"
