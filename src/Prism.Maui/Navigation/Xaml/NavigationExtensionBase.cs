@@ -57,9 +57,7 @@ public abstract class NavigationExtensionBase : Prism.Xaml.TargetAwareExtensionB
 
     protected virtual void Log(Exception ex, INavigationParameters parameters)
     {
-        //TODO: What to do with logs?
-        //Xamarin.Forms.Internals.Log.Warning("Warning", $"{GetType().Name} threw an exception");
-        //Xamarin.Forms.Internals.Log.Warning("Exception", ex.ToString());
+        // TODO: Determine a good way to log
     }
 
     protected abstract Task HandleNavigation(INavigationParameters parameters, INavigationService navigationService);
