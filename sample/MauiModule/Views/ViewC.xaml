@@ -32,7 +32,7 @@
 
     <Button Text="ViewD"
             Command="{Binding NavigateCommand}"
-            CommandParameter="ViewB"
+            CommandParameter="ViewD"
             Margin="10"
             Grid.Row="1" />
     <Button Text="Show Alert Dialog"
