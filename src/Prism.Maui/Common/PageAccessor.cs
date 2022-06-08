@@ -2,5 +2,10 @@
 
 internal class PageAccessor : IPageAccessor
 {
-    public Page Page { get; set; }
+    private WeakReference<Page> _weakPage;
+    public Page Page
+    {
+        get => _weakPage?.TryGetTarget(out var target) ?? false ? target : null;
+        set => _weakPage = value is null ? null : new(value);
+    }
 }
