@@ -20,7 +20,10 @@ public class GoBackExtension : NavigationExtensionBase
             AddKnownNavigationParameters(parameters);
         }
 
-        var result = await navigationService.GoBackToRootAsync(parameters);
+        var result = GoBackType == GoBackType.ToRoot ?
+                await navigationService.GoBackToRootAsync(parameters) :
+                await navigationService.GoBackAsync(parameters);
+
         if (result.Exception != null)
         {
             Log(result.Exception, parameters);

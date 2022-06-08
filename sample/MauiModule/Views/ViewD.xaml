@@ -31,10 +31,10 @@
       </CollectionView.ItemTemplate>
     </CollectionView>
 
-    <!--<Button Text="Go Back" 
+    <Button Text="Go Back" 
             Command="{prism:GoBack}"
             Margin="10"
-            Grid.Row="1" />-->
+            Grid.Row="1" />
     <Button Text="Show Alert Dialog"
             Command="{Binding ShowPageDialog}"
             Margin="10"
