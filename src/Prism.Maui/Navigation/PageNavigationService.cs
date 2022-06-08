@@ -902,22 +902,10 @@ public class PageNavigationService : INavigationService, IRegistryAware
             }
             else
             {
-#if !ANDROID
-                // BUG: https://github.com/dotnet/maui/issues/7275
                 Window.Page = page;
+
 #if WINDOWS
                 page.ForceLayout();
-#endif
-#else
-
-                // HACK: This is the only way CURRENTLY to ensure that the UI resets for Absolute Navigation
-                var newWindow = new PrismWindow
-                {
-                    Page = page
-                };
-                _application.OpenWindow(newWindow);
-                _application.CloseWindow(Window);
-                _window = null;
 #endif
             }
 
