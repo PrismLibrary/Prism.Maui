@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace Prism.Navigation.Xaml;
 
-public abstract class NavigationExtensionBase : Prism.Xaml.TargetAwareExtensionBase<ICommand>, ICommand
+public abstract class NavigationExtensionBase : TargetAwareExtensionBase<ICommand>, ICommand
 {
     public static readonly BindableProperty AnimatedProperty =
         BindableProperty.Create(nameof(Animated), typeof(bool), typeof(NavigationExtensionBase), true);
