@@ -1,5 +1,4 @@
-﻿using System.Windows.Input;
-using Prism.Behaviors;
+﻿using Prism.Behaviors;
 using Prism.Extensions;
 using Prism.Ioc;
 using Prism.Navigation.Xaml;
