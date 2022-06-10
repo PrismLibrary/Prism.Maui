@@ -18,6 +18,7 @@ jobs:
       statuses: write
       checks: write
       pull-requests: write
+      contents: write
     with:
       name: Prism.Maui
       solution-path: build.slnf
