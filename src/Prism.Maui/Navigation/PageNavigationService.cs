@@ -1078,4 +1078,9 @@ public class PageNavigationService : INavigationService, IRegistryAware
         }
 #endif
     }
+
+    public Task<INavigationResult> ClearModalStackAsync(INavigationParameters parameters, bool animated = true)
+    {
+        throw new NotImplementedException();
+    }
 }
