@@ -23,7 +23,7 @@ internal class NavigationBuilder : INavigationBuilder, IRegistryAware
 
     public Uri Uri => BuildUri();
 
-    public INavigationBuilder AddNavigationSegment(string segmentName, Action<ISegmentBuilder> configureSegment)
+    public INavigationBuilder AddSegment(string segmentName, Action<ISegmentBuilder> configureSegment)
     {
         var builder = new SegmentBuilder(segmentName);
         configureSegment?.Invoke(builder);

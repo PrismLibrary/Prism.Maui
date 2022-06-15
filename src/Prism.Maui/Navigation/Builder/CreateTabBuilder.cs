@@ -13,7 +13,7 @@ internal class CreateTabBuilder : ICreateTabBuilder, IUriSegment
 
     public string Segment => BuildSegment();
 
-    public ICreateTabBuilder AddNavigationSegment(string segmentName, Action<ISegmentBuilder> configureSegment)
+    public ICreateTabBuilder AddSegment(string segmentName, Action<ISegmentBuilder> configureSegment)
     {
         var builder = new SegmentBuilder(segmentName);
         configureSegment?.Invoke(builder);

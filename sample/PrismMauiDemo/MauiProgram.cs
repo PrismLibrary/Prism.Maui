@@ -39,7 +39,7 @@ public static class MauiProgram
                         Console.Error.WriteLine(x.Result.Exception.Message);
                 }))
                 .OnAppStart(navigationService => navigationService.CreateBuilder()
-                    .AddNavigationSegment<SplashPageViewModel>()
+                    .AddSegment<SplashPageViewModel>()
                     .Navigate(HandleNavigationError))
             )
             .ConfigureFonts(fonts =>

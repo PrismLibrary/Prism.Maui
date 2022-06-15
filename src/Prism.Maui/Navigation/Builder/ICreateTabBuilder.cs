@@ -2,5 +2,11 @@
 
 public interface ICreateTabBuilder
 {
-    ICreateTabBuilder AddNavigationSegment(string segmentName, Action<ISegmentBuilder> configureSegment);
+    /// <summary>
+    /// Adds a Segment for the <see cref="TabbedPage"/>
+    /// </summary>
+    /// <param name="segmentName"></param>
+    /// <param name="configureSegment"></param>
+    /// <returns></returns>
+    ICreateTabBuilder AddSegment(string segmentName, Action<ISegmentBuilder> configureSegment);
 }

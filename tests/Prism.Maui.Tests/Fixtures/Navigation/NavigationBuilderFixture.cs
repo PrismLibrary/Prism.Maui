@@ -9,7 +9,7 @@ public class NavigationBuilderFixture
     {
         var uri = Mock.Of<INavigationService>()
             .CreateBuilder()
-            .AddNavigationSegment("ViewA")
+            .AddSegment("ViewA")
             .Uri;
 
         Assert.Equal("ViewA", uri.ToString());
@@ -20,9 +20,9 @@ public class NavigationBuilderFixture
     {
         var uri = Mock.Of<INavigationService>()
             .CreateBuilder()
-            .AddNavigationSegment("ViewA")
-            .AddNavigationSegment("ViewB")
-            .AddNavigationSegment("ViewC")
+            .AddSegment("ViewA")
+            .AddSegment("ViewB")
+            .AddSegment("ViewC")
             .Uri;
 
         Assert.Equal("ViewA/ViewB/ViewC", uri.ToString());
@@ -33,7 +33,7 @@ public class NavigationBuilderFixture
     {
         var uri = Mock.Of<INavigationService>()
             .CreateBuilder()
-            .AddNavigationSegment("ViewA")
+            .AddSegment("ViewA")
             .UseAbsoluteNavigation()
             .Uri;
 
@@ -45,9 +45,9 @@ public class NavigationBuilderFixture
     {
         var uri = Mock.Of<INavigationService>()
             .CreateBuilder()
-            .AddNavigationSegment("ViewA")
-            .AddNavigationSegment("ViewB")
-            .AddNavigationSegment("ViewC")
+            .AddSegment("ViewA")
+            .AddSegment("ViewB")
+            .AddSegment("ViewC")
             .UseAbsoluteNavigation()
             .Uri;
 

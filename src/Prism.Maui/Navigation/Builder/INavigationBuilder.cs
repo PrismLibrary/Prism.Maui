@@ -3,7 +3,7 @@
 public interface INavigationBuilder
 {
     Uri Uri { get; }
-    INavigationBuilder AddNavigationSegment(string segmentName, Action<ISegmentBuilder> configureSegment);
+    INavigationBuilder AddSegment(string segmentName, Action<ISegmentBuilder> configureSegment);
     INavigationBuilder AddTabbedSegment(Action<ITabbedSegmentBuilder> configuration);
     INavigationBuilder WithParameters(INavigationParameters parameters);
     INavigationBuilder AddParameter(string key, object value);
