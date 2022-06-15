@@ -42,7 +42,7 @@ public class NavigateToExtensionFixture
 
         Mock.Get(mockNavigation)
             .Setup(x => x.NavigateAsync(It.IsAny<Uri>(), It.IsAny<INavigationParameters>()))
-            .ReturnsAsync(new NavigationResult { Success = true, Exception = null });
+            .ReturnsAsync(new NavigationResult());
 
         var registry = container.Resolve<NavigationRegistry>();
         var page = registry.CreateView(container, "PageMock") as Page;
@@ -78,7 +78,7 @@ public class NavigateToExtensionFixture
             {
                 parameters = navParameters;
             })
-            .ReturnsAsync(new NavigationResult { Success = false, Exception = null });
+            .ReturnsAsync(new NavigationResult { Exception = new Exception() });
 
         var registry = container.Resolve<NavigationRegistry>();
         var page = registry.CreateView(container, "PageMock") as Page;
@@ -113,7 +113,7 @@ public class NavigateToExtensionFixture
             {
                 parameters = navParameters;
             })
-            .ReturnsAsync(new NavigationResult { Success = true, Exception = null });
+            .ReturnsAsync(new NavigationResult());
 
         var registry = container.Resolve<NavigationRegistry>();
         var page = registry.CreateView(container, "PageMock") as Page;

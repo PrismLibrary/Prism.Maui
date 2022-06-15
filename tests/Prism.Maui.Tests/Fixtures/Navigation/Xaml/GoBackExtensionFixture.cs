@@ -54,7 +54,7 @@ public class GoBackExtensionFixture
             {
                 parameters = navParameters;
             })
-            .ReturnsAsync(new NavigationResult { Success = false, Exception = null });
+            .ReturnsAsync(new NavigationResult { Exception = new Exception() });
 
         var registry = container.Resolve<NavigationRegistry>();
         var page = registry.CreateView(container, "PageMock") as Page;
@@ -109,7 +109,7 @@ public class GoBackExtensionFixture
             {
                 parameters = navParameters;
             })
-            .ReturnsAsync(new NavigationResult { Success = false, Exception = null });
+            .ReturnsAsync(new NavigationResult { Exception = new Exception() });
 
         var registry = container.Resolve<NavigationRegistry>();
         var page = registry.CreateView(container, "PageMock") as Page;
@@ -139,7 +139,7 @@ public class GoBackExtensionFixture
             {
                 parameters = navParameters;
             })
-            .ReturnsAsync(new NavigationResult { Success = true, Exception = null });
+            .ReturnsAsync(new NavigationResult { Exception = new Exception() });
 
         var registry = container.Resolve<NavigationRegistry>();
         var page = registry.CreateView(container, "PageMock") as Page;
@@ -168,7 +168,7 @@ public class GoBackExtensionFixture
             {
                 parameters = navParameters;
             })
-            .ReturnsAsync(new NavigationResult { Success = true, Exception = null });
+            .ReturnsAsync(new NavigationResult { Exception = new Exception() });
 
         var registry = container.Resolve<NavigationRegistry>();
         var page = registry.CreateView(container, "PageMock") as Page;

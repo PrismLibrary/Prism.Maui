@@ -1013,8 +1013,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
     {
         var result = new NavigationResult
         {
-            Exception = exception,
-            Success = exception is null
+            Exception = exception
         };
         _eventAggregator.GetEvent<NavigationRequestEvent>().Publish(new NavigationRequestContext
         {
@@ -1030,8 +1029,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
     {
         var result = new NavigationResult
         {
-            Exception = exception,
-            Success = exception is null,
+            Exception = exception
         };
 
         _eventAggregator.GetEvent<NavigationRequestEvent>().Publish(new NavigationRequestContext
