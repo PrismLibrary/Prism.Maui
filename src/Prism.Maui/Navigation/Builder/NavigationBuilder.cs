@@ -86,8 +86,9 @@ internal class NavigationBuilder : INavigationBuilder, IRegistryAware
 
     internal Uri BuildUri()
     {
-        var uri = string.Join("/", _uriSegments.Select(x => x.Segment));
+        var uri = (_absoluteNavigation ? "/" : string.Empty) +
+            string.Join("/", _uriSegments.Select(x => x.Segment));
 
-        return _absoluteNavigation ? new Uri(RootUri, uri) : new Uri(uri, UriKind.Relative);
+        return UriParsingHelper.Parse(uri);
     }
 }

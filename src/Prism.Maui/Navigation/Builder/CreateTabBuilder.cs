@@ -1,17 +1,22 @@
 ﻿using System.Web;
+using Prism.Common;
+using Prism.Mvvm;
 
 namespace Prism.Navigation.Builder;
 
-internal class CreateTabBuilder : ICreateTabBuilder, IUriSegment
+internal class CreateTabBuilder : ICreateTabBuilder, IUriSegment, IRegistryAware
 {
     private List<IUriSegment> _segments { get; }
 
-    public CreateTabBuilder()
+    public CreateTabBuilder(IViewRegistry registry)
     {
         _segments = new List<IUriSegment>();
+        Registry = registry;
     }
 
     public string Segment => BuildSegment();
+
+    public IViewRegistry Registry { get; }
 
     public ICreateTabBuilder AddSegment(string segmentName, Action<ISegmentBuilder> configureSegment)
     {
@@ -24,6 +29,6 @@ internal class CreateTabBuilder : ICreateTabBuilder, IUriSegment
     private string BuildSegment()
     {
         var uri = string.Join("/", _segments.Select(x => x.Segment));
-        return HttpUtility.UrlEncode(uri);
+        return HttpUtility.HtmlEncode(uri);
     }
 }
