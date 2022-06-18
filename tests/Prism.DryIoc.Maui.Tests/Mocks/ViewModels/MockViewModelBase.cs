@@ -14,7 +14,7 @@ public abstract class MockViewModelBase : IConfirmNavigation
 
     public INavigationService NavigationService { get; }
 
-    public Page? Page => _pageAccessor.Page;
+    public Page Page => _pageAccessor.Page;
 
     public bool StopNavigation { get; set; }
 

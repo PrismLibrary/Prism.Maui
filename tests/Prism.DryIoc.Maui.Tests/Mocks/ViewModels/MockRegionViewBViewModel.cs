@@ -11,5 +11,5 @@ public class MockRegionViewBViewModel
         _accessor = accessor;
     }
 
-    public Page? Page => _accessor.Page;
+    public Page Page => _accessor.Page;
 }

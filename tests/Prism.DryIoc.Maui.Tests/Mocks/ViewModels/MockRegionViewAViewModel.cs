@@ -13,10 +13,10 @@ public class MockRegionViewAViewModel : BindableBase, IRegionAware, IInitialize
 
     public bool Initialized { get; private set; }
 
-    public Page? Page => _accessor.Page;
+    public Page Page => _accessor.Page;
 
-    private string? _message;
-    public string? Message
+    private string _message;
+    public string Message
     {
         get => _message;
         set => SetProperty(ref _message, value);
