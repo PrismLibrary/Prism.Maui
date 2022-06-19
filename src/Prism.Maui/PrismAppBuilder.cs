@@ -72,12 +72,19 @@ public abstract class PrismAppBuilder
 
     internal static object DefaultViewModelLocator(object view, Type viewModelType)
     {
-        if (view is not BindableObject bindable)
-            return null;
+        try
+        {
+            if (view is not BindableObject bindable)
+                return null;
 
-        var container = bindable.GetContainerProvider();
+            var container = bindable.GetContainerProvider();
 
-        return container.Resolve(viewModelType);
+            return container.Resolve(viewModelType);
+        }
+        catch (Exception ex)
+        {
+            throw new ViewModelCreationException(view, ex);
+        }
     }
 
     public PrismAppBuilder RegisterTypes(Action<IContainerRegistry> registerTypes)

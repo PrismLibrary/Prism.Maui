@@ -708,14 +708,32 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
             return page;
         }
+        catch(NavigationException)
+        {
+            throw;
+        }
+        catch(KeyNotFoundException knfe)
+        {
+            throw new NavigationException(NavigationException.NoPageIsRegistered, segmentName, knfe);
+        }
+        catch(ViewModelCreationException vmce)
+        {
+            throw new NavigationException(NavigationException.ErrorCreatingViewModel, segmentName, _pageAccessor.Page, vmce);
+        }
+        //catch(ViewCreationException viewCreationException)
+        //{
+        //    if(!string.IsNullOrEmpty(viewCreationException.InnerException?.Message) && viewCreationException.InnerException.Message.Contains("Maui"))
+        //        throw new NavigationException(NavigationException.)
+        //}
         catch (Exception ex)
         {
-            if (ex is NavigationException)
-                throw;
-
-            else if(ex is KeyNotFoundException)
-                throw new NavigationException(NavigationException.NoPageIsRegistered, segmentName, ex);
-
+            var inner = ex.InnerException;
+            while(inner is not null)
+            {
+                if (inner.Message.Contains("thread with a dispatcher"))
+                    throw new NavigationException(NavigationException.UnsupportedMauiCreation, segmentName, _pageAccessor.Page, ex);
+                inner = inner.InnerException;
+            }
             throw new NavigationException(NavigationException.ErrorCreatingPage, segmentName, ex);
         }
     }
@@ -727,7 +745,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
         if (page is null)
         {
             var innerException = new NullReferenceException(string.Format("{0} could not be created. Please make sure you have registered {0} for navigation.", segmentName));
-            throw new NavigationException(NavigationException.NoPageIsRegistered, _pageAccessor.Page, innerException);
+            throw new NavigationException(NavigationException.NoPageIsRegistered, segmentName, _pageAccessor.Page, innerException);
         }
 
         return page;
@@ -937,70 +955,74 @@ public class PageNavigationService : INavigationService, IRegistryAware
             await ProcessNavigation(currentPage.Navigation.NavigationStack.Last(), illegalSegments, parameters, true, animated);
     }
 
-    protected virtual Task DoPush(Page currentPage, Page page, bool? useModalNavigation, bool animated, bool insertBeforeLast = false, int navigationOffset = 0)
+    protected virtual async Task DoPush(Page currentPage, Page page, bool? useModalNavigation, bool animated, bool insertBeforeLast = false, int navigationOffset = 0)
     {
         if (page is null)
             throw new ArgumentNullException(nameof(page));
 
-        // Prevent Page from using Parent's ViewModel
-        if (page.BindingContext is null)
-            page.BindingContext = new object();
-
-        if (currentPage is null)
+        try
         {
-            if (_application.Windows.OfType<PrismWindow>().Any(x => x.Name == PrismWindow.DefaultWindowName))
-                _window = _application.Windows.OfType<PrismWindow>().First(x => x.Name == PrismWindow.DefaultWindowName);
+            // Prevent Page from using Parent's ViewModel
+            if (page.BindingContext is null)
+                page.BindingContext = new object();
 
-            if (Window is null)
+            if (currentPage is null)
             {
-                _window = new PrismWindow
+                if (_application.Windows.OfType<PrismWindow>().Any(x => x.Name == PrismWindow.DefaultWindowName))
+                    _window = _application.Windows.OfType<PrismWindow>().First(x => x.Name == PrismWindow.DefaultWindowName);
+
+                if (Window is null)
                 {
-                    Page = page
-                };
-                ((List<Window>)_application.Windows).Add(_window as PrismWindow);
-            }
-            else
-            {
-#if !ANDROID
-                // BUG: https://github.com/dotnet/maui/issues/7275
-                Window.Page = page;
-#if WINDOWS
-                page.ForceLayout();
-#endif
-#else
-
-                // HACK: This is the only way CURRENTLY to ensure that the UI resets for Absolute Navigation
-                var newWindow = new PrismWindow
-                {
-                    Page = page
-                };
-                _application.OpenWindow(newWindow);
-                _application.CloseWindow(Window);
-                _window = null;
-#endif
-            }
-
-            return Task.FromResult<object>(null);
-        }
-        else
-        {
-            bool useModalForPush = UseModalNavigation(currentPage, useModalNavigation);
-
-            if (useModalForPush)
-            {
-                return currentPage.Navigation.PushModalAsync(page, animated);
-            }
-            else
-            {
-                if (insertBeforeLast)
-                {
-                    return InsertPageBefore(currentPage, page, navigationOffset);
+                    _window = new PrismWindow
+                    {
+                        Page = page
+                    };
+                    ((List<Window>)_application.Windows).Add(_window as PrismWindow);
                 }
                 else
                 {
-                    return currentPage.Navigation.PushAsync(page, animated);
+#if !ANDROID
+                    // BUG: https://github.com/dotnet/maui/issues/7275
+                    Window.Page = page;
+#if WINDOWS
+                    page.ForceLayout();
+#endif
+#else
+                    // HACK: This is the only way CURRENTLY to ensure that the UI resets for Absolute Navigation
+                    var newWindow = new PrismWindow
+                    {
+                        Page = page
+                    };
+                    _application.OpenWindow(newWindow);
+                    _application.CloseWindow(Window);
+                    _window = null;
+#endif
                 }
             }
+            else
+            {
+                bool useModalForPush = UseModalNavigation(currentPage, useModalNavigation);
+
+                if (useModalForPush)
+                {
+                    await currentPage.Navigation.PushModalAsync(page, animated);
+                }
+                else
+                {
+                    if (insertBeforeLast)
+                    {
+                        await InsertPageBefore(currentPage, page, navigationOffset);
+                    }
+                    else
+                    {
+                        await currentPage.Navigation.PushAsync(page, animated);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new NavigationException(NavigationException.UnsupportedMauiNavigation, _pageAccessor.Page, ex);
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Prism.Common;
 using Prism.Ioc;
 using Prism.Navigation.Xaml;
@@ -47,9 +48,13 @@ public abstract class ViewRegistryBase : IViewRegistry
         {
             throw;
         }
+        catch (ViewModelCreationException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
-            throw new Exception($"Unable to create {_registryType} '{name}'.", ex);
+            throw new ViewCreationException(name, _registryType, ex);
         }
     }
 
