@@ -16,16 +16,17 @@
     <PrismPackageIcon>$(MSBuildThisFileDirectory)prism-logo.png</PrismPackageIcon>
     <PrismLicenseFile>$(MSBuildThisFileDirectory)LICENSE</PrismLicenseFile>
     <PackageTags>prism;maui;dotnet-maui;xaml;mvvm;ios;android;mac;winui</PackageTags>
-    <Copyright>Copyright Dan Siegel 2021</Copyright>
+    <Copyright>Copyright Dan Siegel 2021-$([System.DateTime]::Now.Year)</Copyright>
     <Description>
       Prism is a fully open source version of the Prism guidance originally produced by Microsoft Patterns &amp; Practices. Prism provides an implementation of a collection of design patterns that are helpful in writing well structured, maintainable, and testable XAML applications, including MVVM, dependency injection, commanding, event aggregation, and more. Prism's core functionality is a shared library targeting the .NET Framework and .NET Standard. Features that need to be platform specific are implemented in the respective libraries for the target platform (WPF, Uno Platform, Xamarin Forms, and .NET MAUI).
 
       Prism for .NET MAUI helps you more easily design and build rich, flexible, and easy to maintain .NET MAUI applications. This library provides user interface composition as well as modularity support.
     </Description>
-<!-- HACK: WinUI seems to have issues without this -->
+    <!-- HACK: WinUI seems to have issues without this -->
     <GenerateLibraryLayout>true</GenerateLibraryLayout>
     <DisableEmbeddedXbf>false</DisableEmbeddedXbf>
     <ContinuousIntegrationBuild>$(CI)</ContinuousIntegrationBuild>
+    <NoWarn>$(NoWarn);NETSDK1023;NU1604;</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup>
