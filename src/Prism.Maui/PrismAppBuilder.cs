@@ -11,6 +11,7 @@ using Prism.Navigation.Xaml;
 using Prism.Regions.Adapters;
 using Prism.Regions.Behaviors;
 using Prism.Services;
+using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
 
 namespace Prism;
 
@@ -117,7 +118,10 @@ public abstract class PrismAppBuilder
         }
 
         if (!navRegistry.IsRegistered(nameof(TabbedPage)))
-            ((IContainerRegistry)_container).RegisterForNavigation<TabbedPage>();
+        {
+            var registry = _container as IContainerRegistry;
+            registry.RegisterForNavigation<TabbedPage>();
+        }
 
         if (app is ILegacyPrismApplication prismApp)
             prismApp.OnInitialized();

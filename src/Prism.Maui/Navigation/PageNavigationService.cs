@@ -1,8 +1,12 @@
+using System.Text.RegularExpressions;
+using System.Web;
+using Microsoft.Maui.Controls;
 using Prism.Common;
 using Prism.Events;
 using Prism.Ioc;
 using Prism.Mvvm;
 using Application = Microsoft.Maui.Controls.Application;
+using XamlTab = Prism.Navigation.Xaml.TabbedPage;
 
 namespace Prism.Navigation;
 
@@ -213,7 +217,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
     /// <param name="parameters">The navigation parameters</param>
     /// <remarks>Navigation parameters can be provided in the Uri and by using the <paramref name="parameters"/>.</remarks>
     /// <example>
-    /// NavigateAsync(new Uri("MainPage?id=3&amp;name=brian", UriKind.RelativeSource), parameters);
+    /// NavigateAsync(new Uri("MainPage?id=3&amp;name=dan", UriKind.RelativeSource), parameters);
     /// </example>
     public virtual async Task<INavigationResult> NavigateAsync(Uri uri, INavigationParameters parameters)
     {
@@ -384,6 +388,8 @@ public class PageNavigationService : INavigationService, IRegistryAware
     protected virtual async Task ProcessNavigationForRootPage(string nextSegment, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
     {
         var nextPage = CreatePageFromSegment(nextSegment);
+        if (nextPage is TabbedPage tabbedPage)
+            await ConfigureTabbedPage(tabbedPage, nextSegment, parameters);
 
         await ProcessNavigation(nextPage, segments, parameters, useModalNavigation, animated);
 
@@ -406,6 +412,8 @@ public class PageNavigationService : INavigationService, IRegistryAware
         if (!useReverse)
         {
             var nextPage = CreatePageFromSegment(nextSegment);
+            if (nextPage is TabbedPage tabbedPage)
+                await ConfigureTabbedPage(tabbedPage, nextSegment, parameters);
 
             await ProcessNavigation(nextPage, segments, parameters, useModalNavigation, animated);
 
@@ -482,6 +490,8 @@ public class PageNavigationService : INavigationService, IRegistryAware
     protected virtual async Task ProcessNavigationForTabbedPage(TabbedPage currentPage, string nextSegment, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
     {
         var nextPage = CreatePageFromSegment(nextSegment);
+        if (nextPage is TabbedPage tabbedPage)
+            await ConfigureTabbedPage(tabbedPage, nextSegment, parameters);
         await ProcessNavigation(nextPage, segments, parameters, useModalNavigation, animated);
         await DoNavigateAction(currentPage, nextSegment, nextPage, parameters, async () =>
         {
@@ -497,6 +507,8 @@ public class PageNavigationService : INavigationService, IRegistryAware
         if (detail is null)
         {
             var newDetail = CreatePageFromSegment(nextSegment);
+            if (newDetail is TabbedPage tabbedPage)
+                await ConfigureTabbedPage(tabbedPage, nextSegment, parameters);
             await ProcessNavigation(newDetail, segments, parameters, useModalNavigation, animated);
             await DoNavigateAction(null, nextSegment, newDetail, parameters, onNavigationActionCompleted: (p) =>
             {
@@ -509,6 +521,8 @@ public class PageNavigationService : INavigationService, IRegistryAware
         if (useModalNavigation.HasValue && useModalNavigation.Value)
         {
             var nextPage = CreatePageFromSegment(nextSegment);
+            if (nextPage is TabbedPage tabbedPage)
+                await ConfigureTabbedPage(tabbedPage, nextSegment, parameters);
             await ProcessNavigation(nextPage, segments, parameters, useModalNavigation, animated);
             await DoNavigateAction(currentPage, nextSegment, nextPage, parameters, async () =>
             {
@@ -565,6 +579,8 @@ public class PageNavigationService : INavigationService, IRegistryAware
         else
         {
             var newDetail = CreatePageFromSegment(nextSegment);
+            if (newDetail is TabbedPage tabbedPage)
+                await ConfigureTabbedPage(tabbedPage, nextSegment, parameters);
             await ProcessNavigation(newDetail, segments, parameters, newDetail is NavigationPage ? false : true, animated);
             await DoNavigateAction(detail, nextSegment, newDetail, parameters, onNavigationActionCompleted: (p) =>
             {
@@ -714,59 +730,69 @@ public class PageNavigationService : INavigationService, IRegistryAware
             throw new NavigationException(NavigationException.NoPageIsRegistered, _pageAccessor.Page, innerException);
         }
 
-        ConfigurePages(page, segment);
-
         return page;
     }
 
-    void ConfigurePages(Page page, string segment)
+    async Task ConfigureTabbedPage(TabbedPage tabbedPage, string segment, INavigationParameters parameters)
     {
-        if (page is TabbedPage)
-        {
-            ConfigureTabbedPage((TabbedPage)page, segment);
-        }
-    }
+        var tabParameters = UriParsingHelper.GetSegmentParameters(segment);
 
-    void ConfigureTabbedPage(TabbedPage tabbedPage, string segment)
-    {
-        var parameters = UriParsingHelper.GetSegmentParameters(segment);
-
-        var tabsToCreate = parameters.GetValues<string>(KnownNavigationParameters.CreateTab);
-        if (tabsToCreate.Count() > 0)
+        var tabsToCreate = tabParameters.GetValues<string>(KnownNavigationParameters.CreateTab);
+        foreach (var tabToCreateEncoded in tabsToCreate ?? Array.Empty<string>())
         {
-            foreach (var tabToCreate in tabsToCreate)
+            //created tab can be a single view or a view nested in a NavigationPage with the syntax "NavigationPage|ViewToCreate"
+            var tabToCreate = HttpUtility.UrlDecode(tabToCreateEncoded);
+            var tabSegments = tabToCreate.Split('/', '|');
+            NavigationPage navigationPage = null;
+            for(int i = 0; i < tabSegments.Length; i++)
             {
-                //created tab can be a single view or a view nested in a NavigationPage with the syntax "NavigationPage|ViewToCreate"
-                var tabSegments = tabToCreate.Split('|');
-                if (tabSegments.Length > 1)
+                var tabSegment = tabSegments[i];
+                var child = CreatePageFromSegment(tabSegment);
+                var childParameters = UriParsingHelper.GetSegmentParameters(tabSegment, parameters);
+                await MvvmHelpers.OnInitializedAsync(child, childParameters);
+                if (i == 0 && child is NavigationPage navPage)
                 {
-                    var navigationPage = CreatePageFromSegment(tabSegments[0]) as NavigationPage;
-                    if (navigationPage != null)
-                    {
-                        var navigationPageChild = CreatePageFromSegment(tabSegments[1]);
-
-                        navigationPage.PushAsync(navigationPageChild);
-
-                        //when creating a NavigationPage w/ DI, a blank Page object is injected into the ctor. Let's remove it
-                        if (navigationPage.Navigation.NavigationStack.Count > 1)
-                            navigationPage.Navigation.RemovePage(navigationPage.Navigation.NavigationStack[0]);
-
-                        //set the title because Xamarin doesn't do this for us.
-                        navigationPage.Title = navigationPageChild.Title;
-                        navigationPage.IconImageSource = navigationPageChild.IconImageSource;
-
-                        tabbedPage.Children.Add(navigationPage);
-                    }
+                    navigationPage = navPage;
                 }
-                else
+                else if(i == 0)
                 {
-                    var tab = CreatePageFromSegment(tabToCreate);
-                    tabbedPage.Children.Add(tab);
+                    tabbedPage.Children.Add(child);
+                    break;
                 }
+                else if(i > 0 && navigationPage is not null)
+                {
+                    await navigationPage.Navigation.PushAsync(child);
+                }
+            }
+
+            if(navigationPage is null)
+            {
+                continue;
+            }
+
+            tabbedPage.Children.Add(navigationPage);
+            if (navigationPage.RootPage.IsSet(XamlTab.TitleProperty))
+            {
+                navigationPage.Title = XamlTab.GetTitle(navigationPage.RootPage);
+                navigationPage.IconImageSource = XamlTab.GetIconImageSource(navigationPage.RootPage);
+            }
+            else if(!navigationPage.IsSet(Page.TitleProperty))
+            {
+                var source = navigationPage.IsSet(XamlTab.TitleBindingSourceProperty) ?
+                XamlTab.GetTitleBindingSource(navigationPage) :
+                navigationPage.RootPage.IsSet(XamlTab.TitleBindingSourceProperty) ?
+                XamlTab.GetTitleBindingSource(navigationPage.RootPage) :
+                Xaml.TabBindingSource.RootPage;
+
+                //set the title because Xamarin doesn't do this for us.
+                if (!navigationPage.IsSet(Page.TitleProperty))
+                    navigationPage.SetBinding(Page.TitleProperty, new Binding($"{source}.Title", BindingMode.OneWay, source: navigationPage));
+                if (!navigationPage.IsSet(Page.IconImageSourceProperty))
+                    navigationPage.SetBinding(Page.IconImageSourceProperty, new Binding($"{source}.IconImageSource", BindingMode.OneWay, source: navigationPage));
             }
         }
 
-        TabbedPageSelectTab(tabbedPage, parameters);
+        TabbedPageSelectTab(tabbedPage, tabParameters);
     }
 
     private void SelectPageTab(Page page, INavigationParameters parameters)
@@ -779,29 +805,60 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
     private void TabbedPageSelectTab(TabbedPage tabbedPage, INavigationParameters parameters)
     {
-        var selectedTab = parameters?.GetValue<string>(KnownNavigationParameters.SelectedTab);
-        if (!string.IsNullOrWhiteSpace(selectedTab))
+        if (!parameters.TryGetValue<string>(KnownNavigationParameters.SelectedTab, out var selectedTab)
+            || string.IsNullOrEmpty(selectedTab))
+            return;
+
+        var segments = selectedTab.Split('|').Where(x => !string.IsNullOrEmpty(x));
+        if (segments.Count() == 1)
+            TabbedPageSelectRootTab(tabbedPage, selectedTab);
+        else if (segments.Count() > 1)
+            TabbedPageSelectNavigationChildTab(tabbedPage, segments.Last());
+    }
+
+    private void TabbedPageSelectRootTab(TabbedPage tabbedPage, string selectedTab)
+    {
+        var child = tabbedPage.Children
+            .FirstOrDefault(x => selectedTab == (string)x.GetValue(ViewModelLocator.NavigationNameProperty));
+        if (child is not null)
         {
-            var selectedTabType = Registry.GetViewType(UriParsingHelper.GetSegmentName(selectedTab));
+            tabbedPage.CurrentPage = child;
+            return;
+        }
 
-            var childFound = false;
-            foreach (var child in tabbedPage.Children)
-            {
-                if (!childFound && child.GetType() == selectedTabType)
-                {
-                    tabbedPage.CurrentPage = child;
-                    childFound = true;
-                }
+        var registration = Registry.Registrations
+            .LastOrDefault(x => x.Type == ViewType.Page && x.Name == selectedTab);
+        if (registration is null)
+            throw new InvalidOperationException($"No Tab has been registered with the name '{selectedTab}'");
 
-                if (child is NavigationPage)
-                {
-                    if (!childFound && ((NavigationPage)child).CurrentPage.GetType() == selectedTabType)
-                    {
-                        tabbedPage.CurrentPage = child;
-                        childFound = true;
-                    }
-                }
-            }
+        child = tabbedPage.Children
+            .FirstOrDefault(x => x.GetType() == registration.View);
+        if (child is not null)
+        {
+            tabbedPage.CurrentPage = child;
+        }
+    }
+
+    private void TabbedPageSelectNavigationChildTab(TabbedPage tabbedPage, string rootTab, string selectedTab)
+    {
+        var child = tabbedPage.Children
+            .FirstOrDefault(x => x is NavigationPage navPage && selectedTab == (string)navPage.CurrentPage.GetValue(ViewModelLocator.NavigationNameProperty));
+        if (child is not null)
+        {
+            tabbedPage.CurrentPage = child;
+            return;
+        }
+
+        var registration = Registry.Registrations
+            .LastOrDefault(x => x.Type == ViewType.Page && x.Name == selectedTab);
+        if (registration is null)
+            throw new InvalidOperationException($"No Tab has been registered with the name '{selectedTab}'");
+
+        child = tabbedPage.Children
+            .FirstOrDefault(x => x is NavigationPage navPage && navPage.CurrentPage.GetType() == registration.View);
+        if (child is not null)
+        {
+            tabbedPage.CurrentPage = child;
         }
     }
 
@@ -866,6 +923,8 @@ public class PageNavigationService : INavigationService, IRegistryAware
         {
             var segment = navigationStack.Pop();
             var nextPage = CreatePageFromSegment(segment);
+            if (nextPage is TabbedPage tabbedPage)
+                await ConfigureTabbedPage(tabbedPage, nextSegment, parameters);
             await DoNavigateAction(onNavigatedFromTarget, segment, nextPage, parameters, async () =>
             {
                 await DoPush(currentPage, nextPage, useModalNavigation, animated, insertBefore, pageOffset);
@@ -1032,12 +1091,14 @@ public class PageNavigationService : INavigationService, IRegistryAware
             Exception = exception
         };
 
+        var temp = Regex.Replace(uri.ToString(), RemovePageInstruction, RemovePageRelativePath);
+
         _eventAggregator.GetEvent<NavigationRequestEvent>().Publish(new NavigationRequestContext
         {
             Parameters = parameters,
             Result = result,
             Type = NavigationRequestType.Navigate,
-            Uri = uri,
+            Uri = new Uri(temp, UriKind.RelativeOrAbsolute),
         });
 
         return result;

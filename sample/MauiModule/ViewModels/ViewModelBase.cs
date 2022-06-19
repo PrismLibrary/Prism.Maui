@@ -50,6 +50,8 @@ public abstract class ViewModelBase : BindableBase, IInitialize, INavigatedAware
     public void Initialize(INavigationParameters parameters)
     {
         Messages.Add("ViewModel Initialized");
+        foreach (var parameter in parameters.Where(x => x.Key.Contains("message")))
+            Messages.Add(parameter.Value.ToString());
     }
 
     public void OnNavigatedFrom(INavigationParameters parameters)

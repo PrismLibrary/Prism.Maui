@@ -5,8 +5,13 @@ using Prism.Navigation.Xaml;
 
 namespace Prism.DryIoc.Maui.Tests.Fixtures.Navigation;
 
-public class NavigationTests
+public class NavigationTests : TestBase
 {
+    public NavigationTests(ITestOutputHelper testOutputHelper)
+        : base(testOutputHelper)
+    {
+    }
+
     [Theory]
     [InlineData("NavigationPage/MockViewA/MockViewB/MockViewC")]
     [InlineData("MockHome/NavigationPage/MockViewA")]
@@ -136,18 +141,4 @@ public class NavigationTests
         Assert.NotNull(viewModel);
         Assert.Same(page, viewModel!.Page);
     }
-
-    private MauiAppBuilder CreateBuilder(Action<PrismAppBuilder> configurePrism) =>
-        MauiApp.CreateBuilder()
-            .UsePrismApp<Application>(prism =>
-            {
-                prism.RegisterTypes(container =>
-                {
-                    container.RegisterForNavigation<MockHome, MockHomeViewModel>()
-                        .RegisterForNavigation<MockViewA, MockViewAViewModel>()
-                        .RegisterForNavigation<MockViewB, MockViewBViewModel>()
-                        .RegisterForNavigation<MockViewC, MockViewCViewModel>();
-                });
-                configurePrism(prism);
-            });
 }
