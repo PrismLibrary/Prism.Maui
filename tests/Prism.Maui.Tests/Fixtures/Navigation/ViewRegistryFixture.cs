@@ -8,6 +8,7 @@ using Prism.Maui.Tests.Mocks.Ioc;
 using Prism.Maui.Tests.Mocks.ViewModels;
 using Prism.Maui.Tests.Mocks.Views;
 using Prism.Navigation.Xaml;
+using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
 
 namespace Prism.Maui.Tests.Fixtures.Navigation;
 
