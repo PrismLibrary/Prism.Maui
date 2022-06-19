@@ -1,4 +1,4 @@
-﻿using Prism.Common;
+using Prism.Common;
 using Prism.Mvvm;
 
 namespace Prism.Navigation.Builder;
@@ -48,7 +48,7 @@ internal class TabbedSegmentBuilder : ITabbedSegmentBuilder, IConfigurableSegmen
             throw new ArgumentNullException(nameof(configureSegment));
         }
 
-        var builder = new CreateTabBuilder();
+        var builder = new CreateTabBuilder(((IRegistryAware)_builder).Registry);
         configureSegment(builder);
         return AddSegmentParameter(KnownNavigationParameters.CreateTab, builder.Segment);
     }

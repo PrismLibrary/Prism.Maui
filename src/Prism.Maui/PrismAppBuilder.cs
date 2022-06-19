@@ -11,6 +11,7 @@ using Prism.Navigation.Xaml;
 using Prism.Regions.Adapters;
 using Prism.Regions.Behaviors;
 using Prism.Services;
+using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
 
 namespace Prism;
 
@@ -71,12 +72,19 @@ public abstract class PrismAppBuilder
 
     internal static object DefaultViewModelLocator(object view, Type viewModelType)
     {
-        if (view is not BindableObject bindable)
-            return null;
+        try
+        {
+            if (view is not BindableObject bindable)
+                return null;
 
-        var container = bindable.GetContainerProvider();
+            var container = bindable.GetContainerProvider();
 
-        return container.Resolve(viewModelType);
+            return container.Resolve(viewModelType);
+        }
+        catch (Exception ex)
+        {
+            throw new ViewModelCreationException(view, ex);
+        }
     }
 
     public PrismAppBuilder RegisterTypes(Action<IContainerRegistry> registerTypes)
@@ -117,7 +125,10 @@ public abstract class PrismAppBuilder
         }
 
         if (!navRegistry.IsRegistered(nameof(TabbedPage)))
-            ((IContainerRegistry)_container).RegisterForNavigation<TabbedPage>();
+        {
+            var registry = _container as IContainerRegistry;
+            registry.RegisterForNavigation<TabbedPage>();
+        }
 
         if (app is ILegacyPrismApplication prismApp)
             prismApp.OnInitialized();

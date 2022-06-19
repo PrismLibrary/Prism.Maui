@@ -14,7 +14,7 @@ internal class SegmentBuilder : ISegmentBuilder, IConfigurableSegmentName, IUriS
 
     public string Segment => BuildSegment();
 
-    public ISegmentBuilder AddSegmentParameter(string key, object value)
+    public ISegmentBuilder AddParameter(string key, object value)
     {
         _parameters.Add(key, value);
         return this;
@@ -22,7 +22,7 @@ internal class SegmentBuilder : ISegmentBuilder, IConfigurableSegmentName, IUriS
 
     public ISegmentBuilder UseModalNavigation(bool useModalNavigation)
     {
-        return AddSegmentParameter(KnownNavigationParameters.UseModalNavigation, useModalNavigation);
+        return AddParameter(KnownNavigationParameters.UseModalNavigation, useModalNavigation);
     }
 
     private string BuildSegment()

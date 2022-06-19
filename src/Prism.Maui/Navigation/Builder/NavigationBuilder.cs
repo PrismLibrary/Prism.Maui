@@ -23,7 +23,7 @@ internal class NavigationBuilder : INavigationBuilder, IRegistryAware
 
     public Uri Uri => BuildUri();
 
-    public INavigationBuilder AddNavigationSegment(string segmentName, Action<ISegmentBuilder> configureSegment)
+    public INavigationBuilder AddSegment(string segmentName, Action<ISegmentBuilder> configureSegment)
     {
         var builder = new SegmentBuilder(segmentName);
         configureSegment?.Invoke(builder);
@@ -86,8 +86,27 @@ internal class NavigationBuilder : INavigationBuilder, IRegistryAware
 
     internal Uri BuildUri()
     {
-        var uri = string.Join("/", _uriSegments.Select(x => x.Segment));
+        var uri = (_absoluteNavigation ? "/" : string.Empty) +
+            string.Join("/", _uriSegments.Select(x => x.Segment));
 
-        return _absoluteNavigation ? new Uri(RootUri, uri) : new Uri(uri, UriKind.Relative);
+        if(uri.Contains("../"))
+        {
+            if (_absoluteNavigation)
+                throw new InvalidOperationException("The generated URI has one or more relative back operators and was marked as an absolute path. This is not supported.");
+
+            var segments = uri.Split('/');
+            if (!segments.Any(x => x != ".."))
+                throw new InvalidOperationException($"The constructed URI contains one or more relative back operators, but contains no other navigation segments - '{uri}'.");
+            var hasNonBackSegment = false;
+            for(int i = 0; i < segments.Length; i++)
+            {
+                if (hasNonBackSegment && segments[i] == "..")
+                    throw new InvalidOperationException($"The constructed URI has a relative back operator after a new Navigation Segment which is not supported - '{uri}'.");
+                else if (segments[i] != "..")
+                    hasNonBackSegment = true;
+            }
+        }
+
+        return UriParsingHelper.Parse(uri);
     }
 }

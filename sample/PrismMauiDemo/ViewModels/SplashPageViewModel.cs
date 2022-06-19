@@ -12,7 +12,7 @@ internal class SplashPageViewModel : IPageLifecycleAware
     public void OnAppearing()
     {
         _navigationService.CreateBuilder()
-            .AddNavigationSegment<RootPageViewModel>()
+            .AddSegment<RootPageViewModel>()
             .Navigate();
     }
 

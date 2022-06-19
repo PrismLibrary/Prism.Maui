@@ -104,18 +104,19 @@ public static class UriParsingHelper
 
         if (!uri.OriginalString.StartsWith("/", StringComparison.Ordinal))
         {
-            return new Uri("http://localhost/" + uri, UriKind.Absolute);
+            return new Uri("app://prismapp.maui/" + uri, UriKind.Absolute);
         }
-        return new Uri("http://localhost" + uri, UriKind.Absolute);
+        return new Uri("app://prismapp.maui" + uri, UriKind.Absolute);
     }
 
     public static Uri Parse(string uri)
     {
-        if (uri == null) throw new ArgumentNullException(nameof(uri));
+        if (string.IsNullOrEmpty(uri))
+            throw new ArgumentNullException(nameof(uri));
 
         if (uri.StartsWith("/", StringComparison.Ordinal))
         {
-            return new Uri("http://localhost" + uri, UriKind.Absolute);
+            return new Uri("app://prismapp.maui" + uri, UriKind.Absolute);
         }
         else
         {

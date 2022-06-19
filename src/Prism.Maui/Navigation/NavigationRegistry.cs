@@ -3,12 +3,13 @@ using Prism.Common;
 using Prism.Ioc;
 using Prism.Mvvm;
 using Prism.Navigation.Xaml;
+using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
 
 namespace Prism.Navigation;
 
 internal class NavigationRegistry : ViewRegistryBase, INavigationRegistry
 {
-    public NavigationRegistry(IEnumerable<ViewRegistration> registrations) 
+    public NavigationRegistry(IEnumerable<ViewRegistration> registrations)
         : base(ViewType.Page, registrations)
     {
     }

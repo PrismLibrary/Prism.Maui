@@ -3,10 +3,12 @@ using System.Linq;
 using Microsoft.Maui.Controls;
 using Prism.Behaviors;
 using Prism.Common;
+using Prism.Controls;
 using Prism.Maui.Tests.Mocks.Ioc;
 using Prism.Maui.Tests.Mocks.ViewModels;
 using Prism.Maui.Tests.Mocks.Views;
 using Prism.Navigation.Xaml;
+using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
 
 namespace Prism.Maui.Tests.Fixtures.Navigation;
 
@@ -121,5 +123,44 @@ public class ViewRegistryFixture
         Assert.Null(ex);
         Assert.NotNull(page);
         Assert.IsNotType<VMLDisabledPageMockViewModel>(page.BindingContext);
+    }
+
+    [Fact]
+    public void TabbedPageRegistrationIsReturnedForViewOfType()
+    {
+        var container = new TestContainer();
+        container.RegisterForNavigation<TabbedPage>();
+
+        var registry = container.Resolve<NavigationRegistry>();
+        var registrations = registry.ViewsOfType(typeof(TabbedPage));
+
+        Assert.Single(registrations);
+        Assert.Equal(typeof(TabbedPage), registrations.First().View);
+    }
+
+    [Fact]
+    public void NavigationPageRegistrationIsReturnedForViewOfType()
+    {
+        var container = new TestContainer();
+        container.RegisterForNavigation<NavigationPage>();
+
+        var registry = container.Resolve<NavigationRegistry>();
+        var registrations = registry.ViewsOfType(typeof(NavigationPage));
+
+        Assert.Single(registrations);
+        Assert.Equal(typeof(NavigationPage), registrations.First().View);
+    }
+
+    [Fact]
+    public void PrismNavigationPageRegistrationIsReturnedForViewOfType()
+    {
+        var container = new TestContainer();
+        container.RegisterForNavigation<PrismNavigationPage>();
+
+        var registry = container.Resolve<NavigationRegistry>();
+        var registrations = registry.ViewsOfType(typeof(NavigationPage));
+
+        Assert.Single(registrations);
+        Assert.Equal(typeof(PrismNavigationPage), registrations.First().View);
     }
 }

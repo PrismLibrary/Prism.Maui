@@ -6,6 +6,7 @@ using Prism.Events;
 using Prism.Extensions;
 using Prism.Ioc;
 using Prism.Properties;
+using Prism.Regions.Adapters;
 using Prism.Regions.Behaviors;
 
 namespace Prism.Regions.Xaml;

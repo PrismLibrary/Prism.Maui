@@ -9,7 +9,7 @@ namespace Prism.Xaml;
 public abstract class TargetAwareExtensionBase<T> : BindableObject, IMarkupExtension<T>
 {
     private Page _page;
-    public Page Page
+    protected internal Page Page
     {
         get => _page;
         set
@@ -21,7 +21,7 @@ public abstract class TargetAwareExtensionBase<T> : BindableObject, IMarkupExten
     }
 
     private VisualElement _targetElement;
-    public VisualElement TargetElement
+    protected internal VisualElement TargetElement
     {
         get => _targetElement;
         set

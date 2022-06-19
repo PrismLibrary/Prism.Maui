@@ -25,7 +25,8 @@ public static class PrismAppBuilderExtensions
     /// <summary>
     /// Configures the <see cref="IModuleCatalog"/> used by Prism.
     /// </summary>
-    /// <param name="moduleCatalog">The ModuleCatalog to configure</param>
+    /// <param name="builder">The <see cref="PrismAppBuilder"/>.</param>
+    /// <param name="configureCatalog">Delegate to configure the <see cref="IModuleCatalog"/>.</param>
     public static PrismAppBuilder ConfigureModuleCatalog(this PrismAppBuilder builder, Action<IModuleCatalog> configureCatalog)
     {
         if (!s_didRegisterModules)
