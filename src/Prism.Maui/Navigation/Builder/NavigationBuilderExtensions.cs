@@ -25,6 +25,9 @@ public static class NavigationBuilderExtensions
         return registryAware.Registry.GetViewModelNavigationKey(vmType);
     }
 
+    public static INavigationBuilder RelativeBack(this INavigationBuilder builder) =>
+        builder.AddSegment("..");
+
     /// <summary>
     /// This will force the generated Navigation URI to return an Absolute URI resetting the current <see cref="Window"/>'s <see cref="Page"/> property.
     /// </summary>

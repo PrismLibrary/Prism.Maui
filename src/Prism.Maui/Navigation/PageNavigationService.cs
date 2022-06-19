@@ -831,53 +831,44 @@ public class PageNavigationService : INavigationService, IRegistryAware
         if (segments.Count() == 1)
             TabbedPageSelectRootTab(tabbedPage, selectedTab);
         else if (segments.Count() > 1)
-            TabbedPageSelectNavigationChildTab(tabbedPage, segments.Last());
+            TabbedPageSelectNavigationChildTab(tabbedPage, segments.First(), segments.Last());
     }
 
     private void TabbedPageSelectRootTab(TabbedPage tabbedPage, string selectedTab)
     {
+        var registry = Registry;
+        var selectRegistration = registry.Registrations.FirstOrDefault(x => x.Name == selectedTab);
+        if (selectRegistration is null)
+            throw new KeyNotFoundException($"No Registration found to select tab '{selectedTab}'.");
+
         var child = tabbedPage.Children
-            .FirstOrDefault(x => selectedTab == (string)x.GetValue(ViewModelLocator.NavigationNameProperty));
-        if (child is not null)
-        {
-            tabbedPage.CurrentPage = child;
-            return;
-        }
-
-        var registration = Registry.Registrations
-            .LastOrDefault(x => x.Type == ViewType.Page && x.Name == selectedTab);
-        if (registration is null)
-            throw new InvalidOperationException($"No Tab has been registered with the name '{selectedTab}'");
-
-        child = tabbedPage.Children
-            .FirstOrDefault(x => x.GetType() == registration.View);
+            .FirstOrDefault(x => IsPage(x, selectRegistration));
         if (child is not null)
         {
             tabbedPage.CurrentPage = child;
         }
     }
 
+    private static bool IsPage(Page page, ViewRegistration registration) =>
+        (string)page.GetValue(ViewModelLocator.NavigationNameProperty) == registration.Name || page.GetType() == registration.View;
+
     private void TabbedPageSelectNavigationChildTab(TabbedPage tabbedPage, string rootTab, string selectedTab)
     {
+        var registry = Registry;
+        var rootRegistration = registry.Registrations.FirstOrDefault(x => x.Name == rootTab);
+        var selectRegistration = registry.Registrations.FirstOrDefault(x => x.Name == selectedTab);
+        if (rootRegistration is null)
+            throw new KeyNotFoundException($"No Registration found to select tab '{rootTab}'.");
+        else if (selectRegistration is null)
+            throw new KeyNotFoundException($"No Registration found to select tab '{selectedTab}'.");
+        else if (!rootRegistration.View.IsAssignableTo(typeof(NavigationPage)))
+            throw new InvalidOperationException($"Could not select Tab with a root type '{rootRegistration.View.FullName}'. This must inherit from NavigationPage.");
+
         var child = tabbedPage.Children
-            .FirstOrDefault(x => x is NavigationPage navPage && selectedTab == (string)navPage.CurrentPage.GetValue(ViewModelLocator.NavigationNameProperty));
-        if (child is not null)
-        {
-            tabbedPage.CurrentPage = child;
-            return;
-        }
+            .FirstOrDefault(x => x is NavigationPage navPage && IsPage(x, rootRegistration) && (IsPage(navPage.RootPage, selectRegistration) || IsPage(navPage.CurrentPage, selectRegistration)));
 
-        var registration = Registry.Registrations
-            .LastOrDefault(x => x.Type == ViewType.Page && x.Name == selectedTab);
-        if (registration is null)
-            throw new InvalidOperationException($"No Tab has been registered with the name '{selectedTab}'");
-
-        child = tabbedPage.Children
-            .FirstOrDefault(x => x is NavigationPage navPage && navPage.CurrentPage.GetType() == registration.View);
         if (child is not null)
-        {
             tabbedPage.CurrentPage = child;
-        }
     }
 
     protected virtual async Task UseReverseNavigation(Page currentPage, string nextSegment, Queue<string> segments, INavigationParameters parameters, bool? useModalNavigation, bool animated)
