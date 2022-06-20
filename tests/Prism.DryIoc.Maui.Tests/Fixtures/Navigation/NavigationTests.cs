@@ -121,6 +121,36 @@ public class NavigationTests : TestBase
         Assert.IsType<MockViewB>(rootPage.Navigation.ModalStack.Last());
     }
 
+    [Fact(Skip = "Blocked by dotnet/maui/issues/8157")]
+    public async Task RelativeNavigation_RemovesPage_AndNavigatesModally()
+    {
+        Exception startupEx = null;
+        var mauiApp = CreateBuilder(prism => prism.OnAppStart("MockViewA/MockViewB", ex =>
+        {
+            startupEx = ex;
+        }))
+            .Build();
+        Assert.Null(startupEx);
+        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
+        Assert.Single(app.Windows);
+        var window = app!.Windows.First();
+        Assert.IsType<PrismWindow>(window);
+
+        var rootPage = window.Page as MockViewA;
+        Assert.NotNull(rootPage);
+        TestPage(rootPage);
+        var currentPage = rootPage.Navigation.ModalStack.Last();
+        Assert.IsType<MockViewB>(currentPage);
+        TestPage(currentPage);
+        var container = currentPage.GetContainerProvider();
+        var navService = container.Resolve<INavigationService>();
+        Assert.Equal(2, rootPage.Navigation.ModalStack.Count);
+        await navService.NavigateAsync("../MockViewC");
+        var viewC = window.Page.Navigation.ModalStack.Last();
+        Assert.IsType<MockViewC>(viewC);
+        Assert.Equal(2, rootPage.Navigation.ModalStack.Count);
+    }
+
     private void TestPage(Page page)
     {
         Assert.NotNull(page.BindingContext);

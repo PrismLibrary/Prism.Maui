@@ -1,26 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-    <UseMaui>True</UseMaui>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Using Include="Xunit" />
-    <Using Include="Xunit.Abstractions" />
-    <Using Include="Prism" />
-    <Using Include="Prism.AppModel" />
-    <Using Include="Prism.Commands" />
-    <Using Include="Prism.Events" />
-    <Using Include="Prism.Ioc" />
-    <Using Include="Prism.Modularity" />
-    <Using Include="Prism.Mvvm" />
-    <Using Include="Prism.Navigation" />
-    <Using Include="Prism.Regions" />
-    <Using Include="Prism.Regions.Navigation" />
-    <Using Include="Prism.Services" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Remove="Fixtures\PageNavigationServiceFixture.cs" />

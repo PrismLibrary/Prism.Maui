@@ -2,6 +2,8 @@
 using Prism.DryIoc.Maui.Tests.Mocks.Views;
 using Microsoft.Extensions.Logging;
 using Prism.DryIoc.Maui.Tests.Mocks.Logging;
+using Microsoft.Maui.Dispatching;
+using Prism.DryIoc.Maui.Tests.Mocks;
 
 namespace Prism.DryIoc.Maui.Tests.Fixtures;
 
@@ -12,6 +14,8 @@ public abstract class TestBase
     protected TestBase(ITestOutputHelper testOutputHelper)
     {
         _testOutputHelper = testOutputHelper;
+
+        DispatcherProvider.SetCurrent(TestDispatcher.Provider);
     }
 
     protected MauiAppBuilder CreateBuilder(Action<PrismAppBuilder> configurePrism)
