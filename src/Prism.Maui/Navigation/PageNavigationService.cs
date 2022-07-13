@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using System.Web;
-using Microsoft.Maui.Controls;
 using Prism.Common;
 using Prism.Events;
 using Prism.Ioc;
@@ -968,7 +967,13 @@ public class PageNavigationService : INavigationService, IRegistryAware
                     {
                         Page = page
                     };
-                    ((List<Window>)_application.Windows).Add(_window as PrismWindow);
+
+                    if (_application.Windows is List<Window> windows)
+                        windows.Add(_window);
+
+                    // HACK: https://github.com/dotnet/maui/issues/8635
+                    if (_application is Element appElement)
+                        _window.Parent = appElement;
                 }
                 else
                 {
