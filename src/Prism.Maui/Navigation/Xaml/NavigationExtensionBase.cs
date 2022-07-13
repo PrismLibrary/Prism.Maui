@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using Prism.Xaml;
 
@@ -26,7 +27,7 @@ public abstract class NavigationExtensionBase : TargetAwareExtensionBase<IComman
         set => SetValue(UseModalNavigationProperty, value);
     }
 
-    public bool CanExecute(object parameter) => !IsNavigating;
+    public bool CanExecute(object parameter) => Page is not null && !IsNavigating;
 
     public event EventHandler CanExecuteChanged;
 
@@ -37,8 +38,6 @@ public abstract class NavigationExtensionBase : TargetAwareExtensionBase<IComman
         IsNavigating = true;
         try
         {
-            RaiseCanExecuteChanged();
-
             var navigationService = Navigation.GetNavigationService(Page);
             await HandleNavigation(parameters, navigationService);
         }
@@ -49,7 +48,6 @@ public abstract class NavigationExtensionBase : TargetAwareExtensionBase<IComman
         finally
         {
             IsNavigating = false;
-            RaiseCanExecuteChanged();
         }
     }
 
@@ -70,5 +68,12 @@ public abstract class NavigationExtensionBase : TargetAwareExtensionBase<IComman
     {
         parameters.Add(KnownNavigationParameters.Animated, Animated);
         parameters.Add(KnownNavigationParameters.UseModalNavigation, UseModalNavigation);
+    }
+
+    protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+        if (propertyName == nameof(Page) || propertyName == nameof(IsNavigating))
+            RaiseCanExecuteChanged();
     }
 }
