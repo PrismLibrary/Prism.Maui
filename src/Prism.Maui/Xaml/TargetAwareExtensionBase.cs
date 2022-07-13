@@ -1,4 +1,6 @@
-﻿using Prism.Behaviors;
+﻿using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
+using Prism.Behaviors;
 using Prism.Extensions;
 using Prism.Ioc;
 using Prism.Navigation.Xaml;
@@ -8,6 +10,9 @@ namespace Prism.Xaml;
 
 public abstract class TargetAwareExtensionBase<T> : BindableObject, IMarkupExtension<T>
 {
+    private ILogger _logger;
+    public ILogger Logger => _logger ??= GetLogger();
+
     private Page _page;
     protected internal Page Page
     {
@@ -55,14 +60,6 @@ public abstract class TargetAwareExtensionBase<T> : BindableObject, IMarkupExten
         if (TargetElement is null)
             throw new Exception($"{valueTargetProvider.TargetObject} is not supported");
 
-        var path = TargetBindingContext switch
-        {
-            TargetBindingContext.Element => "TargetElement.BindingContext",
-            _ => "Page.BindingContext"
-        };
-
-        SetBinding(BindingContextProperty, new Binding(path, BindingMode.OneWay, source: this));
-
         if (TargetElement.TryGetParentPage(out var page))
             Page = page;
         else
@@ -75,4 +72,25 @@ public abstract class TargetAwareExtensionBase<T> : BindableObject, IMarkupExten
         ((IMarkupExtension<T>)this).ProvideValue(serviceProvider);
 
     protected abstract T ProvideValue(IServiceProvider serviceProvider);
+
+    private ILogger GetLogger()
+    {
+        if (Page is null)
+            return null;
+
+        var loggerFactory = Page.GetContainerProvider().Resolve<ILoggerFactory>();
+        return loggerFactory.CreateLogger(GetType().Name);
+    }
+
+    protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+
+        if(propertyName == nameof(TargetElement) || propertyName == nameof(Page))
+        {
+            var source = TargetBindingContext == TargetBindingContext.Element ? TargetElement : Page;
+            if(source is not null)
+                SetBinding(BindingContextProperty, new Binding(nameof(BindingContext), BindingMode.OneWay, source: source));
+        }
+    }
 }

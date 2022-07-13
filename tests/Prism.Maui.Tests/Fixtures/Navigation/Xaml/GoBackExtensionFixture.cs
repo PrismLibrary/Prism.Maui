@@ -1,4 +1,4 @@
-﻿
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls;
 using Moq;
 using Prism.Common;
@@ -20,6 +20,10 @@ public class GoBackExtensionFixture
         container.RegisterInstance(mockNavigation);
         container.RegisterInstance(new PageAccessor());
         container.RegisterForNavigation<PageMock, PageMockViewModel>();
+        var mockLoggingProvider = new Mock<ILoggerFactory>();
+        mockLoggingProvider.Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(Mock.Of<ILogger>());
+        container.RegisterInstance(mockLoggingProvider.Object);
 
         var registry = container.Resolve<NavigationRegistry>();
         var page = registry.CreateView(container, "PageMock") as Page;
@@ -46,6 +50,10 @@ public class GoBackExtensionFixture
         container.RegisterInstance(mockNavigation);
         container.RegisterInstance(new PageAccessor());
         container.RegisterForNavigation<PageMock, PageMockViewModel>();
+        var mockLoggingProvider = new Mock<ILoggerFactory>();
+        mockLoggingProvider.Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(Mock.Of<ILogger>());
+        container.RegisterInstance(mockLoggingProvider.Object);
 
         INavigationParameters parameters = default;
         Mock.Get(mockNavigation)
@@ -80,6 +88,10 @@ public class GoBackExtensionFixture
         container.RegisterInstance(mockNavigation);
         container.RegisterInstance(new PageAccessor());
         container.RegisterForNavigation<PageMock, PageMockViewModel>();
+        var mockLoggingProvider = new Mock<ILoggerFactory>();
+        mockLoggingProvider.Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(Mock.Of<ILogger>());
+        container.RegisterInstance(mockLoggingProvider.Object);
 
         var registry = container.Resolve<NavigationRegistry>();
         var page = registry.CreateView(container, "PageMock") as Page;
@@ -101,6 +113,10 @@ public class GoBackExtensionFixture
         container.RegisterInstance(mockNavigation);
         container.RegisterInstance(new PageAccessor());
         container.RegisterForNavigation<PageMock, PageMockViewModel>();
+        var mockLoggingProvider = new Mock<ILoggerFactory>();
+        mockLoggingProvider.Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(Mock.Of<ILogger>());
+        container.RegisterInstance(mockLoggingProvider.Object);
 
         INavigationParameters parameters = default;
         Mock.Get(mockNavigation)
@@ -131,6 +147,10 @@ public class GoBackExtensionFixture
         container.RegisterInstance(mockNavigation);
         container.RegisterInstance(new PageAccessor());
         container.RegisterForNavigation<PageMock, PageMockViewModel>();
+        var mockLoggingProvider = new Mock<ILoggerFactory>();
+        mockLoggingProvider.Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(Mock.Of<ILogger>());
+        container.RegisterInstance(mockLoggingProvider.Object);
 
         INavigationParameters parameters = default;
         Mock.Get(mockNavigation)
@@ -160,6 +180,10 @@ public class GoBackExtensionFixture
         container.RegisterInstance(mockNavigation);
         container.RegisterInstance(new PageAccessor());
         container.RegisterForNavigation<PageMock, PageMockViewModel>();
+        var mockLoggingProvider = new Mock<ILoggerFactory>();
+        mockLoggingProvider.Setup(x => x.CreateLogger(It.IsAny<string>()))
+            .Returns(Mock.Of<ILogger>());
+        container.RegisterInstance(mockLoggingProvider.Object);
 
         INavigationParameters parameters = default;
         Mock.Get(mockNavigation)

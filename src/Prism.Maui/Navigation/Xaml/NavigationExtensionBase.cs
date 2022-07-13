@@ -1,5 +1,7 @@
-﻿using Prism.Xaml;
+﻿using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Microsoft.Extensions.Logging;
+using Prism.Xaml;
 
 namespace Prism.Navigation.Xaml;
 
@@ -25,7 +27,7 @@ public abstract class NavigationExtensionBase : TargetAwareExtensionBase<IComman
         set => SetValue(UseModalNavigationProperty, value);
     }
 
-    public bool CanExecute(object parameter) => !IsNavigating;
+    public bool CanExecute(object parameter) => Page is not null && !IsNavigating;
 
     public event EventHandler CanExecuteChanged;
 
@@ -36,8 +38,6 @@ public abstract class NavigationExtensionBase : TargetAwareExtensionBase<IComman
         IsNavigating = true;
         try
         {
-            RaiseCanExecuteChanged();
-
             var navigationService = Navigation.GetNavigationService(Page);
             await HandleNavigation(parameters, navigationService);
         }
@@ -48,7 +48,6 @@ public abstract class NavigationExtensionBase : TargetAwareExtensionBase<IComman
         finally
         {
             IsNavigating = false;
-            RaiseCanExecuteChanged();
         }
     }
 
@@ -58,6 +57,7 @@ public abstract class NavigationExtensionBase : TargetAwareExtensionBase<IComman
     protected virtual void Log(Exception ex, INavigationParameters parameters)
     {
         // TODO: Determine a good way to log
+        Logger.LogError(ex, "Error Navigating: \n[exception]");
     }
 
     protected abstract Task HandleNavigation(INavigationParameters parameters, INavigationService navigationService);
@@ -68,5 +68,12 @@ public abstract class NavigationExtensionBase : TargetAwareExtensionBase<IComman
     {
         parameters.Add(KnownNavigationParameters.Animated, Animated);
         parameters.Add(KnownNavigationParameters.UseModalNavigation, UseModalNavigation);
+    }
+
+    protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        base.OnPropertyChanged(propertyName);
+        if (propertyName == nameof(Page) || propertyName == nameof(IsNavigating))
+            RaiseCanExecuteChanged();
     }
 }
