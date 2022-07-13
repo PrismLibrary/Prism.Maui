@@ -1,5 +1,6 @@
-﻿using Prism.Xaml;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using Microsoft.Extensions.Logging;
+using Prism.Xaml;
 
 namespace Prism.Navigation.Xaml;
 
@@ -58,6 +59,7 @@ public abstract class NavigationExtensionBase : TargetAwareExtensionBase<IComman
     protected virtual void Log(Exception ex, INavigationParameters parameters)
     {
         // TODO: Determine a good way to log
+        Logger.LogError(ex, "Error Navigating: \n[exception]");
     }
 
     protected abstract Task HandleNavigation(INavigationParameters parameters, INavigationService navigationService);

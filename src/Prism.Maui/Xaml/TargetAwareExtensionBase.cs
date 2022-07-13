@@ -1,4 +1,5 @@
-﻿using Prism.Behaviors;
+﻿using Microsoft.Extensions.Logging;
+using Prism.Behaviors;
 using Prism.Extensions;
 using Prism.Ioc;
 using Prism.Navigation.Xaml;
@@ -8,6 +9,9 @@ namespace Prism.Xaml;
 
 public abstract class TargetAwareExtensionBase<T> : BindableObject, IMarkupExtension<T>
 {
+    private ILogger _logger;
+    public ILogger Logger => _logger ??= GetLogger();
+
     private Page _page;
     protected internal Page Page
     {
@@ -75,4 +79,13 @@ public abstract class TargetAwareExtensionBase<T> : BindableObject, IMarkupExten
         ((IMarkupExtension<T>)this).ProvideValue(serviceProvider);
 
     protected abstract T ProvideValue(IServiceProvider serviceProvider);
+
+    private ILogger GetLogger()
+    {
+        if (Page is null)
+            return null;
+
+        var loggerFactory = Page.GetContainerProvider().Resolve<ILoggerFactory>();
+        return loggerFactory.CreateLogger(GetType().Name);
+    }
 }
