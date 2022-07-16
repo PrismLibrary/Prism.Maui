@@ -1,4 +1,7 @@
-﻿namespace Prism.Navigation;
+﻿using Prism.AppModel;
+using Prism.Common;
+
+namespace Prism.Navigation;
 
 internal class PrismWindow : Window
 {
@@ -7,12 +10,16 @@ internal class PrismWindow : Window
     public PrismWindow(string name = DefaultWindowName)
     {
         Name = name;
-        ModalPopping += PrismApplication_ModalPopping;
+        ModalPopping += PrismWindow_ModalPopping;
     }
 
     public string Name { get; }
 
-    private async void PrismApplication_ModalPopping(object sender, ModalPoppingEventArgs e)
+    public bool IsActive { get; private set; }
+
+    internal Page CurrentPage => Page is null ? null : MvvmHelpers.GetCurrentPage(Page);
+
+    private async void PrismWindow_ModalPopping(object sender, ModalPoppingEventArgs e)
     {
         if (PageNavigationService.NavigationSource == PageNavigationSource.NavigationService)
             return;
@@ -20,5 +27,25 @@ internal class PrismWindow : Window
         e.Cancel = true;
         var navService = Xaml.Navigation.GetNavigationService(e.Modal);
         await navService.GoBackAsync();
+    }
+
+    protected override void OnActivated()
+    {
+        IsActive = true;
+    }
+
+    protected override void OnDeactivated()
+    {
+        IsActive = false;
+    }
+
+    protected override void OnResumed()
+    {
+        MvvmHelpers.InvokeViewAndViewModelAction<IApplicationLifecycleAware>(CurrentPage, x => x.OnResume());
+    }
+
+    protected override void OnStopped()
+    {
+        MvvmHelpers.InvokeViewAndViewModelAction<IApplicationLifecycleAware>(CurrentPage, x => x.OnSleep());
     }
 }
