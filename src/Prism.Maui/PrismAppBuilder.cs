@@ -11,6 +11,7 @@ using Prism.Navigation.Xaml;
 using Prism.Regions.Adapters;
 using Prism.Regions.Behaviors;
 using Prism.Services;
+using Microsoft.Maui.LifecycleEvents;
 using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
 
 namespace Prism;
@@ -45,6 +46,28 @@ public abstract class PrismAppBuilder
 
         MauiBuilder = builder;
         MauiBuilder.ConfigureContainer(new PrismServiceProviderFactory(RegistrationCallback));
+        MauiBuilder.ConfigureLifecycleEvents(lifecycle =>
+        {
+#if ANDROID
+            lifecycle.AddAndroid(android =>
+            {
+                android.OnBackPressed(activity =>
+                {
+                    var app = Application.Current;
+                    if (app is null || !app.Windows.OfType<PrismWindow>().Any())
+                        return true;
+
+                    var window = app.Windows.OfType<PrismWindow>().First();
+                    var currentPage = MvvmHelpers.GetCurrentPage(window.Page);
+                    var container = currentPage.GetContainerProvider();
+                    var navigation = container.Resolve<INavigationService>();
+                    navigation.GoBackAsync();
+
+                    return false;
+                });
+            });
+#endif
+        });
 
         ContainerLocator.ResetContainer();
         ContainerLocator.SetContainerExtension(() => containerExtension);
