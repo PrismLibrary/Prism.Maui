@@ -75,12 +75,12 @@ public abstract class PrismAppBuilder
         containerExtension.RegisterInstance(this);
         containerExtension.RegisterSingleton<IMauiInitializeService, PrismInitializationService>();
 
-        ConfigureViewModelLocator(containerExtension);
+        ConfigureViewModelLocator();
     }
 
     public MauiAppBuilder MauiBuilder { get; }
 
-    private void ConfigureViewModelLocator(IContainerProvider container)
+    private void ConfigureViewModelLocator()
     {
         ViewModelLocationProvider2.SetDefaultViewToViewModelTypeResolver(view =>
         {
