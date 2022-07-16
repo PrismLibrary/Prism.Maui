@@ -20,17 +20,6 @@ public abstract class PrismApplication : Application, ILegacyPrismApplication
         _containerExtension = ContainerLocator.Current;
         RegisterTypes(_containerExtension);
         NavigationService = Container.Resolve<INavigationService>((typeof(IApplication), this));
-        this.ModalPopping += PrismApplication_ModalPopping;
-    }
-
-    private async void PrismApplication_ModalPopping(object sender, ModalPoppingEventArgs e)
-    {
-        if (PageNavigationService.NavigationSource == PageNavigationSource.NavigationService)
-            return;
-
-        e.Cancel = true;
-        var navService = Navigation.Xaml.Navigation.GetNavigationService(e.Modal);
-        await navService.GoBackAsync();
     }
 
     void ILegacyPrismApplication.OnInitialized() => OnInitialized();
