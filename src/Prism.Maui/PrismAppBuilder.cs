@@ -53,13 +53,17 @@ public abstract class PrismAppBuilder
             {
                 android.OnBackPressed(activity =>
                 {
-                    var app = Application.Current;
-                    if (app is null || !app.Windows.OfType<PrismWindow>().Any())
+                    var root = ContainerLocator.Container;
+                    if (root is null)
                         return true;
 
-                    var window = app.Windows.OfType<PrismWindow>().First();
-                    var currentPage = MvvmHelpers.GetCurrentPage(window.Page);
-                    var container = currentPage.GetContainerProvider();
+                    var app = root.Resolve<IApplication>();
+                    var windows = app.Windows.OfType<PrismWindow>();
+                    if (!windows.Any(x => x.IsActive))
+                        return true;
+
+                    var window = windows.First(x => x.IsActive);
+                    var container = window.CurrentPage.GetContainerProvider();
                     var navigation = container.Resolve<INavigationService>();
                     navigation.GoBackAsync();
 
