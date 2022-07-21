@@ -9,9 +9,23 @@ namespace Prism.Services.Xaml;
 [ContentProperty(nameof(Name))]
 public class ShowDialogExtension : TargetAwareExtensionBase<ICommand>, ICommand
 {
-    public string Name { get; set; }
+    public static readonly BindableProperty NameProperty =
+        BindableProperty.Create(nameof(Name), typeof(string), typeof(ShowDialogExtension), null);
 
-    public bool IsExecuting { get; set; }
+    public static readonly BindableProperty IsExecutingProperty =
+        BindableProperty.Create(nameof(IsExecuting), typeof(bool), typeof(ShowDialogExtension), false);
+
+    public string Name
+    {
+        get => (string)GetValue(NameProperty);
+        set => SetValue(NameProperty, value);
+    }
+
+    public bool IsExecuting
+    {
+        get => (bool)GetValue(IsExecutingProperty);
+        set => SetValue(IsExecutingProperty, value);
+    }
 
     public event EventHandler CanExecuteChanged;
 

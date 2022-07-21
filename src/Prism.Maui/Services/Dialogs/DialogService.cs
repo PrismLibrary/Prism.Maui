@@ -20,17 +20,7 @@ public sealed class DialogService : IDialogService
         _pageAccessor = pageAccessor ?? throw new ArgumentNullException(nameof(pageAccessor));
     }
 
-    public void ShowDialog(string name, IDialogParameters parameters, Action<IDialogResult> callback)
-    {
-        ShowDialogInternal(name, parameters, callback);
-    }
-
-    public void ShowDialog(string name, IDialogParameters parameters, Func<IDialogResult, Task> callback)
-    {
-        ShowDialogInternal(name, parameters, callback);
-    }
-
-    private void ShowDialogInternal(string name, IDialogParameters parameters, MulticastDelegate callback)
+    public void ShowDialog(string name, IDialogParameters parameters, DialogCallback callback)
     {
         try
         {
@@ -55,7 +45,7 @@ public sealed class DialogService : IDialogService
                         return;
                     }
 
-                    await InvokeCallback(callback, result);
+                    await callback.Invoke(result);
                     GC.Collect();
                 }
                 catch (DialogException dex)
@@ -101,28 +91,18 @@ public sealed class DialogService : IDialogService
         }
         catch (Exception ex)
         {
-            _ = InvokeError(callback, ex);
+            callback.Invoke(ex);
         }
     }
 
-    private async Task InvokeError(MulticastDelegate callback, Exception exception, IDialogParameters parameters = null)
+    private async Task InvokeError(DialogCallback callback, Exception exception, IDialogParameters parameters)
     {
         var result = new DialogResult 
         {
             Parameters = parameters,
-            Exception = exception 
+            Exception = exception
         };
-        await InvokeCallback(callback, result);
-    }
-
-    private async Task InvokeCallback(MulticastDelegate callback, IDialogResult result)
-    {
-        if (callback is null)
-            return;
-        else if (callback is Action<IDialogResult> actionCallback)
-            actionCallback(result);
-        else if (callback is Func<IDialogResult, Task> taskCallback)
-            await taskCallback(result);
+        await callback.Invoke(result);
     }
 
     private static async Task<IDialogResult> CloseDialogAsync(IDialogParameters parameters, Page currentPage, IDialogContainer dialogModal)
