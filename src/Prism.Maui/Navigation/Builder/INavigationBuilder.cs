@@ -11,6 +11,7 @@ public interface INavigationBuilder
     INavigationBuilder UseAbsoluteNavigation(bool absolute);
     INavigationBuilder UseRelativeNavigation();
 
+    Task<INavigationResult> GoBackTo<TViewModel>(INavigationParameters parameters);
     Task<INavigationResult> NavigateAsync();
     Task NavigateAsync(Action<Exception> onError);
     Task NavigateAsync(Action onSuccess, Action<Exception> onError);

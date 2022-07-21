@@ -13,6 +13,9 @@ public static class NavigationBuilderExtensions
     public static INavigationBuilder CreateBuilder(this INavigationService navigationService) =>
            new NavigationBuilder(navigationService);
 
+    public static Task<INavigationResult> GoBackTo<TViewModel>(this INavigationBuilder builder) =>
+        builder.GoBackTo<TViewModel>(null);
+
     internal static string GetNavigationKey<TViewModel>(object builder)
     {
         var vmType = typeof(TViewModel);

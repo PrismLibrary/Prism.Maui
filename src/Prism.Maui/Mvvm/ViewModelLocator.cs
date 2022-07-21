@@ -21,6 +21,12 @@ public static class ViewModelLocator
     internal static readonly BindableProperty NavigationNameProperty =
         BindableProperty.CreateAttached("NavigationName", typeof(string), typeof(ViewModelLocator), null);
 
+    internal static string GetNavigationName(BindableObject bindable) =>
+        (string)bindable.GetValue(NavigationNameProperty);
+
+    internal static void SetNavigationName(BindableObject bindable, string name) =>
+        bindable.SetValue(NavigationNameProperty, name);
+
     /// <summary>
     /// Gets the AutowireViewModel property value.
     /// </summary>
