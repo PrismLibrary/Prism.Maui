@@ -63,9 +63,18 @@ public abstract class PrismAppBuilder
                         return true;
 
                     var window = windows.First(x => x.IsActive);
-                    var container = window.CurrentPage.GetContainerProvider();
-                    var navigation = container.Resolve<INavigationService>();
-                    navigation.GoBackAsync();
+                    var currentPage = window.CurrentPage;
+                    var container = currentPage.GetContainerProvider();
+                    if(currentPage is IDialogContainer dialogContainer)
+                    {
+                        if (dialogContainer.Dismiss.CanExecute(null))
+                            dialogContainer.Dismiss.Execute(null);
+                    }
+                    else
+                    {
+                        var navigation = container.Resolve<INavigationService>();
+                        navigation.GoBackAsync();
+                    }
 
                     return false;
                 });
@@ -211,7 +220,9 @@ public abstract class PrismAppBuilder
         containerRegistry.RegisterSingleton<IEventAggregator, EventAggregator>();
         containerRegistry.RegisterSingleton<IKeyboardMapper, KeyboardMapper>();
         containerRegistry.RegisterScoped<IPageDialogService, PageDialogService>();
-        //containerRegistry.RegisterSingleton<IDialogService, DialogService>();
+        containerRegistry.RegisterScoped<IDialogService, DialogService>();
+        containerRegistry.Register<IDialogViewRegistry, DialogViewRegistry>();
+        containerRegistry.RegisterDialogContainer<DialogContainerPage>();
         //containerRegistry.RegisterSingleton<IDeviceService, DeviceService>();
         containerRegistry.RegisterScoped<IPageAccessor, PageAccessor>();
         containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();

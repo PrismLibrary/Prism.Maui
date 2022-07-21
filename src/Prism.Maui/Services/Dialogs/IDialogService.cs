@@ -1,4 +1,4 @@
-﻿namespace Prism.Services.Dialogs;
+﻿namespace Prism.Services;
 
 /// <summary>
 /// Defines a contract for displaying dialogs from ViewModels.
@@ -22,5 +22,5 @@ public interface IDialogService
     /// _dialogService.ShowDialog("DemoDialog", parameters, <paramref name="callback"/>: null);
     /// </code>
     /// </example>
-    void ShowDialog(string name, IDialogParameters parameters, Action<IDialogResult> callback);
+    void ShowDialog(string name, IDialogParameters parameters, DialogCallback callback);
 }

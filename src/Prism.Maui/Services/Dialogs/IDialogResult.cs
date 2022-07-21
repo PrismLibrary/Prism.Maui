@@ -1,4 +1,4 @@
-﻿namespace Prism.Services.Dialogs;
+﻿namespace Prism.Services;
 
 public interface IDialogResult
 {
