@@ -151,6 +151,53 @@ public class NavigationTests : TestBase
         Assert.Equal(2, rootPage.Navigation.ModalStack.Count);
     }
 
+    [Fact]
+    public async Task GoBackTo_Name_PopsToSpecifiedView()
+    {
+        var mauiApp = CreateBuilder(prism => prism.OnAppStart("NavigationPage/MockViewA/MockViewB/MockViewC/MockViewD/MockViewE"))
+            .Build();
+        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
+        var window = app!.Windows.First();
+
+        Assert.IsAssignableFrom<NavigationPage>(window.Page);
+        var navigationPage = (NavigationPage)window.Page;
+
+        Assert.IsType<MockViewA>(navigationPage.RootPage);
+        Assert.IsType<MockViewE>(navigationPage.CurrentPage);
+
+        var result = await navigationPage.CurrentPage.GetContainerProvider()
+            .Resolve<INavigationService>()
+            .GoBackToAsync("MockViewC");
+
+        Assert.True(result.Success);
+
+        Assert.IsType<MockViewC>(navigationPage.CurrentPage);
+    }
+
+    [Fact]
+    public async Task GoBackTo_ViewModel_PopsToSpecifiedView()
+    {
+        var mauiApp = CreateBuilder(prism => prism.OnAppStart("NavigationPage/MockViewA/MockViewB/MockViewC/MockViewD/MockViewE"))
+            .Build();
+        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
+        var window = app!.Windows.First();
+
+        Assert.IsAssignableFrom<NavigationPage>(window.Page);
+        var navigationPage = (NavigationPage)window.Page;
+
+        Assert.IsType<MockViewA>(navigationPage.RootPage);
+        Assert.IsType<MockViewE>(navigationPage.CurrentPage);
+
+        var result = await navigationPage.CurrentPage.GetContainerProvider()
+            .Resolve<INavigationService>()
+            .CreateBuilder()
+            .GoBackTo<MockViewCViewModel>();
+
+        Assert.True(result.Success);
+
+        Assert.IsType<MockViewC>(navigationPage.CurrentPage);
+    }
+
     private void TestPage(Page page)
     {
         Assert.NotNull(page.BindingContext);

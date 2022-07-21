@@ -28,7 +28,9 @@ public abstract class TestBase
                     container.RegisterForNavigation<MockHome, MockHomeViewModel>()
                         .RegisterForNavigation<MockViewA, MockViewAViewModel>()
                         .RegisterForNavigation<MockViewB, MockViewBViewModel>()
-                        .RegisterForNavigation<MockViewC, MockViewCViewModel>();
+                        .RegisterForNavigation<MockViewC, MockViewCViewModel>()
+                        .RegisterForNavigation<MockViewD, MockViewDViewModel>()
+                        .RegisterForNavigation<MockViewE, MockViewEViewModel>();
                 })
                 .ConfigureLogging(builder =>
                     builder.AddProvider(new XUnitLoggerProvider(_testOutputHelper)))

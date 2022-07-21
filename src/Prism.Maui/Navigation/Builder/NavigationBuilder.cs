@@ -45,6 +45,12 @@ internal class NavigationBuilder : INavigationBuilder, IRegistryAware
         return this;
     }
 
+    public async Task<INavigationResult> GoBackTo<TViewModel>(INavigationParameters parameters)
+    {
+        var name = NavigationBuilderExtensions.GetNavigationKey<TViewModel>(this);
+        return await _navigationService.GoBackToAsync(name, parameters);
+    }
+
     public Task<INavigationResult> NavigateAsync()
     {
         return _navigationService.NavigateAsync(BuildUri(), _navigationParameters);
