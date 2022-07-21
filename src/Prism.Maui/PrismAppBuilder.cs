@@ -145,7 +145,6 @@ public abstract class PrismAppBuilder
             manager.Run();
         }
 
-        var app = _container.Resolve<IApplication>();
         var navRegistry = _container.Resolve<INavigationRegistry>();
         if (!navRegistry.IsRegistered(nameof(NavigationPage)))
         {
@@ -165,9 +164,6 @@ public abstract class PrismAppBuilder
             var registry = _container as IContainerRegistry;
             registry.RegisterForNavigation<TabbedPage>();
         }
-
-        if (app is ILegacyPrismApplication prismApp)
-            prismApp.OnInitialized();
 
         if (_onAppStarted is not null)
             _onAppStarted(_container, _container.Resolve<INavigationService>());
