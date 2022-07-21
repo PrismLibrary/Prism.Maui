@@ -21,12 +21,12 @@ internal class PrismWindow : Window
 
     private async void PrismWindow_ModalPopping(object sender, ModalPoppingEventArgs e)
     {
-        if (PageNavigationService.NavigationSource == PageNavigationSource.NavigationService)
-            return;
-
-        e.Cancel = true;
-        var navService = Xaml.Navigation.GetNavigationService(e.Modal);
-        await navService.GoBackAsync();
+        if (PageNavigationService.NavigationSource == PageNavigationSource.Device)
+        {
+            e.Cancel = true;
+            var navService = Xaml.Navigation.GetNavigationService(e.Modal);
+            await navService.GoBackAsync();
+        }
     }
 
     protected override void OnActivated()

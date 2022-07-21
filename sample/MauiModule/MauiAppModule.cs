@@ -1,4 +1,5 @@
-﻿using MauiModule.ViewModels;
+﻿using MauiModule.Dialogs;
+using MauiModule.ViewModels;
 using MauiModule.Views;
 
 namespace MauiModule
@@ -13,6 +14,7 @@ namespace MauiModule
 
         public void RegisterTypes(IContainerRegistry containerRegistry)
         {
+            containerRegistry.RegisterDialog<LoginDialog, LoginViewModel>();
             containerRegistry.RegisterForNavigation<ViewA, ViewAViewModel>();
             containerRegistry.RegisterForNavigation<ViewB, ViewBViewModel>();
             containerRegistry.RegisterForNavigation<ViewC, ViewCViewModel>();
