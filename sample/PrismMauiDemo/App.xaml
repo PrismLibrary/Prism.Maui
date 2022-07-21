@@ -1,16 +1,15 @@
-﻿<prism:PrismApplication xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:windows="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;assembly=Microsoft.Maui.Controls"
              xmlns:local="clr-namespace:PrismMauiDemo"
-             xmlns:prism="http://prismlibrary.com"
              x:Class="PrismMauiDemo.App"
              windows:Application.ImageDirectory="Assets">
-  <prism:PrismApplication.Resources>
+  <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
         <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
-  </prism:PrismApplication.Resources>
-</prism:PrismApplication>
+  </Application.Resources>
+</Application>
