@@ -38,4 +38,6 @@ public interface INavigationService
     /// NavigateAsync(new Uri("MainPage?id=3&amp;name=brian", UriKind.RelativeSource), parameters);
     /// </example>
     Task<INavigationResult> NavigateAsync(Uri uri, INavigationParameters parameters);
+
+    Task<INavigationResult> ClearModalStackAsync(INavigationParameters parameters, bool animated = true);
 }
