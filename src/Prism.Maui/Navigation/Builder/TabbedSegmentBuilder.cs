@@ -24,6 +24,21 @@ internal class TabbedSegmentBuilder : ITabbedSegmentBuilder, IConfigurableSegmen
         SegmentName = registration.Name;
     }
 
+    public TabbedSegmentBuilder(INavigationBuilder builder, string segmentName)
+    {
+        _builder = builder;
+        _parameters = new NavigationParameters();
+
+        if (builder is not IRegistryAware registryAware)
+            throw new Exception("The builder does not implement IRegistryAware");
+
+        var registration = registryAware.Registry.ViewsOfType(typeof(TabbedPage)).FirstOrDefault(x => x.Name == segmentName);
+        if (registration == null)
+            throw new NavigationException(NavigationException.NoPageIsRegistered, nameof(TabbedPage));
+
+        SegmentName = registration.Name;
+    }
+
     IViewRegistry IRegistryAware.Registry => ((IRegistryAware)_builder).Registry;
 
     public string SegmentName { get; set; }

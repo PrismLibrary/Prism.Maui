@@ -39,6 +39,14 @@ internal class NavigationBuilder : INavigationBuilder, IRegistryAware
         return this;
     }
 
+    public INavigationBuilder AddTabbedSegment(string segmentName, Action<ITabbedSegmentBuilder> configureSegment)
+    {
+        var builder = new TabbedSegmentBuilder(this, segmentName);
+        configureSegment?.Invoke(builder);
+        _uriSegments.Add(builder);
+        return this;
+    }
+
     public INavigationBuilder AddParameter(string key, object value)
     {
         _navigationParameters.Add(key, value);
