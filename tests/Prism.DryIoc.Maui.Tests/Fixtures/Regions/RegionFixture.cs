@@ -10,7 +10,8 @@ public class RegionFixture
     public void ContentRegion_CreatedBy_RequestNavigate()
     {
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>(prism =>
+            .UseMauiApp<Application>()
+            .UsePrism(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
@@ -36,7 +37,8 @@ public class RegionFixture
     public void FrameRegion_CreatedBy_RegisterViewWithRegion()
     {
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>(prism =>
+            .UseMauiApp<Application>()
+            .UsePrism(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
@@ -67,7 +69,8 @@ public class RegionFixture
     public void RegionsShareContainer_WithPage()
     {
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>(prism =>
+            .UseMauiApp<Application>()
+            .UsePrism(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
@@ -104,7 +107,8 @@ public class RegionFixture
     {
         // This validates that the NavigationService is using the correct Page to navigate from
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>(prism =>
+            .UseMauiApp<Application>()
+            .UsePrism(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
@@ -128,7 +132,8 @@ public class RegionFixture
     public void RegionManager_HasTwoRegions()
     {
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>(prism => 
+            .UseMauiApp<Application>()
+            .UsePrism(prism => 
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
@@ -144,7 +149,8 @@ public class RegionFixture
     public void PageHas_2_ChildViews()
     {
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>(prism =>
+            .UseMauiApp<Application>()
+            .UsePrism(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
@@ -177,7 +183,8 @@ public class RegionFixture
     public void RegionWithDefaultView_IsAutoPopulated()
     {
         var mauiApp = MauiApp.CreateBuilder()
-            .UsePrismApp<Application>(prism =>
+            .UseMauiApp<Application>()
+            .UsePrism(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockPageWithRegionAndDefaultView>("MainPage");

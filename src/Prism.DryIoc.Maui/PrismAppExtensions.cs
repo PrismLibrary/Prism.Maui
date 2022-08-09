@@ -9,18 +9,16 @@ namespace Microsoft.Maui;
 /// </summary>
 public static class PrismAppExtensions
 {
-    public static MauiAppBuilder UsePrismApp<TApp>(this MauiAppBuilder builder, Action<PrismAppBuilder> configurePrism)
-        where TApp : Application
+    public static MauiAppBuilder UsePrism(this MauiAppBuilder builder, Action<PrismAppBuilder> configurePrism)
     {
-        return builder.UsePrismApp<TApp>(new DryIocContainerExtension(), configurePrism);
+        return builder.UsePrism(new DryIocContainerExtension(), configurePrism);
     }
 
-    public static MauiAppBuilder UsePrismApp<TApp>(this MauiAppBuilder builder, Rules rules, Action<PrismAppBuilder> configurePrism)
-        where TApp : Application
+    public static MauiAppBuilder UsePrism(this MauiAppBuilder builder, Rules rules, Action<PrismAppBuilder> configurePrism)
     {
         rules = rules.WithTrackingDisposableTransients()
             .With(Made.Of(FactoryMethod.ConstructorWithResolvableArguments))
             .WithFactorySelector(Rules.SelectLastRegisteredFactory());
-        return builder.UsePrismApp<TApp>(new DryIocContainerExtension(rules), configurePrism);
+        return builder.UsePrism(new DryIocContainerExtension(rules), configurePrism);
     }
 }

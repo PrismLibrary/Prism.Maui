@@ -9,10 +9,9 @@ public static class PrismAppBuilderExtensions
 {
     private static bool s_didRegisterModules = false;
 
-    public static MauiAppBuilder UsePrismApp<TApp>(this MauiAppBuilder builder, IContainerExtension containerExtension, Action<PrismAppBuilder> configurePrism)
-        where TApp : Application
+    public static MauiAppBuilder UsePrism(this MauiAppBuilder builder, IContainerExtension containerExtension, Action<PrismAppBuilder> configurePrism)
     {
-        var prismBuilder = new PrismAppBuilder<TApp>(containerExtension, builder);
+        var prismBuilder = new PrismAppBuilder(containerExtension, builder);
         configurePrism(prismBuilder);
         return builder;
     }

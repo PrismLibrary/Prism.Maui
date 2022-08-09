@@ -11,7 +11,8 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         return MauiApp.CreateBuilder()
-            .UsePrismApp<App>(prism => 
+            .UseMauiApp<App>()
+            .UsePrism(prism => 
                 prism.ConfigureModuleCatalog(moduleCatalog =>
                 {
                     moduleCatalog.AddModule<MauiAppModule>();
