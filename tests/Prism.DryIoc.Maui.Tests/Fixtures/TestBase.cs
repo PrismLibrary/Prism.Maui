@@ -21,7 +21,8 @@ public abstract class TestBase
     protected MauiAppBuilder CreateBuilder(Action<PrismAppBuilder> configurePrism)
     {
         return MauiApp.CreateBuilder()
-            .UsePrismApp<Application>(prism =>
+            .UseMauiApp<Application>()
+            .UsePrism(prism =>
             {
                 prism.RegisterTypes(container =>
                 {

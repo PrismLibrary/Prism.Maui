@@ -16,17 +16,7 @@ using TabbedPage = Microsoft.Maui.Controls.TabbedPage;
 
 namespace Prism;
 
-public sealed class PrismAppBuilder<TApp> : PrismAppBuilder
-    where TApp : Application
-{
-    internal PrismAppBuilder(IContainerExtension containerExtension, MauiAppBuilder builder)
-        : base(containerExtension, builder)
-    {
-        builder.UseMauiApp<TApp>();
-    }
-}
-
-public abstract class PrismAppBuilder
+public sealed class PrismAppBuilder
 {
     private List<Action<IContainerRegistry>> _registrations { get; }
     private List<Action<IContainerProvider>> _initializations { get; }
