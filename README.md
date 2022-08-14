@@ -19,7 +19,8 @@ MauiApp.CreateBuilder()
 
 // Prism.Maui
 MauiApp.CreateBuilder()
-    .UsePrismApp<App>(prism => {
+    .UseMauiApp<App>()
+    .UsePrism(prism => {
         // Register Services and setup initial Navigation
     });
 ```
@@ -28,7 +29,8 @@ Some of the methods available on the `PrismAppBuilder` are going to seem a bit f
 
 ```cs
 MauiApp.CreateBuilder()
-    .UsePrismApp<App>(prism =>
+    .UseMauiApp<App>()
+    .UsePrism(prism =>
         prism.RegisterServices(container => {
             container.Register<ISomeService, SomeImplementation>();
             container.RegisterForNavigation<ViewA, ViewAViewModel>();
@@ -46,7 +48,8 @@ You will find that this includes useful extensions that consider that you are wi
 
 ```cs
 MauiApp.CreateBuilder()
-    .UsePrismApp<App>(prism =>
+    .UseMauiApp<App>()
+    .UsePrism(prism =>
         prism.OnInitialized(container => {
             var foo = container.Resolve<IFoo>();
             // Do some initializations here
@@ -58,7 +61,8 @@ The `PrismAppBuilder` additionally provides some new things to make your life ea
 
 ```cs
 MauiApp.CreateBuilder()
-    .UsePrismApp<App>(prism =>
+    .UseMauiApp<App>()
+    .UsePrism(prism =>
         prism.OnAppStart(async navigationService =>
         {
             var result = await navigationService.NavigateAsync("MainPage/NavigationPage/ViewA");
@@ -76,7 +80,8 @@ To help make it even easier we have added some special extensions to the `PrismA
 
 ```cs
 MauiApp.CreateBuilder()
-    .UsePrismApp<App>(prism =>
+    .UseMauiApp<App>()
+    .UsePrism(prism =>
         prism.ConfigureServices(services => {
             services.AddSingleton<IFoo, Foo>();
             services.RegisterForNavigation<ViewA, ViewAViewModel>();
@@ -122,6 +127,4 @@ navigationService.CreateBuilder()
     .Navigate();
 ```
 
-## NOTE
 
-Prism.Maui is currently a Beta. Any preview build is largely meant to solicit additional developer feedback. APIs will likely change and break prior to being merged into the Prism repo and released as a fully official build.
