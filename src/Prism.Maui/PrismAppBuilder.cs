@@ -45,12 +45,12 @@ public sealed class PrismAppBuilder
                 {
                     var root = ContainerLocator.Container;
                     if (root is null)
-                        return true;
+                        return false;
 
                     var app = root.Resolve<IApplication>();
                     var windows = app.Windows.OfType<PrismWindow>();
                     if (!windows.Any(x => x.IsActive))
-                        return true;
+                        return false;
 
                     var window = windows.First(x => x.IsActive);
                     var currentPage = window.CurrentPage;
@@ -66,7 +66,7 @@ public sealed class PrismAppBuilder
                         navigation.GoBackAsync();
                     }
 
-                    return false;
+                    return true;
                 });
             });
 #endif
