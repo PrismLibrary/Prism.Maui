@@ -6,4 +6,10 @@ public partial class SplashPage : ContentPage
     {
         InitializeComponent();
     }
+
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+    }
 }

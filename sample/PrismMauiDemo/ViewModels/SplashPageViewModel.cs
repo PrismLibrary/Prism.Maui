@@ -9,8 +9,9 @@ internal class SplashPageViewModel : IPageLifecycleAware
         _navigationService = navigationService;
     }
 
-    public void OnAppearing()
+    public async void OnAppearing()
     {
+        await Task.Delay(1000);
         _navigationService.CreateBuilder()
             .AddSegment<RootPageViewModel>()
             .Navigate();

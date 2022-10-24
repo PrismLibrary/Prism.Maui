@@ -3,6 +3,9 @@ using MauiModule.ViewModels;
 using MauiRegionsModule;
 using PrismMauiDemo.ViewModels;
 using PrismMauiDemo.Views;
+using Microsoft.Maui.Platform;
+using Microsoft.Maui.Hosting;
+using Microsoft.Maui.LifecycleEvents;
 
 namespace PrismMauiDemo;
 
@@ -60,6 +63,20 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             })
+#if ANDROID
+            .ConfigureLifecycleEvents(events =>
+            {
+                events.AddAndroid(thing =>
+                thing.OnBackPressed((me) =>
+                {
+                    // workaround modal issue
+                    if (Application.Current.MainPage.Navigation.ModalStack.Count > 0)
+                        _ = Application.Current.MainPage.Navigation.PopModalAsync();
+
+                    return true;
+                }));
+            })
+#endif
             .Build();
     }
 

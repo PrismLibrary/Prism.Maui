@@ -14,7 +14,7 @@ namespace Prism.Navigation;
 /// </summary>
 public class PageNavigationService : INavigationService, IRegistryAware
 {
-    private static readonly SemaphoreSlim _semaphore = new (1, 1);
+    private static readonly SemaphoreSlim _semaphore = new(1, 1);
     internal const string RemovePageRelativePath = "../";
     internal const string RemovePageInstruction = "__RemovePage/";
     internal const string RemovePageSegment = "__RemovePage";
@@ -31,7 +31,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
     {
         get
         {
-            if(_window is null && _pageAccessor.Page is not null)
+            if (_window is null && _pageAccessor.Page is not null)
             {
                 _window = _pageAccessor.Page.GetParentWindow();
             }
@@ -767,15 +767,15 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
             return page;
         }
-        catch(NavigationException)
+        catch (NavigationException)
         {
             throw;
         }
-        catch(KeyNotFoundException knfe)
+        catch (KeyNotFoundException knfe)
         {
             throw new NavigationException(NavigationException.NoPageIsRegistered, segmentName, knfe);
         }
-        catch(ViewModelCreationException vmce)
+        catch (ViewModelCreationException vmce)
         {
             throw new NavigationException(NavigationException.ErrorCreatingViewModel, segmentName, _pageAccessor.Page, vmce);
         }
@@ -787,7 +787,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
         catch (Exception ex)
         {
             var inner = ex.InnerException;
-            while(inner is not null)
+            while (inner is not null)
             {
                 if (inner.Message.Contains("thread with a dispatcher"))
                     throw new NavigationException(NavigationException.UnsupportedMauiCreation, segmentName, _pageAccessor.Page, ex);
@@ -821,7 +821,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
             var tabToCreate = HttpUtility.UrlDecode(tabToCreateEncoded);
             var tabSegments = tabToCreate.Split('/', '|');
             NavigationPage navigationPage = null;
-            for(int i = 0; i < tabSegments.Length; i++)
+            for (int i = 0; i < tabSegments.Length; i++)
             {
                 var tabSegment = tabSegments[i];
                 var child = CreatePageFromSegment(tabSegment);
@@ -831,18 +831,18 @@ public class PageNavigationService : INavigationService, IRegistryAware
                 {
                     navigationPage = navPage;
                 }
-                else if(i == 0)
+                else if (i == 0)
                 {
                     tabbedPage.Children.Add(child);
                     break;
                 }
-                else if(i > 0 && navigationPage is not null)
+                else if (i > 0 && navigationPage is not null)
                 {
                     await navigationPage.Navigation.PushAsync(child);
                 }
             }
 
-            if(navigationPage is null)
+            if (navigationPage is null)
             {
                 continue;
             }
@@ -853,7 +853,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
                 navigationPage.Title = XamlTab.GetTitle(navigationPage.RootPage);
                 navigationPage.IconImageSource = XamlTab.GetIconImageSource(navigationPage.RootPage);
             }
-            else if(!navigationPage.IsSet(Page.TitleProperty))
+            else if (!navigationPage.IsSet(Page.TitleProperty))
             {
                 var source = navigationPage.IsSet(XamlTab.TitleBindingSourceProperty) ?
                 XamlTab.GetTitleBindingSource(navigationPage) :
@@ -1023,22 +1023,22 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
                 if (Window is null)
                 {
-                    _window = new PrismWindow
+                    _window = new PrismWindow()
                     {
                         Page = page
                     };
 
-                    if (_application.Windows is List<Window> windows)
-                        windows.Add(_window);
+                    //if (_application.Windows is List<Window> windows)
+                    //    windows.Add(_window);
 
-                    // HACK: https://github.com/dotnet/maui/issues/8635
-                    if (_application is Element appElement)
-                        _window.Parent = appElement;
+                    // page.SendAppearing();
+                   // Application.Current.MainPage = page;
                 }
                 else
                 {
                     Console.WriteLine($"Pushing {page.GetType().Name}");
-                    Window.Page = page;
+                    //Window.Page = page;
+                    //Application.Current.MainPage = page;
                 }
             }
             else
