@@ -63,6 +63,10 @@ public sealed class PrismAppBuilder
                     else
                     {
                         var navigation = container.Resolve<INavigationService>();
+
+                        if (IsRoot(GetPageFromWindow(currentPage), currentPage))
+                            return false;
+
                         navigation.GoBackAsync();
                     }
 
@@ -82,6 +86,40 @@ public sealed class PrismAppBuilder
     }
 
     public MauiAppBuilder MauiBuilder { get; }
+
+    private static bool IsRoot(Page mainPage, Page currentPage)
+    {
+        if (mainPage == currentPage)
+            return true;
+
+        return mainPage switch
+        {
+            FlyoutPage fp => IsRoot(fp.Detail, currentPage),
+            TabbedPage tp => IsRoot(tp.CurrentPage, currentPage),
+            NavigationPage np => IsRoot(np.RootPage, currentPage),
+            _ => false
+        };
+    }
+
+    private static Page GetPageFromWindow(Page page)
+    {
+        try
+        {
+            return page?.GetParentWindow()?.Page;
+        }
+#if DEBUG
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex);
+            return null;
+        }
+#else
+        catch
+        {
+            return null;
+        }
+#endif
+    }
 
     private void ConfigureViewModelLocator()
     {
