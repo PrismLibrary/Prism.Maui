@@ -1,3 +1,4 @@
+using System.Collections.Specialized;
 using System.Text.RegularExpressions;
 using System.Web;
 using Prism.Common;
@@ -1023,16 +1024,26 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
                 if (Window is null)
                 {
-                    _window = new PrismWindow()
-                    {
-                        Page = page
-                    };
+                    TaskCompletionSource completionSource = new TaskCompletionSource();
+                    ((Element)_application).ChildAdded += OnChildAdded;
+
+                    await completionSource.Task;
 
                     //if (_application.Windows is List<Window> windows)
                     //    windows.Add(_window);
 
                     // page.SendAppearing();
-                   // Application.Current.MainPage = page;
+                    // Application.Current.MainPage = page;
+
+                    void OnChildAdded(object sender, EventArgs eventArgs)
+                    {
+                        if (_application.Windows.Count == 0)
+                            return;
+
+                        ((Element)_application).ChildAdded -= OnChildAdded;
+                        ((PrismWindow)_application.Windows[0]).Page = page;
+                        completionSource.SetResult();
+                    }
                 }
                 else
                 {

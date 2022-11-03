@@ -3,16 +3,14 @@ using Prism.Common;
 
 namespace Prism.Navigation;
 
-public class PrismWindow : Window
+class PrismWindow : Window
 {
     public const string DefaultWindowName = "__PrismRootWindow";
 
-    public static PrismWindow Current { get; private set; }
     public PrismWindow(string name = DefaultWindowName)
     {
         Name = name;
         ModalPopping += PrismWindow_ModalPopping;
-        Current = this;
     }
 
     public string Name { get; }
