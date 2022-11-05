@@ -1,4 +1,5 @@
 ﻿using Prism.Common;
+using Prism.Navigation;
 
 namespace Prism.Controls;
 
@@ -25,18 +26,18 @@ public class PrismNavigationPage : NavigationPage
 
     private async void HandleBackButtonPressed(object sender, EventArgs args)
     {
-        bool success;
+        bool backingOut = false;
+
         try
         {
             var result = await MvvmHelpers.HandleNavigationPageGoBack(this).ConfigureAwait(false);
-            success = result.Success;
         }
-        catch
+        catch (NavigationException ex)
         {
-            success = false;
+            backingOut = ex.Message == NavigationException.CannotPopApplicationMainPage;
         }
 
-        if (!success)
+        if (backingOut)
         {
             Application.Current.Quit();
         }
