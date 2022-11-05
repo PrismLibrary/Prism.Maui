@@ -19,7 +19,7 @@ public class PrismNavigationPage : NavigationPage
 
     protected override bool OnBackButtonPressed()
     {
-        //BackButtonPressed.Invoke(this, EventArgs.Empty);
+        BackButtonPressed.Invoke(this, EventArgs.Empty);
         return false;
     }
 
