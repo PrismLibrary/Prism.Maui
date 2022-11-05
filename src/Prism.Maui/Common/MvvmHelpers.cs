@@ -272,10 +272,10 @@ public static class MvvmHelpers
         return GetOnNavigatedToTargetFromChild(page);
     };
 
-    public static async Task HandleNavigationPageGoBack(NavigationPage navigationPage)
+    public static async Task<INavigationResult> HandleNavigationPageGoBack(NavigationPage navigationPage)
     {
         var navigationService = Navigation.Xaml.Navigation.GetNavigationService(navigationPage.CurrentPage);
-        await navigationService.GoBackAsync();
+        return await navigationService.GoBackAsync();
     }
 
     public static void HandleSystemGoBack(IView previousPage, IView currentPage)
