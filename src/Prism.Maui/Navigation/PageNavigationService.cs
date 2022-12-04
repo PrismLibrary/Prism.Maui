@@ -825,11 +825,11 @@ public class PageNavigationService : INavigationService, IRegistryAware
             {
                 var tabSegment = tabSegments[i];
                 var child = CreatePageFromSegment(tabSegment);
-                var childParameters = UriParsingHelper.GetSegmentParameters(tabSegment, parameters);
-                await MvvmHelpers.OnInitializedAsync(child, childParameters);
+                var childParameters = UriParsingHelper.GetSegmentParameters(tabSegment, parameters);                
                 if (i == 0 && child is NavigationPage navPage)
                 {
                     navigationPage = navPage;
+                    await MvvmHelpers.OnInitializedAsync(child, childParameters);
                 }
                 else if(i == 0)
                 {
