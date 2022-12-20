@@ -1,4 +1,4 @@
-﻿namespace PrismMauiDemo.ViewModels;
+namespace PrismMauiDemo.ViewModels;
 
 internal class SplashPageViewModel : IPageLifecycleAware
 {
@@ -12,6 +12,7 @@ internal class SplashPageViewModel : IPageLifecycleAware
     public void OnAppearing()
     {
         _navigationService.CreateBuilder()
+            .UseAbsoluteNavigation()
             .AddSegment<RootPageViewModel>()
             .Navigate();
     }
