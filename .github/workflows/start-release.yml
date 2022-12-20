@@ -12,6 +12,7 @@ jobs:
     with:
       name: Prism.Maui
       solution-path: build.slnf
+      dotnet-version: 7.0.x
       install-workload: maui
       code-sign: true
     secrets:
