@@ -19,9 +19,7 @@ public class DynamicTabbedPageNavigationFixture : TestBase
                     t.CreateTab("MockViewA")
                      .CreateTab("MockViewB"))
                 .Navigate())).Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        Assert.Single(app.Windows);
-        var window = app.Windows[0];
+        var window = GetWindow(mauiApp);
         Assert.IsType<TabbedPage>(window.Page);
         var tabbedPage = window.Page as TabbedPage;
 
@@ -41,10 +39,7 @@ public class DynamicTabbedPageNavigationFixture : TestBase
                     t.CreateTab(ct => ct.AddNavigationPage().AddSegment("MockViewA"))
                      .CreateTab(ct => ct.AddNavigationPage().AddSegment("MockViewB")))
                 .Navigate())).Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        Assert.Single(app.Windows);
-        var window = app.Windows[0];
-        Assert.IsType<TabbedPage>(window.Page);
+        var window = GetWindow(mauiApp);
         var tabbedPage = window.Page as TabbedPage;
 
         Assert.Equal(2, tabbedPage.Children.Count);

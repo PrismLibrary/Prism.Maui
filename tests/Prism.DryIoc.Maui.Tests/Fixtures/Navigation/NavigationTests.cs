@@ -19,8 +19,7 @@ public class NavigationTests : TestBase
     {
         var mauiApp = CreateBuilder(prism => prism.OnAppStart(uri))
             .Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        var window = app!.Windows.First();
+        var window = GetWindow(mauiApp);
 
         var rootPage = window.Page;
 
@@ -43,8 +42,7 @@ public class NavigationTests : TestBase
     {
         var mauiApp = CreateBuilder(prism => prism.OnAppStart("NavigationPage/MockViewA"))
             .Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        var window = app!.Windows.First();
+        var window = GetWindow(mauiApp);
 
         var rootPage = window.Page as NavigationPage;
         Assert.NotNull(rootPage);
@@ -66,8 +64,7 @@ public class NavigationTests : TestBase
     {
         var mauiApp = CreateBuilder(prism => prism.OnAppStart("NavigationPage/MockViewA/MockViewB"))
             .Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        var window = app!.Windows.First();
+        var window = GetWindow(mauiApp);
 
         var rootPage = window.Page as NavigationPage;
         Assert.NotNull(rootPage);
@@ -89,8 +86,7 @@ public class NavigationTests : TestBase
     {
         var mauiApp = CreateBuilder(prism => prism.OnAppStart("MockViewA"))
             .Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        var window = app!.Windows.First();
+        var window = GetWindow(mauiApp);
 
         var rootPage = window.Page as MockViewA;
         Assert.NotNull(rootPage);
@@ -106,8 +102,7 @@ public class NavigationTests : TestBase
     {
         var mauiApp = CreateBuilder(prism => prism.OnAppStart("MockViewA"))
             .Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        var window = app!.Windows.First();
+        var window = GetWindow(mauiApp);
 
         var rootPage = window.Page as MockViewA;
         Assert.NotNull(rootPage);
@@ -131,10 +126,7 @@ public class NavigationTests : TestBase
         }))
             .Build();
         Assert.Null(startupEx);
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        Assert.Single(app.Windows);
-        var window = app!.Windows.First();
-        Assert.IsType<PrismWindow>(window);
+        var window = GetWindow(mauiApp);
 
         var rootPage = window.Page as MockViewA;
         Assert.NotNull(rootPage);
@@ -156,8 +148,7 @@ public class NavigationTests : TestBase
     {
         var mauiApp = CreateBuilder(prism => prism.OnAppStart("NavigationPage/MockViewA/MockViewB/MockViewC/MockViewD/MockViewE"))
             .Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        var window = app!.Windows.First();
+        var window = GetWindow(mauiApp);
 
         Assert.IsAssignableFrom<NavigationPage>(window.Page);
         var navigationPage = (NavigationPage)window.Page;
@@ -179,8 +170,7 @@ public class NavigationTests : TestBase
     {
         var mauiApp = CreateBuilder(prism => prism.OnAppStart("NavigationPage/MockViewA/MockViewB/MockViewC/MockViewD/MockViewE"))
             .Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        var window = app!.Windows.First();
+        var window = GetWindow(mauiApp);
 
         Assert.IsAssignableFrom<NavigationPage>(window.Page);
         var navigationPage = (NavigationPage)window.Page;
