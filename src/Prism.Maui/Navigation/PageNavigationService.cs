@@ -48,7 +48,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
     /// Constructs a new instance of the <see cref="PageNavigationService"/>.
     /// </summary>
     /// <param name="container">The <see cref="IContainerProvider"/> that will be used to resolve pages for navigation.</param>
-    /// <param name="application">The <see cref="IApplication"/> that will let us ensure the Application.MainPage is set.</param>
+    /// <param name="windowFactory">The <see cref="IWindowFactory"/> that will let the NavigationService retrieve, open or close the app Windows.</param>
     /// <param name="eventAggregator">The <see cref="IEventAggregator"/> that will raise <see cref="NavigationRequestEvent"/>.</param>
     public PageNavigationService(IContainerProvider container,
         IWindowFactory windowFactory,
