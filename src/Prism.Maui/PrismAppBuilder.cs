@@ -218,7 +218,7 @@ public sealed class PrismAppBuilder
         containerRegistry.RegisterScoped<IPageAccessor, PageAccessor>();
         containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
         containerRegistry.Register<INavigationRegistry, NavigationRegistry>();
-        containerRegistry.Register<IWindowFactory>(c =>
+        containerRegistry.Register<IWindowManager>(c =>
         {
             var app = c.Resolve<IApplication>();
             if (app is PrismApplication prismApp)

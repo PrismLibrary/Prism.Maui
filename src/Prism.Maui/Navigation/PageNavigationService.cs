@@ -23,7 +23,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
     internal static PageNavigationSource NavigationSource { get; set; } = PageNavigationSource.Device;
 
     private readonly IContainerProvider _container;
-    protected readonly IWindowFactory _windowFactory;
+    protected readonly IWindowManager _windowManager;
     protected readonly IPageAccessor _pageAccessor;
     protected readonly IEventAggregator _eventAggregator;
 
@@ -48,15 +48,15 @@ public class PageNavigationService : INavigationService, IRegistryAware
     /// Constructs a new instance of the <see cref="PageNavigationService"/>.
     /// </summary>
     /// <param name="container">The <see cref="IContainerProvider"/> that will be used to resolve pages for navigation.</param>
-    /// <param name="windowFactory">The <see cref="IWindowFactory"/> that will let the NavigationService retrieve, open or close the app Windows.</param>
+    /// <param name="windowManager">The <see cref="IWindowManager"/> that will let the NavigationService retrieve, open or close the app Windows.</param>
     /// <param name="eventAggregator">The <see cref="IEventAggregator"/> that will raise <see cref="NavigationRequestEvent"/>.</param>
     public PageNavigationService(IContainerProvider container,
-        IWindowFactory windowFactory,
+        IWindowManager windowManager,
         IEventAggregator eventAggregator,
         IPageAccessor pageAccessor)
     {
         _container = container;
-        _windowFactory = windowFactory;
+        _windowManager = windowManager;
         _eventAggregator = eventAggregator;
         _pageAccessor = pageAccessor;
     }
@@ -282,6 +282,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
     public virtual async Task<INavigationResult> NavigateAsync(Uri uri, INavigationParameters parameters)
     {
         await _semaphore.WaitAsync();
+        // Ensure adequate time has passed since last navigation so that UI Refresh can Occur
         if (DateTime.Now - _lastNavigate < TimeSpan.FromMilliseconds(150))
         {
             await Task.Delay(150);
@@ -1025,8 +1026,8 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
             if (currentPage is null)
             {
-                if (_windowFactory.Windows.OfType<PrismWindow>().Any(x => x.Name == PrismWindow.DefaultWindowName))
-                    _window = _windowFactory.Windows.OfType<PrismWindow>().First(x => x.Name == PrismWindow.DefaultWindowName);
+                if (_windowManager.Windows.OfType<PrismWindow>().Any(x => x.Name == PrismWindow.DefaultWindowName))
+                    _window = _windowManager.Windows.OfType<PrismWindow>().First(x => x.Name == PrismWindow.DefaultWindowName);
 
                 if (Window is null)
                 {
@@ -1035,7 +1036,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
                         Page = page
                     };
 
-                    _windowFactory.CreateWindow(_window);
+                    _windowManager.OpenWindow(_window);
                 }
                 else
                 {

@@ -4,9 +4,8 @@ using Prism.Navigation;
 
 namespace Prism;
 
-public class PrismApplication : Application, IWindowFactory
+public class PrismApplication : Application, IWindowManager
 {
-    IEnumerable<Window> IWindowFactory.Windows => Windows;
     private Window _initialWindow;
 
     protected sealed override Window CreateWindow(IActivationState activationState)
@@ -18,10 +17,10 @@ public class PrismApplication : Application, IWindowFactory
 
         activationState.Context.Services.GetRequiredService<PrismAppBuilder>().OnAppStarted();
 
-        return _initialWindow;
+        return _initialWindow ?? throw new InvalidNavigationException("Expected Navigation Failed. No Root Window has been created.");
     }
 
-    void IWindowFactory.CreateWindow(Window window)
+    void IWindowManager.OpenWindow(Window window)
     {
         if (_initialWindow is null)
             _initialWindow = window;

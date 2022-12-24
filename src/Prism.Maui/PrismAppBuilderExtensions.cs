@@ -55,9 +55,6 @@ public static class PrismAppBuilderExtensions
                 onError(result.Exception);
         });
 
-    public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, Action<INavigationService> onAppStarted) =>
-        builder.OnAppStart((_, n) => Task.Run(() => onAppStarted(n)));
-
     public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, Func<IContainerProvider, INavigationService, Task> onAppStarted) =>
         builder.OnAppStart((c, n) => onAppStarted(c, n));
 
