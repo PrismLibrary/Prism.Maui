@@ -4,28 +4,22 @@ using Prism.Navigation.Xaml;
 
 namespace Prism.DryIoc.Maui.Tests.Fixtures.Regions;
 
-public class RegionFixture
+public class RegionFixture : TestBase
 {
+    public RegionFixture(ITestOutputHelper testOutputHelper)
+        : base(testOutputHelper)
+    {
+    }
+
     [Fact]
     public void ContentRegion_CreatedBy_RequestNavigate()
     {
-        var mauiApp = MauiApp.CreateBuilder()
-            .UseMauiApp<PrismApplication>()
-            .UsePrism(prism =>
-                prism.RegisterTypes(container =>
-                {
-                    container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
-                    container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
-                })
-                .OnAppStart("MockContentRegionPage"))
-            .Build();
-
-        var app = mauiApp.Services.GetRequiredService<IApplication>();
-        app.CreateWindow(new ActivationState(new MauiContext(mauiApp.Services)));
-
-        Assert.Single(app!.Windows);
-        var window = app.Windows.OfType<Window>().First();
-        Assert.NotNull(window.Page);
+        var mauiApp = CreateBuilder(prism => prism.RegisterTypes(container =>
+        {
+            container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
+            container.RegisterForRegionNavigation<MockRegionViewA, MockRegionViewAViewModel>();
+        }).OnAppStart(nav => nav.NavigateAsync("MockContentRegionPage"))).Build();
+        var window = GetWindow(mauiApp);
 
         Assert.IsType<MockContentRegionPage>(window.Page);
         var page = window.Page as MockContentRegionPage;
@@ -37,9 +31,7 @@ public class RegionFixture
     [Fact]
     public void FrameRegion_CreatedBy_RegisterViewWithRegion()
     {
-        var mauiApp = MauiApp.CreateBuilder()
-            .UseMauiApp<PrismApplication>()
-            .UsePrism(prism =>
+        var mauiApp = CreateBuilder(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
@@ -52,13 +44,7 @@ public class RegionFixture
                 })
                 .OnAppStart("MockContentRegionPage"))
             .Build();
-
-        var app = mauiApp.Services.GetRequiredService<IApplication>();
-        app.CreateWindow(new ActivationState(new MauiContext(mauiApp.Services)));
-
-        Assert.Single(app!.Windows);
-        var window = app.Windows.OfType<Window>().First();
-        Assert.NotNull(window.Page);
+        var window = GetWindow(mauiApp);
 
         Assert.IsType<MockContentRegionPage>(window.Page);
         var page = window.Page as MockContentRegionPage;
@@ -70,9 +56,7 @@ public class RegionFixture
     [Fact]
     public void RegionsShareContainer_WithPage()
     {
-        var mauiApp = MauiApp.CreateBuilder()
-            .UseMauiApp<PrismApplication>()
-            .UsePrism(prism =>
+        var mauiApp = CreateBuilder(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
@@ -85,13 +69,7 @@ public class RegionFixture
                 })
                 .OnAppStart("MockContentRegionPage"))
             .Build();
-
-        var app = mauiApp.Services.GetRequiredService<IApplication>();
-        app.CreateWindow(new ActivationState(new MauiContext(mauiApp.Services)));
-
-        Assert.Single(app!.Windows);
-        var window = app.Windows.OfType<Window>().First();
-        Assert.NotNull(window.Page);
+        var window = GetWindow(mauiApp);
 
         Assert.IsType<MockContentRegionPage>(window.Page);
         var page = window.Page as MockContentRegionPage;
@@ -109,9 +87,7 @@ public class RegionFixture
     public void RegionViewModel_HasPageAccessor_WithCorrectPage()
     {
         // This validates that the NavigationService is using the correct Page to navigate from
-        var mauiApp = MauiApp.CreateBuilder()
-            .UseMauiApp<PrismApplication>()
-            .UsePrism(prism =>
+        var mauiApp = CreateBuilder(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
@@ -119,12 +95,7 @@ public class RegionFixture
                 })
                 .OnAppStart("MockContentRegionPage"))
             .Build();
-
-        var app = mauiApp.Services.GetRequiredService<IApplication>();
-        app.CreateWindow(new ActivationState(new MauiContext(mauiApp.Services)));
-
-        Assert.Single(app!.Windows);
-        var window = app.Windows.OfType<Window>().First();
+        var window = GetWindow(mauiApp);
 
         var regionManager = mauiApp.Services.GetRequiredService<IRegionManager>();
         var region = regionManager.Regions.First(x => x.Name == "ContentRegion");
@@ -140,21 +111,14 @@ public class RegionFixture
     [Fact]
     public void RegionManager_HasTwoRegions()
     {
-        var mauiApp = MauiApp.CreateBuilder()
-            .UseMauiApp<PrismApplication>()
-            .UsePrism(prism => 
+        var mauiApp = CreateBuilder(prism => 
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
                 })
                 .OnAppStart("MockContentRegionPage"))
             .Build();
-
-        var app = mauiApp.Services.GetRequiredService<IApplication>();
-        app.CreateWindow(new ActivationState(new MauiContext(mauiApp.Services)));
-
-        Assert.Single(app!.Windows);
-        var window = app.Windows.OfType<Window>().First();
+        var window = GetWindow(mauiApp);
 
         var regionManager = mauiApp.Services.GetRequiredService<IRegionManager>();
         Assert.Equal(2, regionManager.Regions.Count());
@@ -163,9 +127,7 @@ public class RegionFixture
     [Fact]
     public void PageHas_2_ChildViews()
     {
-        var mauiApp = MauiApp.CreateBuilder()
-            .UseMauiApp<PrismApplication>()
-            .UsePrism(prism =>
+        var mauiApp = CreateBuilder(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockContentRegionPage, MockContentRegionPageViewModel>();
@@ -178,13 +140,7 @@ public class RegionFixture
                 })
                 .OnAppStart("MockContentRegionPage"))
             .Build();
-
-        var app = mauiApp.Services.GetRequiredService<IApplication>();
-        app.CreateWindow(new ActivationState(new MauiContext(mauiApp.Services)));
-
-        Assert.Single(app!.Windows);
-        var window = app.Windows.OfType<Window>().First();
-        Assert.NotNull(window.Page);
+        var window = GetWindow(mauiApp);
 
         Assert.IsType<MockContentRegionPage>(window.Page);
         var page = window.Page as MockContentRegionPage;
@@ -198,9 +154,7 @@ public class RegionFixture
     [Fact]
     public void RegionWithDefaultView_IsAutoPopulated()
     {
-        var mauiApp = MauiApp.CreateBuilder()
-            .UseMauiApp<PrismApplication>()
-            .UsePrism(prism =>
+        var mauiApp = CreateBuilder(prism =>
                 prism.RegisterTypes(container =>
                 {
                     container.RegisterForNavigation<MockPageWithRegionAndDefaultView>("MainPage");
@@ -208,13 +162,7 @@ public class RegionFixture
                 })
                 .OnAppStart("MainPage", ex => Assert.Null(ex)))
             .Build();
-
-        var app = mauiApp.Services.GetRequiredService<IApplication>();
-        app.CreateWindow(new ActivationState(new MauiContext(mauiApp.Services)));
-
-        Assert.Single(app!.Windows);
-        var window = app.Windows.OfType<Window>().First();
-        Assert.NotNull(window.Page);
+        var window = GetWindow(mauiApp);
 
         Assert.IsType<MockPageWithRegionAndDefaultView>(window.Page);
         var page = window.Page as MockPageWithRegionAndDefaultView;

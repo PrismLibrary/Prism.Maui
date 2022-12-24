@@ -73,6 +73,8 @@ public abstract class TestBase
         var state = new ActivationState(new MauiContext(mauiApp.Services));
         var window = app.CreateWindow(state);
         Assert.IsType<PrismWindow>(window);
-        return window as Window;
+        var prismWindow = window as PrismWindow;
+        Assert.NotNull(prismWindow?.Page);
+        return prismWindow;
     }
 }
