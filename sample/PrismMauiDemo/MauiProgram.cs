@@ -53,7 +53,7 @@ public static class MauiProgram
                 //.OnAppStart("ViewA/ViewB/ViewC")
                 .OnAppStart(navigationService => navigationService.CreateBuilder()
                     .AddSegment<SplashPageViewModel>()
-                    .Navigate(HandleNavigationError))
+                    .NavigateAsync(HandleNavigationError))
             )
             .ConfigureFonts(fonts =>
             {

@@ -21,7 +21,7 @@ public sealed class PrismAppBuilder
     private List<Action<IContainerRegistry>> _registrations { get; }
     private List<Action<IContainerProvider>> _initializations { get; }
     private IContainerProvider _container { get; }
-    private Action<IContainerProvider, INavigationService> _onAppStarted;
+    private Func<IContainerProvider, INavigationService, Task> _onAppStarted;
     private Action<RegionAdapterMappings> _configureAdapters;
     private Action<IRegionBehaviorFactory> _configureBehaviors;
 
@@ -154,12 +154,17 @@ public sealed class PrismAppBuilder
             var registry = _container as IContainerRegistry;
             registry.RegisterForNavigation<TabbedPage>();
         }
-
-        if (_onAppStarted is not null)
-            _onAppStarted(_container, _container.Resolve<INavigationService>());
     }
 
-    public PrismAppBuilder OnAppStart(Action<IContainerProvider, INavigationService> onAppStarted)
+    internal void OnAppStarted()
+    {
+        if (_onAppStarted is null)
+            throw new ArgumentException("You must call OnAppStart on the PrismAppBuilder.");
+        var onStart = _onAppStarted(_container, _container.Resolve<INavigationService>());
+        onStart.Wait();
+    }
+
+    public PrismAppBuilder OnAppStart(Func<IContainerProvider, INavigationService, Task> onAppStarted)
     {
         _onAppStarted = onAppStarted;
         return this;
@@ -213,6 +218,14 @@ public sealed class PrismAppBuilder
         containerRegistry.RegisterScoped<IPageAccessor, PageAccessor>();
         containerRegistry.RegisterScoped<INavigationService, PageNavigationService>();
         containerRegistry.Register<INavigationRegistry, NavigationRegistry>();
+        containerRegistry.Register<IWindowManager>(c =>
+        {
+            var app = c.Resolve<IApplication>();
+            if (app is PrismApplication prismApp)
+                return prismApp;
+
+            throw new InvalidOperationException("The registered application does not inherit from PrismApplication.");
+        });
 
         containerRegistry.RegisterPageBehavior<NavigationPage, NavigationPageSystemGoBackBehavior>();
         containerRegistry.RegisterPageBehavior<NavigationPage, NavigationPageActiveAwareBehavior>();

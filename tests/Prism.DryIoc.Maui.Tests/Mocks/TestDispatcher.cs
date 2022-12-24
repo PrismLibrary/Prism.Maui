@@ -33,7 +33,9 @@ internal class TestDispatcher
         public bool IsRepeating { get; set; }
         public bool IsRunning { get; private set; }
 
+#pragma warning disable CS0067
         public event EventHandler Tick;
+#pragma warning restore CS0067
 
         public void Start()
         {

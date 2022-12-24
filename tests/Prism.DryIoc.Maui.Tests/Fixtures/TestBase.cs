@@ -21,7 +21,7 @@ public abstract class TestBase
     protected MauiAppBuilder CreateBuilder(Action<PrismAppBuilder> configurePrism)
     {
         return MauiApp.CreateBuilder()
-            .UseMauiApp<Application>()
+            .UseMauiApp<PrismApplication>()
             .UsePrism(prism =>
             {
                 prism.RegisterTypes(container =>
@@ -62,5 +62,19 @@ public abstract class TestBase
                 });
                 configurePrism(prism);
             });
+    }
+
+    protected Window GetWindow(MauiApp mauiApp)
+    {
+        var app = mauiApp.Services.GetService<IApplication>();
+        Assert.NotNull(app);
+        Assert.IsType<PrismApplication>(app);
+
+        var state = new ActivationState(new MauiContext(mauiApp.Services));
+        var window = app.CreateWindow(state);
+        Assert.IsType<PrismWindow>(window);
+        var prismWindow = window as PrismWindow;
+        Assert.NotNull(prismWindow?.Page);
+        return prismWindow;
     }
 }
