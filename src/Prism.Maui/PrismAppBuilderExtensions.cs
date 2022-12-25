@@ -55,14 +55,11 @@ public static class PrismAppBuilderExtensions
                 onError(result.Exception);
         });
 
-    public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, Action<INavigationService> onAppStarted) =>
-        builder.OnAppStart((_, n) => onAppStarted(n));
-
     public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, Func<IContainerProvider, INavigationService, Task> onAppStarted) =>
-        builder.OnAppStart(async (c, n) => await onAppStarted(c, n));
+        builder.OnAppStart((c, n) => onAppStarted(c, n));
 
     public static PrismAppBuilder OnAppStart(this PrismAppBuilder builder, Func<INavigationService, Task> onAppStarted) =>
-        builder.OnAppStart(async (_, n) => await onAppStarted(n));
+        builder.OnAppStart((_, n) => onAppStarted(n));
 
     public static PrismAppBuilder ConfigureServices(this PrismAppBuilder builder, Action<IServiceCollection> configureServices)
     {

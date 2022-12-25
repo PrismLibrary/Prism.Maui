@@ -1,5 +1,6 @@
-﻿<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<prism:PrismApplication xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:prism="http://prismlibrary.com"
              xmlns:windows="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.WindowsSpecific;assembly=Microsoft.Maui.Controls"
              xmlns:local="clr-namespace:PrismMauiDemo"
              x:Class="PrismMauiDemo.App"
@@ -12,4 +13,4 @@
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </Application.Resources>
-</Application>
+</prism:PrismApplication>

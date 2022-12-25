@@ -14,14 +14,12 @@ public class DynamicTabbedPageNavigationFixture : TestBase
     public void CreatesTabs_WithSingleContentPage()
     {
         var mauiApp = CreateBuilder(prism => prism.OnAppStart(navigation =>
-            navigation.CreateBuilder()
-                .AddTabbedSegment(t =>
-                    t.CreateTab("MockViewA")
-                     .CreateTab("MockViewB"))
-                .Navigate())).Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        Assert.Single(app.Windows);
-        var window = app.Windows[0];
+        navigation.CreateBuilder()
+            .AddTabbedSegment(t =>
+                t.CreateTab("MockViewA")
+                    .CreateTab("MockViewB"))
+            .NavigateAsync())).Build();
+        var window = GetWindow(mauiApp);
         Assert.IsType<TabbedPage>(window.Page);
         var tabbedPage = window.Page as TabbedPage;
 
@@ -40,10 +38,8 @@ public class DynamicTabbedPageNavigationFixture : TestBase
                 .AddTabbedSegment(t =>
                     t.CreateTab(ct => ct.AddNavigationPage().AddSegment("MockViewA"))
                      .CreateTab(ct => ct.AddNavigationPage().AddSegment("MockViewB")))
-                .Navigate())).Build();
-        var app = mauiApp.Services.GetRequiredService<IApplication>() as Application;
-        Assert.Single(app.Windows);
-        var window = app.Windows[0];
+                .NavigateAsync())).Build();
+        var window = GetWindow(mauiApp);
         Assert.IsType<TabbedPage>(window.Page);
         var tabbedPage = window.Page as TabbedPage;
 

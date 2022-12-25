@@ -15,6 +15,7 @@ namespace Prism.Navigation;
 public class PageNavigationService : INavigationService, IRegistryAware
 {
     private static readonly SemaphoreSlim _semaphore = new (1, 1);
+    private static DateTime _lastNavigate;
     internal const string RemovePageRelativePath = "../";
     internal const string RemovePageInstruction = "__RemovePage/";
     internal const string RemovePageSegment = "__RemovePage";
@@ -22,7 +23,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
     internal static PageNavigationSource NavigationSource { get; set; } = PageNavigationSource.Device;
 
     private readonly IContainerProvider _container;
-    protected readonly IApplication _application;
+    protected readonly IWindowManager _windowManager;
     protected readonly IPageAccessor _pageAccessor;
     protected readonly IEventAggregator _eventAggregator;
 
@@ -47,15 +48,15 @@ public class PageNavigationService : INavigationService, IRegistryAware
     /// Constructs a new instance of the <see cref="PageNavigationService"/>.
     /// </summary>
     /// <param name="container">The <see cref="IContainerProvider"/> that will be used to resolve pages for navigation.</param>
-    /// <param name="application">The <see cref="IApplication"/> that will let us ensure the Application.MainPage is set.</param>
+    /// <param name="windowManager">The <see cref="IWindowManager"/> that will let the NavigationService retrieve, open or close the app Windows.</param>
     /// <param name="eventAggregator">The <see cref="IEventAggregator"/> that will raise <see cref="NavigationRequestEvent"/>.</param>
     public PageNavigationService(IContainerProvider container,
-        IApplication application,
+        IWindowManager windowManager,
         IEventAggregator eventAggregator,
         IPageAccessor pageAccessor)
     {
         _container = container;
-        _application = application;
+        _windowManager = windowManager;
         _eventAggregator = eventAggregator;
         _pageAccessor = pageAccessor;
     }
@@ -281,6 +282,12 @@ public class PageNavigationService : INavigationService, IRegistryAware
     public virtual async Task<INavigationResult> NavigateAsync(Uri uri, INavigationParameters parameters)
     {
         await _semaphore.WaitAsync();
+        // Ensure adequate time has passed since last navigation so that UI Refresh can Occur
+        if (DateTime.Now - _lastNavigate < TimeSpan.FromMilliseconds(150))
+        {
+            await Task.Delay(150);
+        }
+
         try
         {
             if (parameters is null)
@@ -307,6 +314,7 @@ public class PageNavigationService : INavigationService, IRegistryAware
         }
         finally
         {
+            _lastNavigate = DateTime.Now;
             NavigationSource = PageNavigationSource.Device;
             _semaphore.Release();
         }
@@ -1023,8 +1031,8 @@ public class PageNavigationService : INavigationService, IRegistryAware
 
             if (currentPage is null)
             {
-                if (_application.Windows.OfType<PrismWindow>().Any(x => x.Name == PrismWindow.DefaultWindowName))
-                    _window = _application.Windows.OfType<PrismWindow>().First(x => x.Name == PrismWindow.DefaultWindowName);
+                if (_windowManager.Windows.OfType<PrismWindow>().Any(x => x.Name == PrismWindow.DefaultWindowName))
+                    _window = _windowManager.Windows.OfType<PrismWindow>().First(x => x.Name == PrismWindow.DefaultWindowName);
 
                 if (Window is null)
                 {
@@ -1033,28 +1041,11 @@ public class PageNavigationService : INavigationService, IRegistryAware
                         Page = page
                     };
 
-                    if (_application.Windows is List<Window> windows)
-                        windows.Add(_window);
-
-                    // HACK: https://github.com/dotnet/maui/issues/8635
-                    if (_application is Element appElement)
-                        _window.Parent = appElement;
+                    _windowManager.OpenWindow(_window);
                 }
                 else
                 {
-#if !ANDROID && !WINDOWS
-                    // BUG: https://github.com/dotnet/maui/issues/7275
                     Window.Page = page;
-#else
-                    // HACK: This is the only way CURRENTLY to ensure that the UI resets for Absolute Navigation
-                    var newWindow = new PrismWindow
-                    {
-                        Page = page
-                    };
-                    _application.OpenWindow(newWindow);
-                    _application.CloseWindow(Window);
-                    _window = null;
-#endif
                 }
             }
             else

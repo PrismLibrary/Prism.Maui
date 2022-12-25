@@ -32,11 +32,13 @@ internal class PrismWindow : Window
     protected override void OnActivated()
     {
         IsActive = true;
+        MvvmHelpers.InvokeViewAndViewModelAction<IActiveAware>(CurrentPage, x => x.IsActive = true);
     }
 
     protected override void OnDeactivated()
     {
         IsActive = false;
+        MvvmHelpers.InvokeViewAndViewModelAction<IActiveAware>(CurrentPage, x => x.IsActive = true);
     }
 
     protected override void OnResumed()
