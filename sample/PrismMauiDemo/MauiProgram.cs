@@ -20,7 +20,6 @@ public static class MauiProgram
                 })
                 .RegisterTypes(containerRegistry =>
                 {
-                    containerRegistry.RegisterGlobalNavigationObserver();
                     containerRegistry.RegisterForNavigation<MainPage>();
                     containerRegistry.RegisterForNavigation<RootPage>();
                     containerRegistry.RegisterForNavigation<SamplePage>();
