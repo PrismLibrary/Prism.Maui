@@ -339,9 +339,14 @@ public class PageNavigationService : INavigationService, IRegistryAware
         var nextSegment = segments.Dequeue();
 
         var pageParameters = UriParsingHelper.GetSegmentParameters(nextSegment);
-        //var useModalNavigation = pageParameters.ContainsKey(KnownNavigationParameters.UseModalNavigation) ? pageParameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation) : false;
 
-        //var animated = pageParameters.ContainsKey(KnownNavigationParameters.Animated) ? pageParameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;
+        useModalNavigation =  pageParameters.ContainsKey(KnownNavigationParameters.UseModalNavigation) ? pageParameters.GetValue<bool>(KnownNavigationParameters.UseModalNavigation) : false;        
+        if (!useModalNavigation.Value && !MvvmHelpers.HasNavigationPageParent(currentPage))
+            useModalNavigation = true;
+
+        animated = parameters.ContainsKey(KnownNavigationParameters.Animated) ?
+            parameters.GetValue<bool>(KnownNavigationParameters.Animated) :
+                pageParameters.ContainsKey(KnownNavigationParameters.Animated) ? pageParameters.GetValue<bool>(KnownNavigationParameters.Animated) : true;        
 
         if (nextSegment == RemovePageSegment)
         {
