@@ -125,8 +125,13 @@ public sealed class PrismAppBuilder
         return this;
     }
 
+    private bool _initialized;
     internal void OnInitialized()
     {
+        if (_initialized)
+            return;
+
+        _initialized = true;
         _initializations.ForEach(action => action(_container));
 
         if (_container.IsRegistered<IModuleCatalog>() && _container.Resolve<IModuleCatalog>().Modules.Any())
@@ -160,6 +165,9 @@ public sealed class PrismAppBuilder
     {
         if (_onAppStarted is null)
             throw new ArgumentException("You must call OnAppStart on the PrismAppBuilder.");
+
+        // Ensure that this is executed before we navigate.
+        OnInitialized();
         var onStart = _onAppStarted(_container, _container.Resolve<INavigationService>());
         onStart.Wait();
     }
