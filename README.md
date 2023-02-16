@@ -1,5 +1,7 @@
 # Prism.Maui
 
+**NOTE** This repository is now in an archive state. All further work on Prism.Maui can be found in the main [Prism repo](/PrismLibrary/Prism). Please open any issues there.
+
 Prism for .NET MAUI is more than simply a port of Prism for Xamarin.Forms. Many of the features remain largely untouched, however the codebase has been written specifically for MAUI. For existing Prism platforms, PrismApplication is responsible for a lot of service registration. Maui presents a very different paradigm to the app startup process as it uses the AppHostBuilder pattern that you may be familiar with from AspNetCore and other .NET Core applications. Due to the fact that services are registered as part of the MauiAppBuilder bootstrapping, the application bootstrapping that you would typically find as part of the PrismApplication is now instead part of PrismAppBuilder.
 
 As part of this rewrite, some attention to making it easier for legacy Xamarin.Forms apps to be ported to MAUI has been given. In general however, this has been written with specific attention to the updated application initialization patterns that we see with .NET MAUI.
